@@ -211,12 +211,15 @@ function renderAssessment() {
 
     if (employerContainer) {
         employerContainer.innerHTML = careerData.assessment.employerResearch.map(item => `
-            <article class="assessment-card">
+            <article class="assessment-card" onclick="toggleCard(this)">
                 <h4>${item.company}</h4>
                 <p class="assessment-meta">${item.period} • ${item.role}</p>
-                <p>${summarizeText(item.companyContext, 210)}</p>
-                <p><strong>Product Lines:</strong> ${item.productLines.join(' • ')}</p>
-                <p><strong>Role Impact:</strong> ${summarizeText(item.roleImpact, 180)}</p>
+                <p class="card-preview">${summarizeText(item.companyContext, 120)}</p>
+                <div class="card-details">
+                    <p>${item.companyContext}</p>
+                    <p><strong>Product Lines:</strong> ${item.productLines.join(' • ')}</p>
+                    <p><strong>Role Impact:</strong> ${item.roleImpact}</p>
+                </div>
             </article>
         `).join('');
     }
@@ -238,16 +241,23 @@ function renderAssessment() {
             }
 
             return `
-                <article class="assessment-card">
+                <article class="assessment-card" onclick="toggleCard(this)">
                     <h4>${item.institution}</h4>
                     <p class="assessment-meta">${item.degree} • ${item.years}</p>
-                    ${educationMetrics.join('')}
-                    <p>${summarizeText(item.institutionContext, 210)}</p>
-                    <p><strong>Career Relevance:</strong> ${summarizeText(item.careerRelevance, 190)}</p>
+                    <p class="card-preview">${summarizeText(item.institutionContext, 100)}</p>
+                    <div class="card-details">
+                        ${educationMetrics.join('')}
+                        <p>${item.institutionContext}</p>
+                        <p><strong>Career Relevance:</strong> ${item.careerRelevance}</p>
+                    </div>
                 </article>
             `;
         }).join('');
     }
+}
+
+function toggleCard(card) {
+    card.classList.toggle('expanded');
 }
 
 function summarizeText(text, maxLength) {

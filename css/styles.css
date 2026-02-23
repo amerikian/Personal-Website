@@ -1052,6 +1052,24 @@ body {
     transition: all var(--transition-normal);
     -webkit-backdrop-filter: blur(10px);
     backdrop-filter: blur(10px);
+    cursor: pointer;
+    position: relative;
+}
+
+.assessment-card::after {
+    content: '\f078';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    color: var(--primary-light);
+    font-size: 0.8rem;
+    transition: transform 0.3s ease;
+}
+
+.assessment-card.expanded::after {
+    transform: rotate(180deg);
 }
 
 .assessment-card:hover {
@@ -1062,6 +1080,7 @@ body {
 .assessment-card h4 {
     color: var(--white);
     margin-bottom: 8px;
+    padding-right: 30px;
 }
 
 .assessment-card p {
@@ -1073,6 +1092,26 @@ body {
 
 .assessment-card p:last-child {
     margin-bottom: 0;
+}
+
+.assessment-card .card-details {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease, opacity 0.3s ease;
+    opacity: 0;
+}
+
+.assessment-card.expanded .card-details {
+    max-height: 500px;
+    opacity: 1;
+}
+
+.assessment-card .card-preview {
+    display: block;
+}
+
+.assessment-card.expanded .card-preview {
+    display: none;
 }
 
 .assessment-meta {
