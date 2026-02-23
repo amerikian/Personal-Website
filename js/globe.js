@@ -442,13 +442,16 @@ class GlobeVisualization {
         let isDragging = false;
         let previousMousePosition = { x: 0, y: 0 };
 
+        // Get the canvas element that Three.js created
+        const canvas = this.renderer.domElement;
+        
         // Set cursor style to indicate draggable
-        this.container.style.cursor = 'grab';
+        canvas.style.cursor = 'grab';
 
-        this.container.addEventListener('mousedown', (e) => {
+        canvas.addEventListener('mousedown', (e) => {
             isDragging = true;
             this.isRotating = false;
-            this.container.style.cursor = 'grabbing';
+            canvas.style.cursor = 'grabbing';
             previousMousePosition = { x: e.clientX, y: e.clientY };
             e.preventDefault(); // Prevent text selection while dragging
         });
@@ -456,12 +459,13 @@ class GlobeVisualization {
         window.addEventListener('mouseup', () => {
             if (isDragging) {
                 isDragging = false;
-                this.container.style.cursor = 'grab';
+                canvas.style.cursor = 'grab';
                 setTimeout(() => { this.isRotating = true; }, 2000);
             }
         });
 
-        this.container.addEventListener('mousemove', (e) => {
+        // Use window for mousemove to track even when mouse leaves canvas
+        window.addEventListener('mousemove', (e) => {
             const rect = this.container.getBoundingClientRect();
             this.mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
             this.mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
@@ -481,7 +485,7 @@ class GlobeVisualization {
             this.checkMarkerHover(e);
         });
 
-        this.container.addEventListener('mouseleave', () => {
+        canvas.addEventListener('mouseleave', () => {
             this.tooltip.style.opacity = '0';
         });
 
@@ -496,7 +500,7 @@ class GlobeVisualization {
         });
 
         // Touch support
-        this.container.addEventListener('touchstart', (e) => {
+        canvas.addEventListener('touchstart', (e) => {
             isDragging = true;
             this.isRotating = false;
             previousMousePosition = { 
@@ -505,7 +509,7 @@ class GlobeVisualization {
             };
         });
 
-        this.container.addEventListener('touchmove', (e) => {
+        canvas.addEventListener('touchmove', (e) => {
             if (isDragging) {
                 e.preventDefault(); // Prevent page scroll while dragging globe
                 const deltaX = e.touches[0].clientX - previousMousePosition.x;
@@ -522,7 +526,7 @@ class GlobeVisualization {
             }
         }, { passive: false });
 
-        this.container.addEventListener('touchend', () => {
+        canvas.addEventListener('touchend', () => {
             isDragging = false;
             setTimeout(() => { this.isRotating = true; }, 2000);
         });
