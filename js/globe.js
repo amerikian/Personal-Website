@@ -442,15 +442,23 @@ class GlobeVisualization {
         let isDragging = false;
         let previousMousePosition = { x: 0, y: 0 };
 
+        // Set cursor style to indicate draggable
+        this.container.style.cursor = 'grab';
+
         this.container.addEventListener('mousedown', (e) => {
             isDragging = true;
             this.isRotating = false;
+            this.container.style.cursor = 'grabbing';
             previousMousePosition = { x: e.clientX, y: e.clientY };
+            e.preventDefault(); // Prevent text selection while dragging
         });
 
         window.addEventListener('mouseup', () => {
-            isDragging = false;
-            setTimeout(() => { this.isRotating = true; }, 2000);
+            if (isDragging) {
+                isDragging = false;
+                this.container.style.cursor = 'grab';
+                setTimeout(() => { this.isRotating = true; }, 2000);
+            }
         });
 
         this.container.addEventListener('mousemove', (e) => {
@@ -462,8 +470,8 @@ class GlobeVisualization {
                 const deltaX = e.clientX - previousMousePosition.x;
                 const deltaY = e.clientY - previousMousePosition.y;
 
-                this.globe.rotation.y += deltaX * 0.005;
-                this.globe.rotation.x += deltaY * 0.005;
+                this.globe.rotation.y += deltaX * 0.01;
+                this.globe.rotation.x += deltaY * 0.01;
                 this.globe.rotation.x = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, this.globe.rotation.x));
 
                 previousMousePosition = { x: e.clientX, y: e.clientY };
@@ -499,11 +507,12 @@ class GlobeVisualization {
 
         this.container.addEventListener('touchmove', (e) => {
             if (isDragging) {
+                e.preventDefault(); // Prevent page scroll while dragging globe
                 const deltaX = e.touches[0].clientX - previousMousePosition.x;
                 const deltaY = e.touches[0].clientY - previousMousePosition.y;
 
-                this.globe.rotation.y += deltaX * 0.005;
-                this.globe.rotation.x += deltaY * 0.005;
+                this.globe.rotation.y += deltaX * 0.01;
+                this.globe.rotation.x += deltaY * 0.01;
                 this.globe.rotation.x = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, this.globe.rotation.x));
 
                 previousMousePosition = { 
@@ -511,7 +520,7 @@ class GlobeVisualization {
                     y: e.touches[0].clientY 
                 };
             }
-        });
+        }, { passive: false });
 
         this.container.addEventListener('touchend', () => {
             isDragging = false;
