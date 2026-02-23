@@ -172,14 +172,31 @@ function renderAssessment() {
     }
 
     if (educationContainer) {
-        educationContainer.innerHTML = careerData.assessment.educationResearch.map(item => `
-            <article class="assessment-card">
-                <h4>${item.institution}</h4>
-                <p class="assessment-meta">${item.degree} • ${item.years}</p>
-                <p>${item.institutionContext}</p>
-                <p><strong>Career Relevance:</strong> ${item.careerRelevance}</p>
-            </article>
-        `).join('');
+        educationContainer.innerHTML = careerData.assessment.educationResearch.map(item => {
+            const educationMetrics = [];
+
+            if (typeof item.cumulativeGpa === 'number') {
+                educationMetrics.push(`<p><strong>Cumulative GPA:</strong> ${item.cumulativeGpa.toFixed(2)}</p>`);
+            }
+
+            if (typeof item.cumulativeCredits === 'number') {
+                educationMetrics.push(`<p><strong>Cumulative Credits:</strong> ${item.cumulativeCredits.toFixed(2)}</p>`);
+            }
+
+            if (item.degreeDate) {
+                educationMetrics.push(`<p><strong>Degree Date:</strong> ${item.degreeDate}</p>`);
+            }
+
+            return `
+                <article class="assessment-card">
+                    <h4>${item.institution}</h4>
+                    <p class="assessment-meta">${item.degree} • ${item.years}</p>
+                    ${educationMetrics.join('')}
+                    <p>${item.institutionContext}</p>
+                    <p><strong>Career Relevance:</strong> ${item.careerRelevance}</p>
+                </article>
+            `;
+        }).join('');
     }
 }
 
