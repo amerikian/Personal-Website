@@ -268,6 +268,92 @@ const careerData = {
         }
     ],
 
+    // Employer-ready diligence assessment
+    assessment: {
+        title: "Comprehensive Education & Career Assessment",
+        executiveSummary: "Ian Cassiman combines formal international business education with multi-industry product leadership across consulting, insurance, fitness technology, and consumer products. Career progression shows repeatable strengths in global commercialization, product-line optimization, and cross-functional execution from concept through launch.",
+        employerFitSignals: [
+            "Cross-Industry Product Leadership",
+            "Global Commercialization Experience",
+            "Portfolio from Consumer to Enterprise",
+            "Agile Delivery + Release Governance",
+            "Data-Informed Innovation Mindset"
+        ],
+        educationResearch: [
+            {
+                institution: "University of Wisconsin-Whitewater",
+                degree: "MBA, International Business",
+                years: "2006 - 2008",
+                institutionContext: "UW-Whitewater is part of the University of Wisconsin System and includes a College of Business and Economics with graduate business programs. Program structure aligns with practical business leadership, operations, and international market considerations.",
+                careerRelevance: "Strengthened financial and strategic frameworks used later in $100M product-line management, international expansion, and executive-level product decisions."
+            },
+            {
+                institution: "University of Wisconsin-Stevens Point",
+                degree: "BA, International/Global Studies",
+                years: "1997 - 2000",
+                institutionContext: "UW-Stevens Point emphasizes critical thinking, interdisciplinary learning, and global perspective development. International/Global Studies aligns with geopolitical, cultural, and economic analysis needed for global business leadership.",
+                careerRelevance: "Built early capability for cross-cultural communication and market-context analysis used in Southeast Asia leadership roles and international stakeholder management."
+            },
+            {
+                institution: "Study Abroad: Poland and Russia",
+                degree: "Undergraduate International Studies Experience",
+                years: "During BA Program",
+                institutionContext: "Study abroad experience in Central/Eastern Europe provided direct immersion in distinct economic, regulatory, and cultural contexts.",
+                careerRelevance: "Contributed to adaptability in multilingual, distributed teams and increased effectiveness in international negotiations, partnerships, and go-to-market execution."
+            }
+        ],
+        employerResearch: [
+            {
+                company: "RSM US LLP",
+                period: "2022 - Present",
+                role: "Scrum Master & Release Manager",
+                companyContext: "RSM is a middle-market focused assurance, tax, and consulting firm operating globally through the RSM network. Service model combines regulated delivery quality with growing digital and AI-enabled transformation capabilities.",
+                productLines: ["Audit & Assurance Services", "Tax Services", "Consulting & Digital Transformation"],
+                roleImpact: "Scaled Agile execution across two scrum teams and two Azure DevOps projects, improved release governance, and prototyped AI-enabled DevOps reporting assets to increase visibility and velocity."
+            },
+            {
+                company: "Johnson Health Tech (North America / SE Asia)",
+                period: "2006 - 2012, 2015 - 2017",
+                role: "Global Product Manager / VP Commercial Sales",
+                companyContext: "Johnson Health Tech is a global fitness equipment company with commercial and home fitness brands including Matrix Fitness and Vision Fitness.",
+                productLines: ["Commercial Cardio & Strength", "Home Fitness Equipment", "Digital Console/Connected Fitness Experiences"],
+                roleImpact: "Managed and expanded a $100M product line, launched industry-leading feature innovation, and drove regional growth in Southeast Asia through strategic key-account and channel execution."
+            },
+            {
+                company: "American Family Insurance",
+                period: "2014 - 2015",
+                role: "Innovation Project Manager",
+                companyContext: "American Family is a major U.S. insurer with core product lines in auto, home, life, and commercial insurance and a long-running focus on risk reduction and customer experience.",
+                productLines: ["Property & Casualty Insurance", "Life Insurance", "Commercial/Business Coverage"],
+                roleImpact: "Led connected-home IoT experimentation and MVP testing to explore claim-reduction opportunities, combining analytics, experimentation, and customer-centered insurance innovation."
+            },
+            {
+                company: "SportsArt",
+                period: "2014",
+                role: "Senior Product Manager",
+                companyContext: "SportsArt positions itself as a global fitness manufacturer with product families spanning cardio, strength, medical/rehabilitation, and energy-generating ECO-POWR systems.",
+                productLines: ["Cardio Equipment", "Strength Equipment", "Medical/Rehabilitation", "ECO-POWR Energy-Producing Fitness"],
+                roleImpact: "Directed global commercial line planning and launch readiness, including rebranding and software-console/mobile experience completion for market-facing releases."
+            },
+            {
+                company: "Pacific Cycle (Schwinn/Mongoose)",
+                period: "2012 - 2014",
+                role: "Product Manager",
+                companyContext: "Pacific Cycle manages widely recognized bicycle brands and accessory categories distributed through major North American retail channels.",
+                productLines: ["Bicycles (Schwinn/Mongoose)", "Bicycle Parts & Accessories", "Mass Retail Channel Programs"],
+                roleImpact: "Optimized accessory portfolio strategy, partnered with top retailers, and delivered patented accessory innovations including a retailer-exclusive outcome."
+            },
+            {
+                company: "SKY CONSULTING LLC / Sprinkle Group",
+                period: "2017 - 2021",
+                role: "Consultant / Founder / CEO",
+                companyContext: "Entrepreneurial portfolio spanning fintech, blockchain, and digital asset initiatives focused on emerging market models and platform-led growth.",
+                productLines: ["Blockchain Platform Concepts", "Crypto Investment Platforms", "Tokenization/Fintech Ventures"],
+                roleImpact: "Drove product strategy and execution in early-stage environments, balancing innovation velocity, stakeholder alignment, and commercialization readiness."
+            }
+        ]
+    },
+
     // Stats for hero section
     stats: {
         years: 20,

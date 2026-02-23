@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initMobileMenu();
     renderTimeline();
     renderProducts();
+    renderAssessment();
     renderLocations();
     renderTechStack();
     initChat();
@@ -133,6 +134,53 @@ function renderProducts() {
     `).join('');
 
     productsContainer.innerHTML = productsHTML;
+}
+
+/**
+ * Render Employer-Ready Assessment
+ */
+function renderAssessment() {
+    if (!careerData?.assessment) return;
+
+    const summaryContainer = document.getElementById('assessment-summary');
+    const employerContainer = document.getElementById('employer-assessment');
+    const educationContainer = document.getElementById('education-assessment');
+
+    if (summaryContainer) {
+        const summary = careerData.assessment;
+        summaryContainer.innerHTML = `
+            <div class="assessment-summary-card">
+                <h3>${summary.title}</h3>
+                <p>${summary.executiveSummary}</p>
+                <div class="assessment-highlights">
+                    ${summary.employerFitSignals.map(signal => `<span class="assessment-pill">${signal}</span>`).join('')}
+                </div>
+            </div>
+        `;
+    }
+
+    if (employerContainer) {
+        employerContainer.innerHTML = careerData.assessment.employerResearch.map(item => `
+            <article class="assessment-card">
+                <h4>${item.company}</h4>
+                <p class="assessment-meta">${item.period} • ${item.role}</p>
+                <p>${item.companyContext}</p>
+                <p><strong>Product Lines:</strong> ${item.productLines.join(' • ')}</p>
+                <p><strong>Role Impact:</strong> ${item.roleImpact}</p>
+            </article>
+        `).join('');
+    }
+
+    if (educationContainer) {
+        educationContainer.innerHTML = careerData.assessment.educationResearch.map(item => `
+            <article class="assessment-card">
+                <h4>${item.institution}</h4>
+                <p class="assessment-meta">${item.degree} • ${item.years}</p>
+                <p>${item.institutionContext}</p>
+                <p><strong>Career Relevance:</strong> ${item.careerRelevance}</p>
+            </article>
+        `).join('');
+    }
 }
 
 /**
@@ -302,6 +350,14 @@ function generateAIResponse(question) {
     
     if (lowerQ.includes('product') || lowerQ.includes('leadership') || lowerQ.includes('management')) {
         return `Strong product leadership background with ${careerData.stats.products}+ products shipped, including experience scaling teams, defining strategy, and executing go-to-market plans for enterprise software.`;
+    }
+
+    if (lowerQ.includes('education') || lowerQ.includes('university') || lowerQ.includes('study abroad')) {
+        return "Education includes an MBA in International Business (UW-Whitewater) and a BA in International/Global Studies (UW-Stevens Point), with study abroad exposure in Poland and Russia. This combination directly supports global stakeholder alignment, cross-cultural communication, and market-entry work.";
+    }
+
+    if (lowerQ.includes('company') || lowerQ.includes('employer') || lowerQ.includes('worked at')) {
+        return "Experience spans RSM, Johnson Health Tech, American Family Insurance, SportsArt, and Pacific Cycle, with product-line impact across assurance-tech workflows, commercial/home fitness equipment, insurance IoT pilots, and retail bicycle accessories with patented innovations.";
     }
     
     if (lowerQ.includes('location') || lowerQ.includes('global') || lowerQ.includes('remote')) {
