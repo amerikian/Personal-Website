@@ -8,6 +8,8 @@ class GlobeVisualization {
         this.container = document.getElementById(containerId);
         if (!this.container) return;
 
+        this.prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
         this.scene = null;
         this.camera = null;
         this.renderer = null;
@@ -34,6 +36,12 @@ class GlobeVisualization {
         this.createConnectionArcs();
         this.setupTooltip();
         this.setupEventListeners();
+
+        if (this.prefersReducedMotion) {
+            this.renderer.render(this.scene, this.camera);
+            return;
+        }
+
         this.animate();
     }
 
@@ -514,14 +522,35 @@ class GlobeVisualization {
     }
 }
 
-// Initialize globe when DOM is ready
+function initializeGlobeOnce() {
+    if (window.globeVisualization) return;
+    window.globeVisualization = new GlobeVisualization('globe-container');
+}
+
 document.addEventListener('DOMContentLoaded', () => {
-    // Check if container exists before initializing
     const globeContainer = document.getElementById('globe-container');
-    if (globeContainer) {
-        // Small delay to ensure container is properly sized
-        setTimeout(() => {
-            window.globeVisualization = new GlobeVisualization('globe-container');
-        }, 500);
+    if (!globeContainer) return;
+
+    const globalSection = document.getElementById('global') || globeContainer;
+
+    if ('IntersectionObserver' in window) {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    initializeGlobeOnce();
+                    observer.disconnect();
+                }
+            });
+        }, { threshold: 0.15, rootMargin: '120px' });
+
+        observer.observe(globalSection);
+        return;
     }
+
+    if ('requestIdleCallback' in window) {
+        requestIdleCallback(() => initializeGlobeOnce(), { timeout: 1500 });
+        return;
+    }
+
+    setTimeout(() => initializeGlobeOnce(), 800);
 });

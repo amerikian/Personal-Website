@@ -145,6 +145,28 @@ function renderAssessment() {
     const summaryContainer = document.getElementById('assessment-summary');
     const employerContainer = document.getElementById('employer-assessment');
     const educationContainer = document.getElementById('education-assessment');
+    const educationResearch = careerData.assessment.educationResearch || [];
+    const mbaProfile = educationResearch.find(item => (item.degree || '').toLowerCase().includes('mba'));
+    const undergradProfile = educationResearch.find(item => (item.degree || '').toLowerCase().includes('international/global'));
+
+    const keyMetrics = [
+        {
+            label: 'MBA GPA',
+            value: typeof mbaProfile?.cumulativeGpa === 'number' ? mbaProfile.cumulativeGpa.toFixed(2) : '—'
+        },
+        {
+            label: 'Undergrad GPA',
+            value: typeof undergradProfile?.cumulativeGpa === 'number' ? undergradProfile.cumulativeGpa.toFixed(2) : '—'
+        },
+        {
+            label: 'Countries',
+            value: `${careerData?.stats?.countries ?? 0}`
+        },
+        {
+            label: 'Years',
+            value: `${careerData?.stats?.years ?? 0}+`
+        }
+    ];
 
     if (summaryContainer) {
         const summary = careerData.assessment;
@@ -168,8 +190,20 @@ function renderAssessment() {
                 <div class="assessment-summary-meta">${summaryMeta.join('')}</div>
                 <h3>${summary.title}</h3>
                 <p>${summary.executiveSummary}</p>
+                <div class="assessment-metrics">
+                    ${keyMetrics.map(metric => `
+                        <div class="assessment-metric">
+                            <span class="assessment-metric-value">${metric.value}</span>
+                            <span class="assessment-metric-label">${metric.label}</span>
+                        </div>
+                    `).join('')}
+                </div>
                 <div class="assessment-highlights">
                     ${summary.employerFitSignals.map(signal => `<span class="assessment-pill">${signal}</span>`).join('')}
+                </div>
+                <div class="assessment-actions">
+                    <a class="btn btn-primary" href="#contact">Contact Ian</a>
+                    <a class="btn btn-outline" href="${careerData?.profile?.linkedIn || '#'}" target="_blank" rel="noopener noreferrer">View Resume Profile</a>
                 </div>
             </div>
         `;
@@ -180,9 +214,9 @@ function renderAssessment() {
             <article class="assessment-card">
                 <h4>${item.company}</h4>
                 <p class="assessment-meta">${item.period} • ${item.role}</p>
-                <p>${item.companyContext}</p>
+                <p>${summarizeText(item.companyContext, 210)}</p>
                 <p><strong>Product Lines:</strong> ${item.productLines.join(' • ')}</p>
-                <p><strong>Role Impact:</strong> ${item.roleImpact}</p>
+                <p><strong>Role Impact:</strong> ${summarizeText(item.roleImpact, 180)}</p>
             </article>
         `).join('');
     }
@@ -208,12 +242,19 @@ function renderAssessment() {
                     <h4>${item.institution}</h4>
                     <p class="assessment-meta">${item.degree} • ${item.years}</p>
                     ${educationMetrics.join('')}
-                    <p>${item.institutionContext}</p>
-                    <p><strong>Career Relevance:</strong> ${item.careerRelevance}</p>
+                    <p>${summarizeText(item.institutionContext, 210)}</p>
+                    <p><strong>Career Relevance:</strong> ${summarizeText(item.careerRelevance, 190)}</p>
                 </article>
             `;
         }).join('');
     }
+}
+
+function summarizeText(text, maxLength) {
+    if (!text || text.length <= maxLength) return text || '';
+    const clipped = text.slice(0, maxLength).trim();
+    const lastSpace = clipped.lastIndexOf(' ');
+    return `${clipped.slice(0, lastSpace > 0 ? lastSpace : clipped.length)}…`;
 }
 
 /**

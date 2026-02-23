@@ -5,6 +5,12 @@
 
 // Wait for DOM and GSAP to be ready
 document.addEventListener('DOMContentLoaded', () => {
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reducedMotion) {
+        applyReducedMotionState();
+        return;
+    }
+
     // Register GSAP plugins
     gsap.registerPlugin(ScrollTrigger);
 
@@ -64,6 +70,18 @@ function initHeroAnimations() {
             y: 20,
             duration: 0.5
         }, '-=0.1');
+}
+
+function applyReducedMotionState() {
+    document.querySelectorAll('.stat-number').forEach((counter) => {
+        const target = parseInt(counter.dataset.target || '0', 10);
+        counter.textContent = target ? `${target}+` : '0';
+    });
+
+    document.querySelectorAll('.skill-bar').forEach((bar) => {
+        const skill = parseInt(bar.dataset.skill || '0', 10);
+        bar.style.width = `${skill}%`;
+    });
 }
 
 /**

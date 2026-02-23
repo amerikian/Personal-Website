@@ -7,6 +7,12 @@ class ParticleSystem {
     constructor(canvasId) {
         this.canvas = document.getElementById(canvasId);
         if (!this.canvas) return;
+
+        this.prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (this.prefersReducedMotion) {
+            this.canvas.style.display = 'none';
+            return;
+        }
         
         this.ctx = this.canvas.getContext('2d');
         this.particles = [];
