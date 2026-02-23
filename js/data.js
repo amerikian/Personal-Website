@@ -259,12 +259,16 @@ const careerData = {
             degree: "MBA, International Business",
             school: "University of Wisconsin-Whitewater",
             years: "Program completed 2011",
-            highlight: "Official transcript indicates MBA (Business Administration), cumulative graduate GPA 3.00, 39.00 graduate credits, degree date 08/20/2011"
+            degreeDate: "08/20/2011",
+            cumulativeGpa: 3.41,
+            cumulativeCredits: 39.0,
+            highlight: "Official transcript indicates MBA (Business Administration) with 39.00 graduate credits"
         },
         {
             degree: "BA, International/Global Studies",
             school: "University of Wisconsin-Stevens Point",
             years: "1997 - 2000",
+            cumulativeGpa: 3.13,
             highlight: "Included studies abroad in Poland and Russia, with transcript evidence of East/Central Europe coursework and Polish language study"
         }
     ],
@@ -272,7 +276,7 @@ const careerData = {
     // Employer-ready diligence assessment
     assessment: {
         title: "Comprehensive Education & Career Assessment",
-        executiveSummary: "Ian Cassiman combines formal international business education with multi-industry product leadership across consulting, insurance, fitness technology, and consumer products. Transcript-backed academics show an MBA in Business Administration (International Business focus) completed in 2011 with 39 graduate credits and a 3.00 cumulative graduate GPA, plus undergrad international studies with direct Poland/Russia immersion and regional coursework.",
+        executiveSummary: "Ian Cassiman combines formal international business education with multi-industry product leadership across consulting, insurance, fitness technology, and consumer products. Transcript-backed academics show an MBA in Business Administration (International Business focus) completed in 2011 with 39 graduate credits and a 3.41 cumulative graduate GPA, plus undergrad international studies with a 3.13 cumulative GPA and direct Poland/Russia immersion.",
         employerFitSignals: [
             "Cross-Industry Product Leadership",
             "Global Commercialization Experience",
@@ -285,13 +289,16 @@ const careerData = {
                 institution: "University of Wisconsin-Whitewater",
                 degree: "MBA, International Business",
                 years: "Degree date: 08/20/2011",
-                institutionContext: "Official transcript reflects MBA (Business Administration) completion at UW-Whitewater School of Graduate Studies, with 39.00 graduate credits and a 3.00 cumulative graduate GPA.",
+                cumulativeGpa: 3.41,
+                cumulativeCredits: 39.0,
+                institutionContext: "Official transcript reflects MBA (Business Administration) completion at UW-Whitewater School of Graduate Studies, with 39.00 graduate credits and a 3.41 cumulative graduate GPA.",
                 careerRelevance: "Supports evidence-based business decision making, portfolio economics, and strategic planning used in product-line ownership, international commercialization, and leadership roles."
             },
             {
                 institution: "University of Wisconsin-Stevens Point",
                 degree: "BA, International/Global Studies",
                 years: "1997 - 2000",
+                cumulativeGpa: 3.13,
                 institutionContext: "Transcript and portfolio history align to international/regional coursework including comparative politics, East European politics, and international studies classes, combined with language study and field experience.",
                 careerRelevance: "Built durable cross-cultural analysis and communication capability that later translated into Southeast Asia market expansion, multinational stakeholder management, and global product strategy execution."
             },
