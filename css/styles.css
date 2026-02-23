@@ -922,6 +922,8 @@ body {
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 16px;
     padding: 28px;
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
 }
 
 .assessment-summary-meta {
@@ -1008,6 +1010,8 @@ body {
     border-radius: 14px;
     padding: 20px;
     transition: all var(--transition-normal);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
 }
 
 .assessment-card:hover {
