@@ -176,6 +176,15 @@ const careerData = {
             details: "Factory/HQ visits - Product development & VIP tours"
         },
         { 
+            country: "China", 
+            flag: "🇨🇳", 
+            cities: ["Shanghai", "Shenzhen"], 
+            years: "Frequent",
+            lat: 31.2304,
+            lng: 121.4737,
+            details: "Factory visits - Johnson Health Tech manufacturing operations"
+        },
+        { 
             country: "Sweden", 
             flag: "🇸🇪", 
             cities: ["Stockholm"], 
@@ -224,11 +233,13 @@ const careerData = {
 
     // Skills & Expertise
     skills: {
-        product: ["Product Strategy", "NPD (New Product Development)", "User Stories", "MVP Development", "Product Launch"],
-        methodologies: ["Scaled Agile Framework", "Lean Startup", "Waterfall", "Test & Learn", "A/B Testing"],
+        product: ["Product Strategy", "NPD (New Product Development)", "User Stories", "MVP Development", "Product Launch", "Roadmapping"],
+        methodologies: ["Scaled Agile Framework (SAFe)", "Scrum Master", "Lean Startup", "Release Management", "A/B Testing", "Test & Learn"],
+        devops: ["Azure DevOps", "CI/CD Pipelines", "Git Repos", "GitHub Actions", "Azure Static Web Apps", "Release Governance"],
+        technical: ["JavaScript", "HTML/CSS", "Python", "Three.js", "ECharts", "DOMO", "Mobile Apps", "API Development"],
+        ai: ["GitHub Copilot", "Azure OpenAI", "RAG Patterns", "Bot Development", "AI-Assisted Workflows"],
         leadership: ["Cross-Functional Teams", "C-Level Sales", "Key Account Management", "Sales Training", "Team Development"],
-        technical: ["Salesforce", "DOMO", "Business Intelligence", "IoT/Smart Home", "Mobile Apps"],
-        industries: ["Fintech", "Blockchain", "Fitness/Wellness", "Insurance", "Consumer Products", "Cryptocurrency"]
+        industries: ["Fintech", "Blockchain", "Fitness/Wellness", "Insurance", "Consumer Products", "Cryptocurrency", "IoT/Smart Home"]
     },
 
     // Certifications & Recognition
@@ -367,7 +378,7 @@ const careerData = {
     // Stats for hero section
     stats: {
         years: 20,
-        countries: 8,
+        countries: 9,
         products: 50,
         users: 1000000  // Estimated product reach
     }

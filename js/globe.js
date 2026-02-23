@@ -82,31 +82,118 @@ class GlobeVisualization {
         // Create globe geometry
         const geometry = new THREE.SphereGeometry(1, 64, 64);
         
-        // Create gradient material for globe
+        // Load Earth texture for realistic globe
+        const textureLoader = new THREE.TextureLoader();
+        
+        // Create material with texture
         const material = new THREE.MeshPhongMaterial({
-            color: 0x1e293b,
+            color: 0x1a365d,
             emissive: 0x0f172a,
             shininess: 25,
             transparent: true,
-            opacity: 0.95
+            opacity: 0.98
         });
 
         this.globe = new THREE.Mesh(geometry, material);
         this.scene.add(this.globe);
 
-        // Add wireframe overlay for tech look
+        // Load Earth texture (stylized dark version)
+        textureLoader.load(
+            'https://unpkg.com/three-globe@2.31.0/example/img/earth-dark.jpg',
+            (texture) => {
+                material.map = texture;
+                material.color.setHex(0xffffff);
+                material.needsUpdate = true;
+            },
+            undefined,
+            () => {
+                // Fallback: draw continent outlines if texture fails
+                this.addContinentOutlines();
+            }
+        );
+
+        // Add subtle wireframe overlay for tech look
         const wireframeGeometry = new THREE.SphereGeometry(1.002, 36, 36);
         const wireframeMaterial = new THREE.MeshBasicMaterial({
             color: 0x6366f1,
             wireframe: true,
             transparent: true,
-            opacity: 0.15
+            opacity: 0.08
         });
         const wireframe = new THREE.Mesh(wireframeGeometry, wireframeMaterial);
         this.globe.add(wireframe);
 
         // Add latitude/longitude lines
         this.addGridLines();
+    }
+
+    addContinentOutlines() {
+        // Simplified continent outlines as fallback
+        const continentMaterial = new THREE.LineBasicMaterial({
+            color: 0x22c55e,
+            transparent: true,
+            opacity: 0.6
+        });
+
+        // North America outline (simplified)
+        const northAmerica = [
+            [-125, 48], [-124, 40], [-117, 32], [-105, 25], [-97, 26], 
+            [-97, 28], [-83, 29], [-80, 25], [-81, 31], [-75, 35],
+            [-70, 42], [-67, 45], [-65, 47], [-57, 47], [-55, 50],
+            [-65, 55], [-75, 58], [-85, 60], [-95, 62], [-105, 60],
+            [-120, 55], [-125, 50], [-125, 48]
+        ];
+        this.addContinentPath(northAmerica, continentMaterial);
+
+        // South America outline (simplified)
+        const southAmerica = [
+            [-80, 10], [-75, 5], [-70, -5], [-75, -15], [-70, -25],
+            [-65, -35], [-65, -45], [-70, -55], [-75, -50], [-72, -40],
+            [-75, -30], [-80, -20], [-80, -10], [-75, 0], [-80, 10]
+        ];
+        this.addContinentPath(southAmerica, continentMaterial);
+
+        // Europe outline (simplified)
+        const europe = [
+            [-10, 36], [0, 36], [5, 44], [10, 45], [15, 40], [25, 40],
+            [30, 45], [40, 42], [30, 55], [25, 55], [20, 60], [10, 65],
+            [5, 62], [0, 60], [-5, 55], [-10, 50], [-10, 36]
+        ];
+        this.addContinentPath(europe, continentMaterial);
+
+        // Africa outline (simplified)
+        const africa = [
+            [-15, 35], [10, 37], [30, 32], [35, 30], [40, 10], [50, 12],
+            [45, 0], [40, -10], [35, -25], [30, -35], [20, -35], [15, -30],
+            [10, -15], [5, 5], [-5, 5], [-15, 15], [-18, 25], [-15, 35]
+        ];
+        this.addContinentPath(africa, continentMaterial);
+
+        // Asia outline (simplified)
+        const asia = [
+            [30, 45], [50, 40], [60, 45], [70, 40], [80, 30], [90, 25],
+            [100, 22], [105, 12], [110, 20], [120, 25], [130, 35], [140, 40],
+            [145, 45], [160, 60], [170, 65], [180, 68], [170, 70], [120, 75],
+            [80, 70], [60, 65], [50, 55], [40, 50], [30, 45]
+        ];
+        this.addContinentPath(asia, continentMaterial);
+
+        // Australia outline (simplified)
+        const australia = [
+            [115, -20], [120, -18], [135, -12], [145, -15], [150, -25],
+            [155, -28], [150, -35], [145, -40], [135, -35], [125, -35],
+            [115, -30], [115, -20]
+        ];
+        this.addContinentPath(australia, continentMaterial);
+    }
+
+    addContinentPath(coords, material) {
+        const points = coords.map(([lng, lat]) => 
+            this.latLngToVector3(lat, lng, 1.004)
+        );
+        const geometry = new THREE.BufferGeometry().setFromPoints(points);
+        const line = new THREE.Line(geometry, material);
+        this.globe.add(line);
     }
 
     addGridLines() {
