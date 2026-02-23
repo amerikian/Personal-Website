@@ -1,0 +1,25 @@
+{
+    "navigationFallback": {
+        "rewrite": "/index.html",
+        "exclude": ["/css/*", "/js/*", "/images/*", "/data/*", "*.{css,js,json,png,jpg,gif,svg,ico}"]
+    },
+    "routes": [
+        {
+            "route": "/api/*",
+            "allowedRoles": ["anonymous"]
+        }
+    ],
+    "responseOverrides": {
+        "404": {
+            "rewrite": "/index.html"
+        }
+    },
+    "globalHeaders": {
+        "X-Content-Type-Options": "nosniff",
+        "X-Frame-Options": "DENY",
+        "Content-Security-Policy": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com https://fonts.googleapis.com https://fonts.gstatic.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data: https:; connect-src 'self' https://*.azure.com https://*.openai.azure.com https://api.openai.com;"
+    },
+    "mimeTypes": {
+        ".json": "application/json"
+    }
+}

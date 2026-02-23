@@ -1,0 +1,31 @@
+{
+    "name": "professional-portfolio",
+    "version": "1.0.0",
+    "description": "Interactive professional portfolio showcasing 25+ years of global technology leadership",
+    "main": "index.html",
+    "scripts": {
+        "start": "npx serve .",
+        "dev": "npx live-server --port=3000",
+        "build": "echo 'Static site - no build required'",
+        "deploy": "swa deploy . --env production"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/amerikian/Personal-Website.git"
+    },
+    "keywords": [
+        "portfolio",
+        "professional",
+        "interactive",
+        "ai",
+        "career",
+        "technology"
+    ],
+    "author": "",
+    "license": "MIT",
+    "devDependencies": {
+        "@azure/static-web-apps-cli": "^1.1.6",
+        "live-server": "^1.2.2",
+        "serve": "^14.2.1"
+    }
+}
