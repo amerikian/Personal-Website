@@ -7,7 +7,11 @@
         "start": "npx serve .",
         "dev": "npx live-server --port=3000",
         "build": "echo 'Static site - no build required'",
-        "deploy": "swa deploy . --env production"
+        "deploy": "swa deploy . --env production",
+        "visual:check": "node scripts/visual-check.js",
+        "visual:baseline": "node scripts/visual-regression.js baseline",
+        "visual:compare": "node scripts/visual-regression.js compare",
+        "hooks:install": "git config core.hooksPath .githooks"
     },
     "repository": {
         "type": "git",
@@ -26,7 +30,9 @@
     "devDependencies": {
         "@azure/static-web-apps-cli": "^1.1.6",
         "live-server": "^1.2.2",
+        "pixelmatch": "^7.1.0",
         "playwright": "^1.58.2",
+        "pngjs": "^7.0.0",
         "serve": "^14.2.1"
     }
 }

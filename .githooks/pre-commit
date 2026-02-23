@@ -1,0 +1,17 @@
+#!/bin/sh
+set -e
+
+PORT=4173
+BASE_URL="http://127.0.0.1:${PORT}"
+
+npx serve . -l "$PORT" > /tmp/portfolio-visual-hook.log 2>&1 &
+SERVER_PID=$!
+
+cleanup() {
+  kill "$SERVER_PID" >/dev/null 2>&1 || true
+}
+
+trap cleanup EXIT INT TERM
+sleep 2
+
+node scripts/visual-regression.js compare "$BASE_URL"

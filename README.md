@@ -81,6 +81,9 @@ Personal-Website/
 │   ├── particles.js        # Particle background system
 │   ├── animations.js       # GSAP scroll animations
 │   └── main.js             # Core functionality & chat
+├── scripts/
+│   ├── visual-check.js      # One-off screenshot capture/validation
+│   └── visual-regression.js # Baseline + diff visual regression
 ├── images/                  # Static assets (to be added)
 ├── api/                     # Azure Functions for AI (future)
 ├── staticwebapp.config.json # Azure SWA configuration
@@ -146,6 +149,35 @@ The portfolio includes a chat widget ready for AI integration. To connect to Azu
 4. Update `generateAIResponse()` in `main.js`
 
 See [Azure OpenAI Docs](https://learn.microsoft.com/azure/ai-services/openai/) for setup.
+
+## 👀 Visual Regression (Playwright)
+
+Automated screenshot validation is available for desktop and mobile views.
+
+### Commands
+
+```bash
+# Capture regular screenshots
+npm run visual:check
+
+# Create/update baseline images
+npm run visual:baseline
+
+# Compare current UI to baseline
+npm run visual:compare
+```
+
+### Commit-time validation
+
+This repo uses a committed hook at `.githooks/pre-commit`.
+
+```bash
+# Run once per clone
+npm run hooks:install
+```
+
+On each commit, the hook starts a local static server and runs visual compare.
+Baselines are stored in `artifacts/visual-baseline/`.
 
 ## 📊 Research & Data Collection
 
