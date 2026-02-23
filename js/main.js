@@ -360,7 +360,7 @@ function initChat() {
     });
 
     // Send message
-    const sendMessage = () => {
+    const sendMessage = async () => {
         const message = chatInput?.value.trim();
         if (!message) return;
 
@@ -368,11 +368,37 @@ function initChat() {
         addChatMessage(message, 'user');
         chatInput.value = '';
 
-        // Simulate AI response (placeholder - to be connected to real AI)
-        setTimeout(() => {
-            const response = generateAIResponse(message);
-            addChatMessage(response, 'bot');
-        }, 1000);
+        // Show typing indicator
+        const typingDiv = document.createElement('div');
+        typingDiv.className = 'chat-message bot typing';
+        typingDiv.innerHTML = `
+            <div class="message-avatar"><i class="fas fa-robot"></i></div>
+            <div class="message-content"><p>Thinking...</p></div>
+        `;
+        chatMessages.appendChild(typingDiv);
+
+        try {
+            // Call the Azure Functions API
+            const response = await fetch('/api/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message })
+            });
+
+            typingDiv.remove();
+
+            if (response.ok) {
+                const data = await response.json();
+                addChatMessage(data.response, 'bot');
+            } else {
+                // Fallback to local response if API fails
+                addChatMessage(generateAIResponse(message), 'bot');
+            }
+        } catch (error) {
+            typingDiv.remove();
+            // Fallback to local response if API unavailable
+            addChatMessage(generateAIResponse(message), 'bot');
+        }
     };
 
     sendBtn?.addEventListener('click', sendMessage);
