@@ -132,9 +132,9 @@ class GlobeVisualization {
     addContinentOutlines() {
         // Simplified continent outlines as fallback
         const continentMaterial = new THREE.LineBasicMaterial({
-            color: 0x22c55e,
+            color: 0x64748b,
             transparent: true,
-            opacity: 0.6
+            opacity: 0.7
         });
 
         // North America outline (simplified)
@@ -337,7 +337,7 @@ class GlobeVisualization {
             // Inner dot
             const dotGeometry = new THREE.CircleGeometry(0.02, 32);
             const dotMaterial = new THREE.MeshBasicMaterial({
-                color: index === 0 ? 0x22c55e : 0xf97316, // Green for primary, orange for others
+                color: index === 0 ? 0xf97316 : 0xf97316, // Orange for all markers
                 transparent: true,
                 opacity: 0.95,
                 side: THREE.DoubleSide
