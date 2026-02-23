@@ -143,6 +143,45 @@ const careerData = {
             },
             icon: "bicycle",
             tags: ["Patents", "Consumer Products", "Retail"]
+        },
+        {
+            id: 5,
+            name: "DevOps AI Dashboard",
+            company: "RSM US LLP",
+            description: "Built interactive HTML dashboard visualizing SAFe Agile metrics across 2 Azure DevOps projects. Features ECharts visualizations, 8-node SAME architecture ring, tech stack donut chart, and real-time pipeline status. Developed during personal time to fill critical organizational visibility gaps.",
+            impact: {
+                projects: "2",
+                architecture: "SAME v4.0",
+                charts: "12+"
+            },
+            icon: "chart-line",
+            tags: ["Azure DevOps", "ECharts", "SAFe Agile", "Data Visualization"]
+        },
+        {
+            id: 6,
+            name: "DevOps AI Wiki Integration",
+            company: "RSM US LLP",
+            description: "Developed automated wiki documentation system that crawls Azure DevOps data and generates structured knowledge base pages. Includes 46+ documentation pages with hierarchical navigation, auto-generated from pipeline data, work items, and sprint metrics.",
+            impact: {
+                pages: "46+",
+                automation: "Full",
+                sources: "Multi"
+            },
+            icon: "book",
+            tags: ["Wiki", "Documentation", "Automation", "Python"]
+        },
+        {
+            id: 7,
+            name: "DevOps AI Bot v5.0",
+            company: "RSM US LLP",
+            description: "Created intelligent Teams bot that answers questions about sprint health, release status, and team velocity using natural language. Features RAG pattern with Azure DevOps API integration, knowledge synthesis, and contextual responses for 2 scrum teams.",
+            impact: {
+                version: "v5.0",
+                teams: "2",
+                sources: "8 KS"
+            },
+            icon: "robot",
+            tags: ["AI Bot", "Teams", "RAG", "NLP"]
         }
     ],
 

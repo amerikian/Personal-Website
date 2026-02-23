@@ -97,7 +97,10 @@ class GlobeVisualization {
         this.globe = new THREE.Mesh(geometry, material);
         this.scene.add(this.globe);
 
-        // Load Earth texture (stylized dark version)
+        // Always draw continent outlines first
+        this.addContinentOutlines();
+
+        // Try to load Earth texture as enhancement
         textureLoader.load(
             'https://unpkg.com/three-globe@2.31.0/example/img/earth-dark.jpg',
             (texture) => {
@@ -106,9 +109,8 @@ class GlobeVisualization {
                 material.needsUpdate = true;
             },
             undefined,
-            () => {
-                // Fallback: draw continent outlines if texture fails
-                this.addContinentOutlines();
+            (err) => {
+                console.log('Globe texture failed to load, using continent outlines');
             }
         );
 

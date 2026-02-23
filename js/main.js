@@ -295,16 +295,17 @@ function renderTechStack() {
     if (!techOrbit || !careerData?.skills) return;
 
     const allTech = [
-        ...careerData.skills.languages.map(t => ({ name: t, icon: getIconForTech(t) })),
-        ...careerData.skills.cloud.map(t => ({ name: t, icon: getIconForTech(t) })),
-        ...careerData.skills.ai.map(t => ({ name: t, icon: getIconForTech(t) })),
-        ...careerData.skills.devops.map(t => ({ name: t, icon: getIconForTech(t) })),
-        ...careerData.skills.databases.map(t => ({ name: t, icon: getIconForTech(t) }))
+        ...(careerData.skills.technical || []).map(t => ({ name: t, icon: getIconForTech(t) })),
+        ...(careerData.skills.devops || []).map(t => ({ name: t, icon: getIconForTech(t) })),
+        ...(careerData.skills.ai || []).map(t => ({ name: t, icon: getIconForTech(t) })),
+        ...(careerData.skills.methodologies || []).map(t => ({ name: t, icon: getIconForTech(t) })),
+        ...(careerData.skills.industries || []).map(t => ({ name: t, icon: getIconForTech(t) }))
     ];
 
     const techHTML = allTech.map(tech => `
         <div class="tech-icon" title="${tech.name}">
             <i class="${tech.icon}"></i>
+            <span class="tech-label">${tech.name}</span>
         </div>
     `).join('');
 
@@ -317,31 +318,40 @@ function renderTechStack() {
 function getIconForTech(tech) {
     const iconMap = {
         'Python': 'fab fa-python',
+        'JavaScript': 'fab fa-js-square',
+        'HTML/CSS': 'fab fa-html5',
         'TypeScript': 'fab fa-js-square',
         'C#': 'fab fa-microsoft',
-        'Go': 'fas fa-cube',
-        'Java': 'fab fa-java',
-        'Rust': 'fas fa-cog',
+        'Three.js': 'fas fa-cube',
+        'ECharts': 'fas fa-chart-bar',
+        'DOMO': 'fas fa-chart-pie',
+        'Mobile Apps': 'fas fa-mobile-alt',
+        'API Development': 'fas fa-plug',
         'Azure': 'fab fa-microsoft',
-        'AWS': 'fab fa-aws',
-        'GCP': 'fab fa-google',
-        'Kubernetes': 'fas fa-dharmachakra',
-        'Docker': 'fab fa-docker',
-        'OpenAI': 'fas fa-brain',
-        'Azure AI': 'fas fa-robot',
-        'PyTorch': 'fas fa-fire',
-        'TensorFlow': 'fas fa-project-diagram',
-        'LangChain': 'fas fa-link',
-        'GitHub Actions': 'fab fa-github',
         'Azure DevOps': 'fab fa-microsoft',
-        'Jenkins': 'fab fa-jenkins',
-        'Terraform': 'fas fa-globe',
-        'Ansible': 'fas fa-cogs',
-        'CosmosDB': 'fas fa-database',
-        'PostgreSQL': 'fas fa-database',
-        'MongoDB': 'fas fa-leaf',
-        'Redis': 'fas fa-bolt',
-        'Elasticsearch': 'fas fa-search'
+        'CI/CD Pipelines': 'fas fa-rocket',
+        'Git Repos': 'fab fa-git-alt',
+        'GitHub Actions': 'fab fa-github',
+        'Azure Static Web Apps': 'fas fa-cloud',
+        'Release Governance': 'fas fa-clipboard-check',
+        'GitHub Copilot': 'fab fa-github',
+        'Azure OpenAI': 'fas fa-brain',
+        'RAG Patterns': 'fas fa-project-diagram',
+        'Bot Development': 'fas fa-robot',
+        'AI-Assisted Workflows': 'fas fa-magic',
+        'Scaled Agile Framework (SAFe)': 'fas fa-layer-group',
+        'Scrum Master': 'fas fa-users',
+        'Lean Startup': 'fas fa-seedling',
+        'Release Management': 'fas fa-calendar-check',
+        'A/B Testing': 'fas fa-flask',
+        'Test & Learn': 'fas fa-lightbulb',
+        'Fintech': 'fas fa-coins',
+        'Blockchain': 'fas fa-link',
+        'Fitness/Wellness': 'fas fa-heartbeat',
+        'Insurance': 'fas fa-shield-alt',
+        'Consumer Products': 'fas fa-shopping-cart',
+        'Cryptocurrency': 'fab fa-bitcoin',
+        'IoT/Smart Home': 'fas fa-home'
     };
     return iconMap[tech] || 'fas fa-code';
 }
