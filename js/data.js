@@ -1,153 +1,279 @@
 /**
  * Career Data Structure
- * This file contains placeholder data that will be populated with actual career information
- * from LinkedIn research and user input
+ * Ian Cassiman - Product Leadership Portfolio
+ * Data populated from LinkedIn profile research
  */
 
 const careerData = {
     // Personal Info
     profile: {
-        name: "Your Name",
-        title: "Technology Executive & AI Architect",
-        tagline: "25+ Years Building the Future of Technology",
-        summary: "Visionary technology leader with extensive experience in AI/ML, Developer Experience, and Enterprise Architecture. Track record of scaling teams and products globally.",
-        linkedIn: "https://linkedin.com/in/yourprofile",
-        github: "https://github.com/yourusername",
-        email: "contact@example.com"
+        name: "Ian Cassiman",
+        title: "Product Leadership & Innovation Expert",
+        tagline: "20+ Years Driving Product Innovation Globally",
+        summary: "Seasoned product leader with extensive international experience spanning fitness technology, fintech, blockchain, IoT, and enterprise innovation. Proven track record of launching award-winning products, managing $100M+ product lines, and leading cross-functional teams across North America, Southeast Asia, and Europe. PMP certified with expertise in Scaled Agile Framework and data-driven decision making.",
+        linkedIn: "https://linkedin.com/in/iancassiman",
+        github: "https://github.com/amerikian",
+        email: "iancassiman@gmail.com"
     },
 
-    // Career Timeline - Placeholder to be filled with research
+    // Career Timeline
     timeline: [
         {
             id: 1,
-            year: "2024 - Present",
-            title: "Principal Architect - AI/Copilot",
-            company: "Microsoft",
-            location: "Seattle, WA",
-            description: "Leading AI Copilot architecture initiatives, driving innovation in developer experience and enterprise AI adoption.",
-            tags: ["AI/ML", "Copilot", "DevOps", "Architecture"],
-            icon: "brain"
+            year: "2022 - Present",
+            title: "Scrum Master & Release Manager",
+            company: "RSM US LLP",
+            location: "Ironwood, Michigan",
+            description: "Started as Project Manager on Audit Innovation Team, evolved to Scrum Master & Release Manager overseeing 2 scrum teams and releases across 2 Azure DevOps projects. Currently building DevOps AI tools (HTML dashboards, wiki integration, and bot) to improve SAFe Agile metrics & visibility—developed during personal time to fill critical organizational needs.",
+            tags: ["Scrum Master", "Release Management", "Azure DevOps", "SAFe Agile", "AI Tools", "Audit Innovation"],
+            icon: "chart-line"
         },
         {
             id: 2,
-            year: "2020 - 2024",
-            title: "Senior Director, Product",
-            company: "Previous Company",
-            location: "San Francisco, CA",
-            description: "Scaled product organization from 10 to 50+, launched flagship products reaching millions of users.",
-            tags: ["Product Strategy", "Team Leadership", "Go-to-Market"],
+            year: "2017 - 2021",
+            title: "Product Management Consultant (Owner)",
+            company: "SKY CONSULTING LLC",
+            location: "Global",
+            description: "Founded consultancy delivering product and project management for fintech, blockchain, and cryptocurrency ventures. Notable: CEO of Swedish Fintech startup Sprinkle Group (blockchain platform on Stockholm exchange), Co-Founder of ProfitOps.com (Bitcoin investment), Project Manager for Digital Motorsports World Cup 2021.",
+            tags: ["Fintech", "Blockchain", "Cryptocurrency", "CEO", "Startup"],
             icon: "rocket"
         },
         {
             id: 3,
-            year: "2015 - 2020",
-            title: "VP Engineering",
-            company: "Growth Company",
-            location: "New York, NY",
-            description: "Built and scaled engineering organization, achieving 10x growth in platform capabilities.",
-            tags: ["Engineering", "Scale", "Cloud Native"],
-            icon: "code"
+            year: "2015 - 2017",
+            title: "Vice President of Commercial Sales",
+            company: "Johnson Health Tech. Co., Ltd.",
+            location: "Bangkok, Thailand",
+            description: "Led commercial sales across Southeast Asia targeting hotels, resorts, gyms, and government. Closed first Marriott deal in SE Asia, expanded into Myanmar & Cambodia. Implemented MS Salesforce and led VIP seminar tours to Taiwan factory.",
+            tags: ["VP Leadership", "SE Asia", "B2B Sales", "Key Accounts", "Salesforce"],
+            icon: "globe-asia"
         },
         {
             id: 4,
-            year: "2010 - 2015",
-            title: "Director of Technology",
-            company: "Enterprise Corp",
-            location: "Chicago, IL",
-            description: "Modernized legacy systems, introduced DevOps practices across organization.",
-            tags: ["DevOps", "Modernization", "Enterprise"],
-            icon: "server"
+            year: "2014 - 2015",
+            title: "Innovation Project Manager",
+            company: "American Family Insurance",
+            location: "Madison, Wisconsin",
+            description: "Pioneered Connected Home/IoT products for home insurance. Implemented Lean Startup methodology, ran MVP testing campaigns for smart home devices, deployed DOMO data visualization for real-time insights, developed A/B testing and digital marketing campaigns.",
+            tags: ["IoT", "Smart Home", "Lean Startup", "Big Data", "Insurance Tech"],
+            icon: "home"
         },
         {
             id: 5,
-            year: "2005 - 2010",
-            title: "Senior Software Engineer",
-            company: "Startup Inc",
-            location: "Austin, TX",
-            description: "Core contributor to breakthrough products, pioneering agile methodologies.",
-            tags: ["Full Stack", "Agile", "Innovation"],
-            icon: "laptop-code"
+            year: "2014",
+            title: "Senior Product Manager",
+            company: "SportsArt",
+            location: "Seattle Area",
+            description: "Managed global commercial fitness product line. Planned new product and rebranding launch at Europe's largest fitness trade show. Rationalized product line, finalized touchscreen console software and mobile apps.",
+            tags: ["Commercial Fitness", "Global PM", "Rebranding", "Mobile Apps"],
+            icon: "dumbbell"
         },
         {
             id: 6,
-            year: "2000 - 2005",
-            title: "Software Developer",
-            company: "Tech Corp",
-            location: "Boston, MA",
-            description: "Started career in enterprise software development, mastering fundamentals.",
-            tags: ["Java", ".NET", "Enterprise"],
-            icon: "terminal"
+            year: "2012 - 2014",
+            title: "Product Manager",
+            company: "Pacific Cycle (Schwinn/Mongoose)",
+            location: "Madison, Wisconsin",
+            description: "Led Bicycle Parts & Accessories line for iconic Schwinn & Mongoose brands. Worked directly with Target & Walmart buyers. Achieved 3 Patents including a Walmart exclusive product. Streamlined SKU portfolio and developed new packaging.",
+            tags: ["Consumer Products", "Retail", "Patents", "Target", "Walmart"],
+            icon: "bicycle"
+        },
+        {
+            id: 7,
+            year: "2006 - 2012",
+            title: "Global Product Manager",
+            company: "Johnson Health Tech North America",
+            location: "Madison, Wisconsin",
+            description: "Managed $100M global product line for Vision Fitness & Matrix Fitness cardiovascular equipment. Implemented first iPod dock on home fitness product in industry. Won 3 Product Innovation Awards. Developed dozens of products for retail & commercial markets.",
+            tags: ["$100M Product Line", "Innovation Awards", "Global Launch", "Fitness Tech"],
+            icon: "heartbeat"
         }
     ],
 
-    // Products & Projects
+    // Products & Notable Achievements
     products: [
         {
             id: 1,
-            name: "AI Copilot Platform",
-            company: "Microsoft",
-            description: "Enterprise-grade AI assistant integrated across developer workflows, enabling natural language coding and documentation.",
+            name: "Blockchain & Crypto Platforms",
+            company: "SKY Consulting / Sprinkle Group",
+            description: "Led development of multiple blockchain-based platforms including security tokenization (STOkenize), crypto investment platform (ProfitOps.com), and comprehensive fintech ecosystem at Sprinkle Group with crowdfunding ICO/IPO platform.",
             impact: {
-                users: "10M+",
-                efficiency: "40%",
-                rating: "4.8"
+                platforms: "5+",
+                exchanges: "Stockholm",
+                role: "CEO/Founder"
             },
-            icon: "robot",
-            tags: ["AI", "LLM", "DevEx"]
+            icon: "bitcoin",
+            tags: ["Blockchain", "Fintech", "Security Tokens", "ICO"]
         },
         {
             id: 2,
-            name: "DevOps Pipeline Platform",
-            company: "Previous Company",
-            description: "Unified CI/CD platform supporting 1000+ development teams with automated testing and deployment.",
+            name: "IoT Smart Home Products",
+            company: "American Family Insurance",
+            description: "Developed and tested Connected Home/IoT products to reduce home insurance claims. Implemented data-driven MVP testing with DOMO visualization, measuring impact on smoke, fire, water, and burglary incident reduction.",
             impact: {
-                pipelines: "50K",
-                deployments: "1M/mo",
-                teams: "1000+"
+                campaigns: "Multiple",
+                insights: "Real-time",
+                methodology: "Lean Startup"
             },
-            icon: "code-branch",
-            tags: ["DevOps", "CI/CD", "Automation"]
+            icon: "house-signal",
+            tags: ["IoT", "Smart Home", "Insurance", "Big Data"]
         },
         {
             id: 3,
-            name: "Cloud Migration Framework",
-            company: "Enterprise Corp",
-            description: "Comprehensive framework for migrating legacy applications to cloud-native architecture.",
+            name: "$100M Fitness Product Line",
+            company: "Johnson Health Tech",
+            description: "Global product manager for Vision Fitness & Matrix Fitness cardiovascular equipment. Launched industry-first iPod dock integration. Won 3 Product Innovation Awards. Implemented company-wide global product launch process.",
             impact: {
-                apps: "500+",
-                savings: "35%",
-                uptime: "99.99%"
+                revenue: "$100M",
+                awards: "3",
+                firstIndustry: "iPod Dock"
             },
-            icon: "cloud",
-            tags: ["Cloud", "Migration", "Azure"]
+            icon: "dumbbell",
+            tags: ["Fitness Tech", "Global", "Innovation Awards"]
+        },
+        {
+            id: 4,
+            name: "Patented Bicycle Accessories",
+            company: "Pacific Cycle",
+            description: "Developed patented bicycle accessories for Schwinn & Mongoose brands. Created EASY-CONNECT ATTACHMENT HEAD, Data ADAPTER, and Modular accessory connector. One patent became Walmart exclusive product.",
+            impact: {
+                patents: "3",
+                retailers: "Target, Walmart",
+                exclusive: "Walmart"
+            },
+            icon: "bicycle",
+            tags: ["Patents", "Consumer Products", "Retail"]
         }
     ],
 
-    // Global Locations
+    // Global Locations with coordinates for 3D globe
     locations: [
-        { country: "United States", flag: "🇺🇸", cities: ["Seattle", "San Francisco", "New York", "Austin"], years: "20+" },
-        { country: "United Kingdom", flag: "🇬🇧", cities: ["London", "Cambridge"], years: "3" },
-        { country: "Germany", flag: "🇩🇪", cities: ["Berlin", "Munich"], years: "2" },
-        { country: "Japan", flag: "🇯🇵", cities: ["Tokyo"], years: "1" },
-        { country: "India", flag: "🇮🇳", cities: ["Bangalore", "Hyderabad"], years: "2" },
-        { country: "Australia", flag: "🇦🇺", cities: ["Sydney"], years: "1" }
+        { 
+            country: "United States", 
+            flag: "🇺🇸", 
+            cities: ["Madison, WI", "Seattle", "Ironwood, MI"], 
+            years: "18+",
+            lat: 43.0731,
+            lng: -89.4012,
+            details: "Primary base - Johnson Health Tech, Pacific Cycle, American Family, RSM"
+        },
+        { 
+            country: "Thailand", 
+            flag: "🇹🇭", 
+            cities: ["Bangkok"], 
+            years: "2",
+            lat: 13.7563,
+            lng: 100.5018,
+            details: "VP Commercial Sales - Johnson Health Tech SE Asia"
+        },
+        { 
+            country: "Taiwan", 
+            flag: "🇹🇼", 
+            cities: ["Taichung"], 
+            years: "Frequent",
+            lat: 24.1477,
+            lng: 120.6736,
+            details: "Factory/HQ visits - Product development & VIP tours"
+        },
+        { 
+            country: "Sweden", 
+            flag: "🇸🇪", 
+            cities: ["Stockholm"], 
+            years: "1",
+            lat: 59.3293,
+            lng: 18.0686,
+            details: "CEO - Sprinkle Group (Stockholm Exchange listed)"
+        },
+        { 
+            country: "Myanmar", 
+            flag: "🇲🇲", 
+            cities: ["Yangon"], 
+            years: "<1",
+            lat: 16.8661,
+            lng: 96.1951,
+            details: "Market expansion - First company deals"
+        },
+        { 
+            country: "Cambodia", 
+            flag: "🇰🇭", 
+            cities: ["Phnom Penh"], 
+            years: "<1",
+            lat: 11.5564,
+            lng: 104.9282,
+            details: "Market expansion - First company deals"
+        },
+        { 
+            country: "Poland", 
+            flag: "🇵🇱", 
+            cities: ["Krakow", "Warsaw"], 
+            years: "<1",
+            lat: 50.0647,
+            lng: 19.9450,
+            details: "Undergraduate studies abroad - International Studies"
+        },
+        { 
+            country: "Russia", 
+            flag: "🇷🇺", 
+            cities: ["Moscow", "St. Petersburg"], 
+            years: "<1",
+            lat: 55.7558,
+            lng: 37.6173,
+            details: "Undergraduate studies abroad - International Studies"
+        }
     ],
 
-    // Technical Skills
+    // Skills & Expertise
     skills: {
-        languages: ["Python", "TypeScript", "C#", "Go", "Java", "Rust"],
-        cloud: ["Azure", "AWS", "GCP", "Kubernetes", "Docker"],
-        ai: ["OpenAI", "Azure AI", "PyTorch", "TensorFlow", "LangChain"],
-        devops: ["GitHub Actions", "Azure DevOps", "Jenkins", "Terraform", "Ansible"],
-        databases: ["CosmosDB", "PostgreSQL", "MongoDB", "Redis", "Elasticsearch"]
+        product: ["Product Strategy", "NPD (New Product Development)", "User Stories", "MVP Development", "Product Launch"],
+        methodologies: ["Scaled Agile Framework", "Lean Startup", "Waterfall", "Test & Learn", "A/B Testing"],
+        leadership: ["Cross-Functional Teams", "C-Level Sales", "Key Account Management", "Sales Training", "Team Development"],
+        technical: ["Salesforce", "DOMO", "Business Intelligence", "IoT/Smart Home", "Mobile Apps"],
+        industries: ["Fintech", "Blockchain", "Fitness/Wellness", "Insurance", "Consumer Products", "Cryptocurrency"]
     },
+
+    // Certifications & Recognition
+    certifications: [
+        "Project Management Professional (PMP)",
+        "Google Data Analytics Certificates",
+        "3x Product Innovation Award Winner"
+    ],
+
+    // Patents
+    patents: [
+        "EASY-CONNECT ATTACHMENT HEAD",
+        "Data ADAPTER",
+        "Modular Accessory Connector"
+    ],
+
+    // Languages
+    languages: [
+        { lang: "English", level: "Native" },
+        { lang: "Spanish", level: "Elementary" },
+        { lang: "Polish", level: "Limited Working" },
+        { lang: "Thai", level: "Limited Working" }
+    ],
+
+    // Education
+    education: [
+        {
+            degree: "MBA, International Business",
+            school: "University of Wisconsin-Whitewater",
+            years: "2006 - 2008"
+        },
+        {
+            degree: "BA, International/Global Studies",
+            school: "University of Wisconsin-Stevens Point",
+            years: "1997 - 2000",
+            highlight: "Included studies abroad in Poland and Russia"
+        }
+    ],
 
     // Stats for hero section
     stats: {
-        years: 25,
-        countries: 15,
+        years: 20,
+        countries: 8,
         products: 50,
-        users: 1000000
+        users: 1000000  // Estimated product reach
     }
 };
 
