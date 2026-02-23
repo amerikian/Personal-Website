@@ -31,6 +31,22 @@ jobs:
           output_location: "" # Built app content directory (empty for static sites)
           skip_app_build: true # No build step needed for static HTML
 
+      - name: Print deployment URL
+        if: success() && steps.builddeploy.outputs.static_web_app_url != ''
+        run: |
+          echo "✅ Azure Static Web App deployed"
+          echo "🌐 URL: ${{ steps.builddeploy.outputs.static_web_app_url }}"
+          echo "## 🚀 Deployment Complete" >> $GITHUB_STEP_SUMMARY
+          echo "**Live URL:** ${{ steps.builddeploy.outputs.static_web_app_url }}" >> $GITHUB_STEP_SUMMARY
+
+      - name: URL output unavailable
+        if: success() && steps.builddeploy.outputs.static_web_app_url == ''
+        run: |
+          echo "⚠️ Deployment succeeded, but the action did not return static_web_app_url output."
+          echo "Check the Azure Portal Static Web App Overview page for the live URL."
+          echo "## 🚀 Deployment Complete" >> $GITHUB_STEP_SUMMARY
+          echo "Deployment succeeded, but URL output was not provided by the action." >> $GITHUB_STEP_SUMMARY
+
   close_pull_request:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
     runs-on: ubuntu-latest
