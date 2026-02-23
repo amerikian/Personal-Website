@@ -258,20 +258,21 @@ const careerData = {
         {
             degree: "MBA, International Business",
             school: "University of Wisconsin-Whitewater",
-            years: "2006 - 2008"
+            years: "Program completed 2011",
+            highlight: "Official transcript indicates MBA (Business Administration), cumulative graduate GPA 3.00, 39.00 graduate credits, degree date 08/20/2011"
         },
         {
             degree: "BA, International/Global Studies",
             school: "University of Wisconsin-Stevens Point",
             years: "1997 - 2000",
-            highlight: "Included studies abroad in Poland and Russia"
+            highlight: "Included studies abroad in Poland and Russia, with transcript evidence of East/Central Europe coursework and Polish language study"
         }
     ],
 
     // Employer-ready diligence assessment
     assessment: {
         title: "Comprehensive Education & Career Assessment",
-        executiveSummary: "Ian Cassiman combines formal international business education with multi-industry product leadership across consulting, insurance, fitness technology, and consumer products. Career progression shows repeatable strengths in global commercialization, product-line optimization, and cross-functional execution from concept through launch.",
+        executiveSummary: "Ian Cassiman combines formal international business education with multi-industry product leadership across consulting, insurance, fitness technology, and consumer products. Transcript-backed academics show an MBA in Business Administration (International Business focus) completed in 2011 with 39 graduate credits and a 3.00 cumulative graduate GPA, plus undergrad international studies with direct Poland/Russia immersion and regional coursework.",
         employerFitSignals: [
             "Cross-Industry Product Leadership",
             "Global Commercialization Experience",
@@ -283,23 +284,23 @@ const careerData = {
             {
                 institution: "University of Wisconsin-Whitewater",
                 degree: "MBA, International Business",
-                years: "2006 - 2008",
-                institutionContext: "UW-Whitewater is part of the University of Wisconsin System and includes a College of Business and Economics with graduate business programs. Program structure aligns with practical business leadership, operations, and international market considerations.",
-                careerRelevance: "Strengthened financial and strategic frameworks used later in $100M product-line management, international expansion, and executive-level product decisions."
+                years: "Degree date: 08/20/2011",
+                institutionContext: "Official transcript reflects MBA (Business Administration) completion at UW-Whitewater School of Graduate Studies, with 39.00 graduate credits and a 3.00 cumulative graduate GPA.",
+                careerRelevance: "Supports evidence-based business decision making, portfolio economics, and strategic planning used in product-line ownership, international commercialization, and leadership roles."
             },
             {
                 institution: "University of Wisconsin-Stevens Point",
                 degree: "BA, International/Global Studies",
                 years: "1997 - 2000",
-                institutionContext: "UW-Stevens Point emphasizes critical thinking, interdisciplinary learning, and global perspective development. International/Global Studies aligns with geopolitical, cultural, and economic analysis needed for global business leadership.",
-                careerRelevance: "Built early capability for cross-cultural communication and market-context analysis used in Southeast Asia leadership roles and international stakeholder management."
+                institutionContext: "Transcript and portfolio history align to international/regional coursework including comparative politics, East European politics, and international studies classes, combined with language study and field experience.",
+                careerRelevance: "Built durable cross-cultural analysis and communication capability that later translated into Southeast Asia market expansion, multinational stakeholder management, and global product strategy execution."
             },
             {
                 institution: "Study Abroad: Poland and Russia",
                 degree: "Undergraduate International Studies Experience",
                 years: "During BA Program",
-                institutionContext: "Study abroad experience in Central/Eastern Europe provided direct immersion in distinct economic, regulatory, and cultural contexts.",
-                careerRelevance: "Contributed to adaptability in multilingual, distributed teams and increased effectiveness in international negotiations, partnerships, and go-to-market execution."
+                institutionContext: "Undergrad transcript context supports Central/Eastern Europe immersion through Poland-based academic activity and related regional studies, with Russia included in the international studies abroad experience profile.",
+                careerRelevance: "Strengthened adaptability in multilingual environments and improved real-world readiness for international negotiations, market-entry collaboration, and globally distributed product teams."
             }
         ],
         employerResearch: [
