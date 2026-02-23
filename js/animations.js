@@ -14,13 +14,94 @@ document.addEventListener('DOMContentLoaded', () => {
     // Register GSAP plugins
     gsap.registerPlugin(ScrollTrigger);
 
-    // Initialize all animations
+    // Initialize static element animations
     initHeroAnimations();
     initScrollAnimations();
     initCounterAnimations();
     initSkillBarAnimations();
     initHoverEffects();
+    
+    // Initialize dynamic content animations after a short delay
+    // to allow main.js render functions to complete
+    setTimeout(() => {
+        initDynamicContentAnimations();
+    }, 100);
 });
+
+/**
+ * Initialize animations for dynamically rendered content
+ * Call this after dynamic content is rendered
+ */
+function initDynamicContentAnimations() {
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reducedMotion) return;
+    
+    // Product cards
+    const productCards = document.querySelectorAll('.product-card');
+    if (productCards.length > 0) {
+        gsap.fromTo('.product-card', 
+            { opacity: 0, y: 60 },
+            {
+                scrollTrigger: {
+                    trigger: '.products-showcase',
+                    start: 'top 85%',
+                    toggleActions: 'play none none reverse'
+                },
+                opacity: 1,
+                y: 0,
+                stagger: 0.15,
+                duration: 0.8,
+                ease: 'power3.out'
+            }
+        );
+    }
+
+    // Location cards
+    const locationCards = document.querySelectorAll('.location-card');
+    if (locationCards.length > 0) {
+        gsap.fromTo('.location-card',
+            { opacity: 0, x: 50 },
+            {
+                scrollTrigger: {
+                    trigger: '.location-cards',
+                    start: 'top 85%',
+                    toggleActions: 'play none none reverse'
+                },
+                opacity: 1,
+                x: 0,
+                stagger: 0.1,
+                duration: 0.6,
+                ease: 'power3.out'
+            }
+        );
+    }
+
+    // Tech icons
+    const techIcons = document.querySelectorAll('.tech-icon');
+    if (techIcons.length > 0) {
+        gsap.fromTo('.tech-icon',
+            { opacity: 0, scale: 0.8 },
+            {
+                scrollTrigger: {
+                    trigger: '#tech-orbit',
+                    start: 'top 85%',
+                    toggleActions: 'play none none reverse'
+                },
+                opacity: 1,
+                scale: 1,
+                stagger: {
+                    each: 0.03,
+                    from: 'start'
+                },
+                duration: 0.4,
+                ease: 'back.out(1.2)'
+            }
+        );
+    }
+}
+
+// Make function globally available
+window.initDynamicContentAnimations = initDynamicContentAnimations;
 
 /**
  * Hero Section Animations
@@ -134,50 +215,8 @@ function initScrollAnimations() {
         ease: 'power3.out'
     });
 
-    // Product cards
-    gsap.from('.product-card', {
-        scrollTrigger: {
-            trigger: '.products-showcase',
-            start: 'top 80%',
-            toggleActions: 'play none none reverse'
-        },
-        opacity: 0,
-        y: 60,
-        stagger: 0.15,
-        duration: 0.8,
-        ease: 'power3.out'
-    });
-
-    // Location cards
-    gsap.from('.location-card', {
-        scrollTrigger: {
-            trigger: '.location-cards',
-            start: 'top 80%',
-            toggleActions: 'play none none reverse'
-        },
-        opacity: 0,
-        x: 50,
-        stagger: 0.1,
-        duration: 0.6,
-        ease: 'power3.out'
-    });
-
-    // Tech icons
-    gsap.from('.tech-icon', {
-        scrollTrigger: {
-            trigger: '.tech-orbit',
-            start: 'top 80%',
-            toggleActions: 'play none none reverse'
-        },
-        opacity: 0,
-        scale: 0,
-        stagger: {
-            each: 0.05,
-            from: 'random'
-        },
-        duration: 0.5,
-        ease: 'back.out(1.7)'
-    });
+    // Note: Product cards, location cards, and tech icons are animated by
+    // initDynamicContentAnimations() which runs after main.js renders them
 
     // Contact section
     gsap.from('.contact-item', {
