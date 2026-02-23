@@ -148,8 +148,24 @@ function renderAssessment() {
 
     if (summaryContainer) {
         const summary = careerData.assessment;
+        const summaryMeta = [];
+
+        if (summary.verificationNote) {
+            summaryMeta.push(`<span class="assessment-verified"><i class="fas fa-shield-check"></i> ${summary.verificationNote}</span>`);
+        }
+
+        if (summary.lastUpdated) {
+            const formattedDate = new Date(`${summary.lastUpdated}T00:00:00`).toLocaleDateString('en-US', {
+                month: 'short',
+                day: 'numeric',
+                year: 'numeric'
+            });
+            summaryMeta.push(`<span class="assessment-updated">Last updated: ${formattedDate}</span>`);
+        }
+
         summaryContainer.innerHTML = `
             <div class="assessment-summary-card">
+                <div class="assessment-summary-meta">${summaryMeta.join('')}</div>
                 <h3>${summary.title}</h3>
                 <p>${summary.executiveSummary}</p>
                 <div class="assessment-highlights">

@@ -276,7 +276,9 @@ const careerData = {
     // Employer-ready diligence assessment
     assessment: {
         title: "Comprehensive Education & Career Assessment",
-        executiveSummary: "Ian Cassiman combines formal international business education with multi-industry product leadership across consulting, insurance, fitness technology, and consumer products. Transcript-backed academics show an MBA in Business Administration (International Business focus) completed in 2011 with 39 graduate credits and a 3.41 cumulative graduate GPA, plus undergrad international studies with a 3.13 cumulative GPA and direct Poland/Russia immersion.",
+        executiveSummary: "Ian Cassiman combines international business academics with multi-industry product leadership across consulting, insurance, fitness technology, and consumer products. Transcript-backed education includes an MBA (3.41 GPA, 39 graduate credits) and undergrad International/Global Studies (3.13 GPA) with Poland/Russia immersion.",
+        verificationNote: "Education metrics verified from official transcripts provided by candidate",
+        lastUpdated: "2026-02-23",
         employerFitSignals: [
             "Cross-Industry Product Leadership",
             "Global Commercialization Experience",
