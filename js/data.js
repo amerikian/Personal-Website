@@ -161,9 +161,9 @@ const careerData = {
             id: 6,
             name: "DevOps AI Wiki Integration",
             company: "RSM US LLP",
-            description: "Developed automated wiki documentation system that crawls Azure DevOps data and generates structured knowledge base pages. Includes 46+ documentation pages with hierarchical navigation, auto-generated from pipeline data, work items, and sprint metrics.",
+            description: "Developed automated wiki documentation system that crawls Azure DevOps data and generates structured knowledge base pages. Includes 153 documentation pages with hierarchical navigation, auto-generated from pipeline data, work items, and sprint metrics.",
             impact: {
-                pages: "46+",
+                pages: "153",
                 automation: "Full",
                 sources: "Multi"
             },
@@ -200,10 +200,10 @@ const careerData = {
             country: "Thailand", 
             flag: "🇹🇭", 
             cities: ["Bangkok"], 
-            years: "2",
+            years: "7",
             lat: 13.7563,
             lng: 100.5018,
-            details: "VP Commercial Sales - Johnson Health Tech SE Asia"
+            details: "VP Commercial Sales - Johnson Health Tech SE Asia + Sky Consulting base"
         },
         { 
             country: "Taiwan", 
