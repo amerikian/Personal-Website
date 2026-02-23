@@ -25,11 +25,25 @@ If you don't know something specific, suggest they reach out directly.
 module.exports = async function (context, req) {
     context.log('Chat API triggered');
 
+    // CORS headers for GitHub Pages
+    const corsHeaders = {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'POST, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type'
+    };
+
+    // Handle preflight OPTIONS request
+    if (req.method === 'OPTIONS') {
+        context.res = { status: 204, headers: corsHeaders };
+        return;
+    }
+
     const message = req.body?.message;
 
     if (!message) {
         context.res = {
             status: 400,
+            headers: corsHeaders,
             body: { error: 'Message is required' }
         };
         return;
@@ -45,6 +59,7 @@ module.exports = async function (context, req) {
             // Fallback to simple responses if not configured
             context.res = {
                 status: 200,
+                headers: corsHeaders,
                 body: {
                     response: generateFallbackResponse(message),
                     source: 'fallback'
@@ -58,6 +73,7 @@ module.exports = async function (context, req) {
         
         context.res = {
             status: 200,
+            headers: corsHeaders,
             body: {
                 response: response,
                 source: 'azure-openai'
@@ -68,6 +84,7 @@ module.exports = async function (context, req) {
         context.log.error('Chat API error:', error);
         context.res = {
             status: 500,
+            headers: corsHeaders,
             body: { error: 'Failed to generate response' }
         };
     }

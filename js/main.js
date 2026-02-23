@@ -378,8 +378,9 @@ function initChat() {
         chatMessages.appendChild(typingDiv);
 
         try {
-            // Call the Azure Functions API
-            const response = await fetch('/api/chat', {
+            // Call the Azure Functions API (hosted on Azure SWA)
+            const API_BASE = 'https://salmon-rock-093cc6a0f.6.azurestaticapps.net';
+            const response = await fetch(`${API_BASE}/api/chat`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ message })
