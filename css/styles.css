@@ -604,6 +604,10 @@ body {
     transition: all var(--transition-normal);
     position: relative;
     overflow: hidden;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
 }
 
 .expertise-card::before {
@@ -692,7 +696,8 @@ body {
 }
 
 .product-card:hover {
-    transform: translateY(-8px) scale(1.02);
+    -webkit-transform: translateY(-8px) translateZ(0);
+    transform: translateY(-8px) translateZ(0);
     box-shadow: 0 20px 60px rgba(99, 102, 241, 0.2);
 }
 
@@ -1163,6 +1168,10 @@ body {
     font-size: 1.5rem;
     color: var(--gray-400);
     transition: all var(--transition-normal);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
 }
 
 .tech-icon i {
@@ -1180,7 +1189,8 @@ body {
 .tech-icon:hover {
     color: var(--white);
     border-color: var(--primary);
-    transform: translateY(-5px);
+    -webkit-transform: translateY(-5px) translateZ(0);
+    transform: translateY(-5px) translateZ(0);
     box-shadow: 0 10px 30px rgba(99, 102, 241, 0.2);
     background: rgba(99, 102, 241, 0.1);
 }
