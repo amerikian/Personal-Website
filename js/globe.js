@@ -444,9 +444,12 @@ class GlobeVisualization {
         // Get the canvas element that Three.js created
         const canvas = this.renderer.domElement;
         
-        // Set cursor and touch styles
+        // Ensure canvas receives all pointer events
         canvas.style.cursor = 'grab';
         canvas.style.touchAction = 'none';
+        canvas.style.pointerEvents = 'auto';
+        canvas.style.position = 'relative';
+        canvas.style.zIndex = '10';
         
         // Track dragging state on the instance for reliable access
         this.isDragging = false;
@@ -454,6 +457,7 @@ class GlobeVisualization {
 
         // Use pointer events for unified mouse/touch handling
         canvas.addEventListener('pointerdown', (e) => {
+            console.log('Globe pointerdown', e.clientX, e.clientY);
             this.isDragging = true;
             this.isRotating = false;
             canvas.style.cursor = 'grabbing';
@@ -499,6 +503,38 @@ class GlobeVisualization {
 
         canvas.addEventListener('pointerleave', () => {
             this.tooltip.style.opacity = '0';
+        });
+
+        // Fallback mouse events for browsers with pointer event issues
+        canvas.addEventListener('mousedown', (e) => {
+            if (this.isDragging) return; // Already handled by pointer events
+            console.log('Globe mousedown fallback', e.clientX, e.clientY);
+            this.isDragging = true;
+            this.isRotating = false;
+            canvas.style.cursor = 'grabbing';
+            this.previousPosition = { x: e.clientX, y: e.clientY };
+            e.preventDefault();
+        });
+
+        document.addEventListener('mouseup', () => {
+            if (this.isDragging) {
+                this.isDragging = false;
+                canvas.style.cursor = 'grab';
+                setTimeout(() => { this.isRotating = true; }, 2000);
+            }
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (this.isDragging) {
+                const deltaX = e.clientX - this.previousPosition.x;
+                const deltaY = e.clientY - this.previousPosition.y;
+
+                this.globe.rotation.y += deltaX * 0.01;
+                this.globe.rotation.x += deltaY * 0.01;
+                this.globe.rotation.x = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, this.globe.rotation.x));
+
+                this.previousPosition = { x: e.clientX, y: e.clientY };
+            }
         });
 
         // Resize handler
