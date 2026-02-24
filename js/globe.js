@@ -1,6 +1,6 @@
 /**
- * Interactive 3D Globe Visualization
- * Shows global experience with animated location markers
+ * Interactive Global Map Visualization (2D fallback-first)
+ * Reliable drag/pan interaction with location markers and tooltips
  */
 
 class GlobeVisualization {
@@ -10,495 +10,62 @@ class GlobeVisualization {
 
         this.prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-        this.scene = null;
-        this.camera = null;
-        this.renderer = null;
-        this.globe = null;
-        this.markers = [];
-        this.arcs = [];
-        this.isRotating = true;
-        this.mouse = { x: 0, y: 0 };
-        this.targetRotation = { x: 0, y: 0 };
-        this.raycaster = new THREE.Raycaster();
-        this.mouseVector = new THREE.Vector2();
-        this.hoveredMarker = null;
+        this.canvas = document.createElement('canvas');
+        this.ctx = this.canvas.getContext('2d');
+
+        this.width = 0;
+        this.height = 0;
+        this.mapRect = { x: 0, y: 0, width: 0, height: 0 };
+
+        this.locations = careerData?.locations || [];
+        this.markerPoints = [];
+        this.hoveredLocation = null;
+
+        this.offsetX = 0;
+        this.velocityX = 0;
+        this.dragState = {
+            active: false,
+            pointerId: null,
+            lastX: 0,
+            lastMoveTs: 0,
+            lastDelta: 0
+        };
+
         this.tooltip = null;
-        this.activePointerId = null;
-        this.dragVelocity = { x: 0, y: 0 };
-        this.globeWireframe = null;
-        this.globeGridLines = [];
-        this.hasTextureMap = false;
-        this.controls = null;
+        this.mapImage = null;
+        this.mapReady = false;
 
         this.init();
     }
 
     init() {
-        this.setupScene();
-        this.createGlobe();
-        this.createAtmosphere();
-        this.createStars();
-        this.addLocationMarkers();
-        this.createConnectionArcs();
+        this.setupCanvas();
         this.setupTooltip();
         this.setupEventListeners();
+        this.loadMapTexture();
+        this.resize();
 
         if (this.prefersReducedMotion) {
-            this.renderer.render(this.scene, this.camera);
+            this.render();
             return;
         }
 
         this.animate();
     }
 
-    setupScene() {
-        const width = this.container.clientWidth;
-        const height = this.container.clientHeight || 500;
+    setupCanvas() {
+        this.canvas.className = 'global-map-canvas';
+        this.canvas.style.display = 'block';
+        this.canvas.style.width = '100%';
+        this.canvas.style.height = '100%';
+        this.canvas.style.cursor = 'grab';
+        this.canvas.style.touchAction = 'none';
+        this.canvas.style.pointerEvents = 'auto';
+        this.canvas.style.position = 'relative';
+        this.canvas.style.zIndex = '10';
 
-        // Scene
-        this.scene = new THREE.Scene();
-
-        // Camera
-        this.camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
-        this.camera.position.z = 3;
-
-        // Renderer
-        this.renderer = new THREE.WebGLRenderer({ 
-            antialias: true, 
-            alpha: true 
-        });
-        this.renderer.setSize(width, height);
-        this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-        this.container.appendChild(this.renderer.domElement);
-
-        if (typeof THREE.OrbitControls === 'function') {
-            this.controls = new THREE.OrbitControls(this.camera, this.renderer.domElement);
-            this.controls.enablePan = false;
-            this.controls.enableZoom = false;
-            this.controls.enableDamping = true;
-            this.controls.dampingFactor = 0.08;
-            this.controls.rotateSpeed = 0.75;
-            this.controls.minPolarAngle = 0.2;
-            this.controls.maxPolarAngle = Math.PI - 0.2;
-            this.controls.autoRotate = !this.prefersReducedMotion;
-            this.controls.autoRotateSpeed = 0.75;
-            this.controls.target.set(0, 0, 0);
-            this.controls.update();
-        }
-
-        // Lighting
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
-        this.scene.add(ambientLight);
-
-        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-        directionalLight.position.set(5, 3, 5);
-        this.scene.add(directionalLight);
-
-        const pointLight = new THREE.PointLight(0x6366f1, 1, 10);
-        pointLight.position.set(-5, 3, 2);
-        this.scene.add(pointLight);
-    }
-
-    createGlobe() {
-        // Create globe geometry
-        const geometry = new THREE.SphereGeometry(1, 64, 64);
-        
-        // Load Earth texture for realistic globe
-        const textureLoader = new THREE.TextureLoader();
-        textureLoader.setCrossOrigin('anonymous');
-        
-        // Create material with texture
-        const material = new THREE.MeshPhongMaterial({
-            color: 0x1a365d,
-            emissive: 0x0f172a,
-            shininess: 12,
-            transparent: true,
-            opacity: 0.98
-        });
-
-        this.globe = new THREE.Mesh(geometry, material);
-        this.scene.add(this.globe);
-
-        this.loadEarthTextures(textureLoader, material);
-
-        // Add subtle wireframe overlay for tech look
-        const wireframeGeometry = new THREE.SphereGeometry(1.002, 36, 36);
-        const wireframeMaterial = new THREE.MeshBasicMaterial({
-            color: 0x6366f1,
-            wireframe: true,
-            transparent: true,
-            opacity: 0.03
-        });
-        const wireframe = new THREE.Mesh(wireframeGeometry, wireframeMaterial);
-        this.globeWireframe = wireframe;
-        this.globe.add(wireframe);
-
-        // Add latitude/longitude lines
-        this.addGridLines();
-    }
-
-    loadEarthTextures(textureLoader, material) {
-        const mapCandidates = [
-            'https://threejs.org/examples/textures/planets/earth_atmos_2048.jpg',
-            'https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-blue-marble.jpg',
-            'https://unpkg.com/three-globe@2.31.0/example/img/earth-dark.jpg'
-        ];
-
-        const loadTexture = (url) => new Promise((resolve, reject) => {
-            textureLoader.load(url, resolve, undefined, reject);
-        });
-
-        const tryLoadMap = (index = 0) => {
-            if (index >= mapCandidates.length) {
-                this.addContinentOutlines();
-                this.tuneOverlayForTexture(false);
-                return;
-            }
-
-            loadTexture(mapCandidates[index])
-                .then((texture) => {
-                    texture.anisotropy = this.renderer.capabilities.getMaxAnisotropy();
-                    if ('colorSpace' in texture && THREE.SRGBColorSpace) {
-                        texture.colorSpace = THREE.SRGBColorSpace;
-                    } else {
-                        texture.encoding = THREE.sRGBEncoding;
-                    }
-                    material.map = texture;
-                    material.color.setHex(0xffffff);
-                    material.shininess = 10;
-                    material.opacity = 1;
-                    material.needsUpdate = true;
-                    this.hasTextureMap = true;
-                    this.tuneOverlayForTexture(true);
-
-                    textureLoader.load(
-                        'https://threejs.org/examples/textures/planets/earth_normal_2048.jpg',
-                        (normalMap) => {
-                            material.normalMap = normalMap;
-                            material.normalScale = new THREE.Vector2(0.5, 0.5);
-                            material.needsUpdate = true;
-                        }
-                    );
-
-                    textureLoader.load(
-                        'https://threejs.org/examples/textures/planets/earth_specular_2048.jpg',
-                        (specularMap) => {
-                            material.specularMap = specularMap;
-                            material.specular = new THREE.Color(0x1e293b);
-                            material.needsUpdate = true;
-                        }
-                    );
-                })
-                .catch(() => {
-                    tryLoadMap(index + 1);
-                });
-        };
-
-        tryLoadMap();
-    }
-
-    tuneOverlayForTexture(hasTexture) {
-        if (this.globeWireframe?.material) {
-            this.globeWireframe.material.opacity = hasTexture ? 0.015 : 0.06;
-            this.globeWireframe.material.needsUpdate = true;
-        }
-
-        this.globeGridLines.forEach((line) => {
-            if (line?.material) {
-                line.material.opacity = hasTexture ? 0.025 : 0.08;
-                line.material.needsUpdate = true;
-            }
-        });
-    }
-
-    addContinentOutlines() {
-        // Fallback continent outlines if texture loading fails
-        const continentMaterial = new THREE.LineBasicMaterial({
-            color: 0x64748b,
-            transparent: true,
-            opacity: 0.85,
-            depthTest: true
-        });
-
-        // North America outline (simplified)
-        const northAmerica = [
-            [-125, 48], [-124, 40], [-117, 32], [-105, 25], [-97, 26], 
-            [-97, 28], [-83, 29], [-80, 25], [-81, 31], [-75, 35],
-            [-70, 42], [-67, 45], [-65, 47], [-57, 47], [-55, 50],
-            [-65, 55], [-75, 58], [-85, 60], [-95, 62], [-105, 60],
-            [-120, 55], [-125, 50], [-125, 48]
-        ];
-        this.addContinentPath(northAmerica, continentMaterial);
-
-        // South America outline (simplified)
-        const southAmerica = [
-            [-80, 10], [-75, 5], [-70, -5], [-75, -15], [-70, -25],
-            [-65, -35], [-65, -45], [-70, -55], [-75, -50], [-72, -40],
-            [-75, -30], [-80, -20], [-80, -10], [-75, 0], [-80, 10]
-        ];
-        this.addContinentPath(southAmerica, continentMaterial);
-
-        // Europe outline (simplified)
-        const europe = [
-            [-10, 36], [0, 36], [5, 44], [10, 45], [15, 40], [25, 40],
-            [30, 45], [40, 42], [30, 55], [25, 55], [20, 60], [10, 65],
-            [5, 62], [0, 60], [-5, 55], [-10, 50], [-10, 36]
-        ];
-        this.addContinentPath(europe, continentMaterial);
-
-        // Africa outline (simplified)
-        const africa = [
-            [-15, 35], [10, 37], [30, 32], [35, 30], [40, 10], [50, 12],
-            [45, 0], [40, -10], [35, -25], [30, -35], [20, -35], [15, -30],
-            [10, -15], [5, 5], [-5, 5], [-15, 15], [-18, 25], [-15, 35]
-        ];
-        this.addContinentPath(africa, continentMaterial);
-
-        // Asia outline (simplified)
-        const asia = [
-            [30, 45], [50, 40], [60, 45], [70, 40], [80, 30], [90, 25],
-            [100, 22], [105, 12], [110, 20], [120, 25], [130, 35], [140, 40],
-            [145, 45], [160, 60], [170, 65], [180, 68], [170, 70], [120, 75],
-            [80, 70], [60, 65], [50, 55], [40, 50], [30, 45]
-        ];
-        this.addContinentPath(asia, continentMaterial);
-
-        // Australia outline (simplified)
-        const australia = [
-            [115, -20], [120, -18], [135, -12], [145, -15], [150, -25],
-            [155, -28], [150, -35], [145, -40], [135, -35], [125, -35],
-            [115, -30], [115, -20]
-        ];
-        this.addContinentPath(australia, continentMaterial);
-    }
-
-    addContinentPath(coords, material) {
-        const points = coords.map(([lng, lat]) => 
-            this.latLngToVector3(lat, lng, 1.008)
-        );
-        const geometry = new THREE.BufferGeometry().setFromPoints(points);
-        const line = new THREE.Line(geometry, material);
-        line.renderOrder = 1;
-        this.globe.add(line);
-    }
-
-    addGridLines() {
-        const linesMaterial = new THREE.LineBasicMaterial({
-            color: 0x6366f1,
-            transparent: true,
-            opacity: 0.05
-        });
-
-        // Latitude lines
-        for (let lat = -60; lat <= 60; lat += 30) {
-            const latRad = (lat * Math.PI) / 180;
-            const radius = Math.cos(latRad);
-            const y = Math.sin(latRad);
-
-            const points = [];
-            for (let lng = 0; lng <= 360; lng += 5) {
-                const lngRad = (lng * Math.PI) / 180;
-                points.push(new THREE.Vector3(
-                    radius * Math.cos(lngRad),
-                    y,
-                    radius * Math.sin(lngRad)
-                ).multiplyScalar(1.003));
-            }
-
-            const geometry = new THREE.BufferGeometry().setFromPoints(points);
-            const line = new THREE.Line(geometry, linesMaterial);
-            this.globe.add(line);
-            this.globeGridLines.push(line);
-        }
-
-        // Longitude lines
-        for (let lng = 0; lng < 360; lng += 30) {
-            const lngRad = (lng * Math.PI) / 180;
-            const points = [];
-            
-            for (let lat = -90; lat <= 90; lat += 5) {
-                const latRad = (lat * Math.PI) / 180;
-                points.push(new THREE.Vector3(
-                    Math.cos(latRad) * Math.cos(lngRad),
-                    Math.sin(latRad),
-                    Math.cos(latRad) * Math.sin(lngRad)
-                ).multiplyScalar(1.003));
-            }
-
-            const geometry = new THREE.BufferGeometry().setFromPoints(points);
-            const line = new THREE.Line(geometry, linesMaterial);
-            this.globe.add(line);
-            this.globeGridLines.push(line);
-        }
-    }
-
-    createAtmosphere() {
-        // Glow effect
-        const atmosphereGeometry = new THREE.SphereGeometry(1.15, 64, 64);
-        const atmosphereMaterial = new THREE.ShaderMaterial({
-            vertexShader: `
-                varying vec3 vNormal;
-                void main() {
-                    vNormal = normalize(normalMatrix * normal);
-                    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-                }
-            `,
-            fragmentShader: `
-                varying vec3 vNormal;
-                void main() {
-                    float intensity = pow(0.65 - dot(vNormal, vec3(0.0, 0.0, 1.0)), 2.5);
-                    vec3 color = vec3(0.388, 0.4, 0.945); // #6366f1
-                    gl_FragColor = vec4(color, intensity * 0.6);
-                }
-            `,
-            blending: THREE.AdditiveBlending,
-            side: THREE.BackSide,
-            transparent: true
-        });
-
-        const atmosphere = new THREE.Mesh(atmosphereGeometry, atmosphereMaterial);
-        this.scene.add(atmosphere);
-    }
-
-    createStars() {
-        const starsGeometry = new THREE.BufferGeometry();
-        const starsMaterial = new THREE.PointsMaterial({
-            color: 0xffffff,
-            size: 0.02,
-            transparent: true,
-            opacity: 0.8
-        });
-
-        const starsVertices = [];
-        for (let i = 0; i < 2000; i++) {
-            const x = (Math.random() - 0.5) * 100;
-            const y = (Math.random() - 0.5) * 100;
-            const z = (Math.random() - 0.5) * 100;
-            const distance = Math.sqrt(x*x + y*y + z*z);
-            if (distance > 5) {
-                starsVertices.push(x, y, z);
-            }
-        }
-
-        starsGeometry.setAttribute('position', new THREE.Float32BufferAttribute(starsVertices, 3));
-        const stars = new THREE.Points(starsGeometry, starsMaterial);
-        this.scene.add(stars);
-    }
-
-    latLngToVector3(lat, lng, radius = 1.01) {
-        const phi = (90 - lat) * (Math.PI / 180);
-        const theta = (lng + 180) * (Math.PI / 180);
-
-        return new THREE.Vector3(
-            -radius * Math.sin(phi) * Math.cos(theta),
-            radius * Math.cos(phi),
-            radius * Math.sin(phi) * Math.sin(theta)
-        );
-    }
-
-    addLocationMarkers() {
-        const locations = careerData.locations;
-
-        locations.forEach((location, index) => {
-            const position = this.latLngToVector3(location.lat, location.lng);
-
-            // Create marker group
-            const markerGroup = new THREE.Group();
-            markerGroup.position.copy(position);
-            markerGroup.lookAt(0, 0, 0);
-            markerGroup.rotateX(Math.PI);
-
-            // Outer ring (pulsing)
-            const ringGeometry = new THREE.RingGeometry(0.03, 0.04, 32);
-            const ringMaterial = new THREE.MeshBasicMaterial({
-                color: 0x6366f1,
-                transparent: true,
-                opacity: 0.8,
-                side: THREE.DoubleSide
-            });
-            const ring = new THREE.Mesh(ringGeometry, ringMaterial);
-            ring.userData = { isPulsing: true, originalScale: 1 };
-            markerGroup.add(ring);
-
-            // Inner dot
-            const dotGeometry = new THREE.CircleGeometry(0.02, 32);
-            const dotMaterial = new THREE.MeshBasicMaterial({
-                color: index === 0 ? 0xf97316 : 0xf97316, // Orange for all markers
-                transparent: true,
-                opacity: 0.95,
-                side: THREE.DoubleSide
-            });
-            const dot = new THREE.Mesh(dotGeometry, dotMaterial);
-            dot.position.z = 0.001;
-            markerGroup.add(dot);
-
-            // Glow effect
-            const glowGeometry = new THREE.CircleGeometry(0.05, 32);
-            const glowMaterial = new THREE.MeshBasicMaterial({
-                color: 0x6366f1,
-                transparent: true,
-                opacity: 0.3,
-                side: THREE.DoubleSide
-            });
-            const glow = new THREE.Mesh(glowGeometry, glowMaterial);
-            glow.position.z = -0.001;
-            markerGroup.add(glow);
-
-            // Store location data
-            markerGroup.userData = {
-                location: location,
-                index: index
-            };
-
-            this.globe.add(markerGroup);
-            this.markers.push(markerGroup);
-        });
-    }
-
-    createConnectionArcs() {
-        const locations = careerData.locations;
-        if (locations.length < 2) return;
-
-        // Connect to primary location (USA)
-        const primaryLocation = locations[0];
-        const primaryPos = this.latLngToVector3(primaryLocation.lat, primaryLocation.lng);
-
-        locations.slice(1).forEach((location, index) => {
-            const targetPos = this.latLngToVector3(location.lat, location.lng);
-            const arc = this.createArc(primaryPos, targetPos, index);
-            this.arcs.push(arc);
-        });
-    }
-
-    createArc(startPos, endPos, index) {
-        const midPoint = new THREE.Vector3()
-            .addVectors(startPos, endPos)
-            .multiplyScalar(0.5);
-        
-        // Elevate the midpoint for arc effect
-        const distance = startPos.distanceTo(endPos);
-        midPoint.normalize().multiplyScalar(1 + distance * 0.3);
-
-        const curve = new THREE.QuadraticBezierCurve3(startPos, midPoint, endPos);
-        const points = curve.getPoints(50);
-        
-        const geometry = new THREE.BufferGeometry().setFromPoints(points);
-        const material = new THREE.LineBasicMaterial({
-            color: 0x6366f1,
-            transparent: true,
-            opacity: 0.4,
-            linewidth: 2
-        });
-
-        const arc = new THREE.Line(geometry, material);
-        arc.userData = { 
-            progress: 0,
-            delay: index * 0.2,
-            points: points
-        };
-
-        this.globe.add(arc);
-        return arc;
+        this.container.innerHTML = '';
+        this.container.appendChild(this.canvas);
     }
 
     setupTooltip() {
@@ -515,7 +82,7 @@ class GlobeVisualization {
             pointer-events: none;
             opacity: 0;
             transform: translateX(-50%);
-            transition: opacity 0.3s ease;
+            transition: opacity 0.2s ease;
             z-index: 1000;
             backdrop-filter: blur(10px);
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
@@ -524,318 +91,338 @@ class GlobeVisualization {
         this.container.appendChild(this.tooltip);
     }
 
+    loadMapTexture() {
+        const candidates = [
+            'https://upload.wikimedia.org/wikipedia/commons/8/80/World_map_-_low_resolution.svg',
+            'https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/World_map_-_low_resolution.svg/2048px-World_map_-_low_resolution.svg.png',
+            'https://upload.wikimedia.org/wikipedia/commons/thumb/c/cb/World_Map_Blank_-_with_blue_sea.svg/2048px-World_Map_Blank_-_with_blue_sea.svg.png'
+        ];
+
+        const tryLoad = (index = 0) => {
+            if (index >= candidates.length) {
+                this.mapReady = false;
+                return;
+            }
+
+            const img = new Image();
+            img.crossOrigin = 'anonymous';
+            img.onload = () => {
+                this.mapImage = img;
+                this.mapReady = true;
+            };
+            img.onerror = () => tryLoad(index + 1);
+            img.src = candidates[index];
+        };
+
+        tryLoad();
+    }
+
+    resize() {
+        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+        this.width = this.container.clientWidth;
+        this.height = this.container.clientHeight || 550;
+
+        this.canvas.width = Math.floor(this.width * dpr);
+        this.canvas.height = Math.floor(this.height * dpr);
+        this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+        const idealHeight = Math.min(this.height, this.width / 2);
+        const mapHeight = Math.max(220, idealHeight);
+        const mapWidth = mapHeight * 2;
+
+        this.mapRect = {
+            width: mapWidth,
+            height: mapHeight,
+            x: (this.width - mapWidth) / 2,
+            y: (this.height - mapHeight) / 2
+        };
+    }
+
     setupEventListeners() {
-        // Get the canvas element that Three.js created
-        const canvas = this.renderer.domElement;
-        const dragElement = this.container;
-        
-        // Ensure canvas receives all pointer events
-        canvas.style.cursor = 'grab';
-        canvas.style.touchAction = 'none';
-        canvas.style.pointerEvents = 'auto';
-        canvas.style.position = 'relative';
-        canvas.style.zIndex = '10';
-        
-        // Track dragging state on the instance for reliable access
-        this.isDragging = false;
-        this.previousPosition = { x: 0, y: 0 };
+        const onPointerDown = (e) => {
+            this.dragState.active = true;
+            this.dragState.pointerId = e.pointerId ?? null;
+            this.dragState.lastX = e.clientX;
+            this.dragState.lastMoveTs = performance.now();
+            this.dragState.lastDelta = 0;
+            this.canvas.style.cursor = 'grabbing';
 
-        const updatePointerPosition = (clientX, clientY) => {
-            const rect = this.container.getBoundingClientRect();
-            this.mouse.x = ((clientX - rect.left) / rect.width) * 2 - 1;
-            this.mouse.y = -((clientY - rect.top) / rect.height) * 2 + 1;
-        };
-
-        if (this.controls) {
-            const stopAutoRotate = () => {
-                this.isRotating = false;
-                this.controls.autoRotate = false;
-                canvas.style.cursor = 'grabbing';
-            };
-
-            const resumeAutoRotate = () => {
-                canvas.style.cursor = 'grab';
-                setTimeout(() => {
-                    this.isRotating = true;
-                    this.controls.autoRotate = !this.prefersReducedMotion;
-                }, 1000);
-            };
-
-            this.controls.addEventListener('start', stopAutoRotate);
-            this.controls.addEventListener('end', resumeAutoRotate);
-
-            canvas.addEventListener('mousemove', (e) => {
-                updatePointerPosition(e.clientX, e.clientY);
-                this.checkMarkerHover(e);
-            });
-
-            canvas.addEventListener('touchmove', (e) => {
-                if (!e.touches?.length) return;
-                const touch = e.touches[0];
-                updatePointerPosition(touch.clientX, touch.clientY);
-                this.checkMarkerHover({ clientX: touch.clientX, clientY: touch.clientY });
-            }, { passive: true });
-
-            canvas.addEventListener('pointerleave', () => {
-                this.tooltip.style.opacity = '0';
-            });
-
-            window.addEventListener('resize', () => {
-                const width = this.container.clientWidth;
-                const height = this.container.clientHeight || 500;
-
-                this.camera.aspect = width / height;
-                this.camera.updateProjectionMatrix();
-                this.renderer.setSize(width, height);
-                this.controls.update();
-            });
-
-            canvas.addEventListener('contextmenu', (e) => e.preventDefault());
-        }
-
-        const applyDrag = (clientX, clientY) => {
-            const deltaX = clientX - this.previousPosition.x;
-            const deltaY = clientY - this.previousPosition.y;
-
-            if (this.controls) {
-                const dragFactor = 0.005;
-                this.controls.rotateLeft(deltaX * dragFactor);
-                this.controls.rotateUp(deltaY * dragFactor);
-                this.controls.update();
-                this.dragVelocity = { x: 0, y: 0 };
-            } else {
-                const dragFactor = 0.0065;
-                this.globe.rotation.y += deltaX * dragFactor;
-                this.globe.rotation.x += deltaY * dragFactor;
-                this.globe.rotation.x = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, this.globe.rotation.x));
-
-                this.dragVelocity.x = deltaX * dragFactor;
-                this.dragVelocity.y = deltaY * dragFactor;
+            if (typeof e.pointerId === 'number' && this.canvas.setPointerCapture) {
+                try {
+                    this.canvas.setPointerCapture(e.pointerId);
+                } catch (_) {
+                    // Ignore pointer capture failure
+                }
             }
 
-            this.previousPosition = { x: clientX, y: clientY };
-        };
-
-        const handlePointerDown = (e) => {
-            if (this.activePointerId !== null) return;
-            this.isDragging = true;
-            this.isRotating = false;
-            this.activePointerId = e.pointerId;
-            if (this.controls) this.controls.enabled = false;
-            canvas.style.cursor = 'grabbing';
-            this.previousPosition = { x: e.clientX, y: e.clientY };
-            this.dragVelocity = { x: 0, y: 0 };
-            try {
-                dragElement.setPointerCapture(e.pointerId);
-            } catch (_) {
-                // no-op fallback where pointer capture is unavailable
-            }
             e.preventDefault();
         };
 
-        const handlePointerMove = (e) => {
-            updatePointerPosition(e.clientX, e.clientY);
+        const onPointerMove = (e) => {
+            if (this.dragState.active && (this.dragState.pointerId === null || this.dragState.pointerId === e.pointerId)) {
+                const now = performance.now();
+                const dx = e.clientX - this.dragState.lastX;
 
-            if (this.isDragging && this.activePointerId === e.pointerId) {
-                applyDrag(e.clientX, e.clientY);
+                this.offsetX += dx;
+
+                const dt = Math.max(8, now - this.dragState.lastMoveTs);
+                this.velocityX = (dx / dt) * 16;
+                this.dragState.lastDelta = dx;
+                this.dragState.lastX = e.clientX;
+                this.dragState.lastMoveTs = now;
             }
 
-            // Check for marker hover
-            this.checkMarkerHover(e);
+            this.updateHover(e.clientX, e.clientY);
         };
 
-        const handlePointerEnd = (e) => {
-            if (this.activePointerId !== e.pointerId) return;
-            this.isDragging = false;
-            this.activePointerId = null;
-            if (this.controls) this.controls.enabled = true;
-            canvas.style.cursor = 'grab';
-            if (dragElement.hasPointerCapture(e.pointerId)) {
-                dragElement.releasePointerCapture(e.pointerId);
+        const onPointerUp = (e) => {
+            if (!this.dragState.active) return;
+            if (this.dragState.pointerId !== null && this.dragState.pointerId !== e.pointerId) return;
+
+            this.dragState.active = false;
+            this.dragState.pointerId = null;
+            this.canvas.style.cursor = 'grab';
+
+            if (typeof e.pointerId === 'number' && this.canvas.releasePointerCapture && this.canvas.hasPointerCapture?.(e.pointerId)) {
+                try {
+                    this.canvas.releasePointerCapture(e.pointerId);
+                } catch (_) {
+                    // Ignore release failures
+                }
             }
-            setTimeout(() => { this.isRotating = true; }, 1200);
         };
 
-        const handleMouseDownFallback = (e) => {
-            if (this.isDragging || this.activePointerId !== null) return;
-            this.isDragging = true;
-            this.isRotating = false;
-            if (this.controls) this.controls.enabled = false;
-            canvas.style.cursor = 'grabbing';
-            this.previousPosition = { x: e.clientX, y: e.clientY };
-            this.dragVelocity = { x: 0, y: 0 };
-            e.preventDefault();
-        };
-
-        const handleMouseMoveFallback = (e) => {
-            if (!this.isDragging || this.activePointerId !== null) return;
-            applyDrag(e.clientX, e.clientY);
-        };
-
-        const handleMouseUpFallback = () => {
-            if (!this.isDragging || this.activePointerId !== null) return;
-            this.isDragging = false;
-            if (this.controls) this.controls.enabled = true;
-            canvas.style.cursor = 'grab';
-            setTimeout(() => { this.isRotating = true; }, 1200);
-        };
-
-        const handleTouchStartFallback = (e) => {
-            if (this.activePointerId !== null || !e.touches?.length) return;
+        const onTouchStart = (e) => {
+            if (!e.touches?.length) return;
             const touch = e.touches[0];
-            this.isDragging = true;
-            this.isRotating = false;
-            if (this.controls) this.controls.enabled = false;
-            this.previousPosition = { x: touch.clientX, y: touch.clientY };
-            this.dragVelocity = { x: 0, y: 0 };
+            onPointerDown({ clientX: touch.clientX, pointerId: null, preventDefault: () => e.preventDefault() });
             e.preventDefault();
         };
 
-        const handleTouchMoveFallback = (e) => {
-            if (!this.isDragging || this.activePointerId !== null || !e.touches?.length) return;
+        const onTouchMove = (e) => {
+            if (!e.touches?.length) return;
             const touch = e.touches[0];
-            applyDrag(touch.clientX, touch.clientY);
+            onPointerMove({ clientX: touch.clientX, clientY: touch.clientY, pointerId: null });
             e.preventDefault();
         };
 
-        const handleTouchEndFallback = () => {
-            if (!this.isDragging || this.activePointerId !== null) return;
-            this.isDragging = false;
-            if (this.controls) this.controls.enabled = true;
-            setTimeout(() => { this.isRotating = true; }, 1200);
+        const onTouchEnd = () => {
+            onPointerUp({ pointerId: null });
         };
 
-        dragElement.addEventListener('pointerdown', handlePointerDown);
-        window.addEventListener('pointermove', handlePointerMove, { passive: false });
-        window.addEventListener('pointerup', handlePointerEnd);
-        window.addEventListener('pointercancel', handlePointerEnd);
+        this.canvas.addEventListener('pointerdown', onPointerDown);
+        window.addEventListener('pointermove', onPointerMove, { passive: true });
+        window.addEventListener('pointerup', onPointerUp);
+        window.addEventListener('pointercancel', onPointerUp);
 
-        canvas.addEventListener('mousedown', handleMouseDownFallback);
-        window.addEventListener('mousemove', handleMouseMoveFallback);
-        window.addEventListener('mouseup', handleMouseUpFallback);
+        this.canvas.addEventListener('touchstart', onTouchStart, { passive: false });
+        window.addEventListener('touchmove', onTouchMove, { passive: false });
+        window.addEventListener('touchend', onTouchEnd);
+        window.addEventListener('touchcancel', onTouchEnd);
 
-        canvas.addEventListener('touchstart', handleTouchStartFallback, { passive: false });
-        window.addEventListener('touchmove', handleTouchMoveFallback, { passive: false });
-        window.addEventListener('touchend', handleTouchEndFallback);
-        window.addEventListener('touchcancel', handleTouchEndFallback);
-
-        canvas.addEventListener('pointerleave', () => {
+        this.canvas.addEventListener('mouseleave', () => {
+            this.hoveredLocation = null;
             this.tooltip.style.opacity = '0';
         });
 
-        // Resize handler
-        window.addEventListener('resize', () => {
-            const width = this.container.clientWidth;
-            const height = this.container.clientHeight || 500;
-
-            this.camera.aspect = width / height;
-            this.camera.updateProjectionMatrix();
-            this.renderer.setSize(width, height);
-        });
-
-        canvas.addEventListener('contextmenu', (e) => e.preventDefault());
+        this.canvas.addEventListener('contextmenu', (e) => e.preventDefault());
+        window.addEventListener('resize', () => this.resize());
     }
 
-    checkMarkerHover(e) {
-        this.mouseVector.x = this.mouse.x;
-        this.mouseVector.y = this.mouse.y;
+    normalizeOffset() {
+        const period = this.mapRect.width;
+        if (!period) return;
+        this.offsetX = ((this.offsetX % period) + period) % period;
+    }
 
-        this.raycaster.setFromCamera(this.mouseVector, this.camera);
+    updateHover(clientX, clientY) {
+        const rect = this.container.getBoundingClientRect();
+        const x = clientX - rect.left;
+        const y = clientY - rect.top;
 
-        const markerMeshes = [];
-        this.markers.forEach(marker => {
-            marker.children.forEach(child => {
-                child.userData.parentMarker = marker;
-                markerMeshes.push(child);
-            });
-        });
+        let closest = null;
+        let closestDist = 16;
 
-        const intersects = this.raycaster.intersectObjects(markerMeshes);
+        for (const point of this.markerPoints) {
+            const dx = point.x - x;
+            const dy = point.y - y;
+            const d = Math.sqrt(dx * dx + dy * dy);
+            if (d < closestDist) {
+                closestDist = d;
+                closest = point.location;
+            }
+        }
 
-        if (intersects.length > 0) {
-            const marker = intersects[0].object.userData.parentMarker;
-            if (marker && marker.userData.location) {
-                this.showTooltip(marker.userData.location, e);
+        if (closest) {
+            this.hoveredLocation = closest;
+            this.showTooltip(closest, x, y);
+        } else {
+            this.hoveredLocation = null;
+            this.tooltip.style.opacity = '0';
+        }
+    }
+
+    locationToMapX(lng) {
+        return ((lng + 180) / 360) * this.mapRect.width;
+    }
+
+    locationToMapY(lat) {
+        return ((90 - lat) / 180) * this.mapRect.height;
+    }
+
+    renderMapBackground() {
+        const { x, y, width, height } = this.mapRect;
+
+        this.ctx.fillStyle = '#0f172a';
+        this.ctx.fillRect(0, 0, this.width, this.height);
+
+        this.ctx.fillStyle = 'rgba(99, 102, 241, 0.08)';
+        this.ctx.fillRect(x, y, width, height);
+
+        const shifted = this.offsetX;
+        const startX = x - shifted - width;
+
+        if (this.mapReady && this.mapImage) {
+            for (let drawX = startX; drawX < x + width + width; drawX += width) {
+                this.ctx.drawImage(this.mapImage, drawX, y, width, height);
             }
         } else {
-            this.tooltip.style.opacity = '0';
+            this.ctx.strokeStyle = 'rgba(148, 163, 184, 0.4)';
+            this.ctx.lineWidth = 1;
+
+            for (let lon = -180; lon <= 180; lon += 30) {
+                const mapX = x + ((lon + 180) / 360) * width - shifted;
+                for (let drawX = mapX - width; drawX <= mapX + width; drawX += width) {
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(drawX, y);
+                    this.ctx.lineTo(drawX, y + height);
+                    this.ctx.stroke();
+                }
+            }
+
+            for (let lat = -60; lat <= 60; lat += 30) {
+                const mapY = y + ((90 - lat) / 180) * height;
+                this.ctx.beginPath();
+                this.ctx.moveTo(x, mapY);
+                this.ctx.lineTo(x + width, mapY);
+                this.ctx.stroke();
+            }
         }
+
+        this.ctx.strokeStyle = 'rgba(99, 102, 241, 0.35)';
+        this.ctx.lineWidth = 1;
+        this.ctx.strokeRect(x, y, width, height);
     }
 
-    showTooltip(location, e) {
-        const rect = this.container.getBoundingClientRect();
-        
+    renderConnections() {
+        if (this.locations.length < 2) return;
+
+        const { x, y, width } = this.mapRect;
+        const shifted = this.offsetX;
+
+        const primary = this.locations[0];
+        const primaryBaseX = x + this.locationToMapX(primary.lng) - shifted;
+        const primaryY = y + this.locationToMapY(primary.lat);
+
+        this.ctx.lineWidth = 1.5;
+
+        this.locations.slice(1).forEach((location, index) => {
+            const targetBaseX = x + this.locationToMapX(location.lng) - shifted;
+            const targetY = y + this.locationToMapY(location.lat);
+
+            const options = [targetBaseX - width, targetBaseX, targetBaseX + width];
+            const targetX = options.reduce((best, candidate) => {
+                const bestDist = Math.abs(best - primaryBaseX);
+                const candDist = Math.abs(candidate - primaryBaseX);
+                return candDist < bestDist ? candidate : best;
+            }, targetBaseX);
+
+            const lift = 30 + (index % 3) * 8;
+            const controlX = (primaryBaseX + targetX) / 2;
+            const controlY = Math.min(primaryY, targetY) - lift;
+
+            this.ctx.strokeStyle = 'rgba(99, 102, 241, 0.45)';
+            this.ctx.beginPath();
+            this.ctx.moveTo(primaryBaseX, primaryY);
+            this.ctx.quadraticCurveTo(controlX, controlY, targetX, targetY);
+            this.ctx.stroke();
+        });
+    }
+
+    renderMarkers() {
+        const { x, y, width } = this.mapRect;
+        const shifted = this.offsetX;
+        const t = Date.now() * 0.004;
+
+        this.markerPoints = [];
+
+        this.locations.forEach((location, index) => {
+            const baseX = x + this.locationToMapX(location.lng) - shifted;
+            const markerY = y + this.locationToMapY(location.lat);
+            const drawXs = [baseX - width, baseX, baseX + width];
+
+            drawXs.forEach((markerX) => {
+                if (markerX < -30 || markerX > this.width + 30) return;
+
+                const pulse = 1 + Math.sin(t + index * 0.8) * 0.2;
+                const radius = 5 * pulse;
+
+                this.ctx.beginPath();
+                this.ctx.fillStyle = 'rgba(99, 102, 241, 0.25)';
+                this.ctx.arc(markerX, markerY, radius + 4, 0, Math.PI * 2);
+                this.ctx.fill();
+
+                this.ctx.beginPath();
+                this.ctx.fillStyle = '#f97316';
+                this.ctx.arc(markerX, markerY, 4, 0, Math.PI * 2);
+                this.ctx.fill();
+
+                this.markerPoints.push({
+                    x: markerX,
+                    y: markerY,
+                    location
+                });
+            });
+        });
+    }
+
+    showTooltip(location, x, y) {
         this.tooltip.innerHTML = `
-            <div style="font-size: 24px; margin-bottom: 8px;">${location.flag}</div>
-            <div style="font-weight: 600; color: #6366f1; margin-bottom: 4px;">
-                ${location.country}
-            </div>
-            <div style="color: #94a3b8; font-size: 12px; margin-bottom: 6px;">
-                ${location.cities.join(', ')}
-            </div>
-            <div style="color: #e2e8f0; font-size: 13px;">
-                ${location.details}
-            </div>
-            <div style="color: #f97316; font-size: 11px; margin-top: 6px;">
-                ${location.years} years experience
-            </div>
+            <div style="font-size: 22px; margin-bottom: 6px;">${location.flag}</div>
+            <div style="font-weight: 600; color: #6366f1; margin-bottom: 4px;">${location.country}</div>
+            <div style="color: #94a3b8; font-size: 12px; margin-bottom: 6px;">${location.cities.join(', ')}</div>
+            <div style="color: #e2e8f0; font-size: 13px;">${location.details}</div>
+            <div style="color: #f97316; font-size: 11px; margin-top: 6px;">${location.years} years experience</div>
         `;
 
-        this.tooltip.style.left = `${e.clientX - rect.left}px`;
-        this.tooltip.style.top = `${e.clientY - rect.top - 10}px`;
+        this.tooltip.style.left = `${x}px`;
+        this.tooltip.style.top = `${y - 14}px`;
         this.tooltip.style.opacity = '1';
+    }
+
+    render() {
+        this.normalizeOffset();
+        this.renderMapBackground();
+        this.renderConnections();
+        this.renderMarkers();
     }
 
     animate() {
         requestAnimationFrame(() => this.animate());
 
-        if (this.controls) {
-            this.controls.update();
+        if (!this.dragState.active) {
+            this.offsetX += this.prefersReducedMotion ? 0 : 0.22;
+            this.offsetX += this.velocityX;
+            this.velocityX *= 0.92;
+            if (Math.abs(this.velocityX) < 0.01) this.velocityX = 0;
         }
 
-        // Auto-rotate when not dragging
-        if (!this.controls && this.isRotating) {
-            this.globe.rotation.y += 0.002;
-        }
-
-        // Inertia after drag release
-        if (!this.controls && !this.isDragging && this.activePointerId === null) {
-            this.globe.rotation.y += this.dragVelocity.x;
-            this.globe.rotation.x += this.dragVelocity.y;
-            this.globe.rotation.x = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, this.globe.rotation.x));
-            this.dragVelocity.x *= 0.92;
-            this.dragVelocity.y *= 0.92;
-            if (Math.abs(this.dragVelocity.x) < 0.00001) this.dragVelocity.x = 0;
-            if (Math.abs(this.dragVelocity.y) < 0.00001) this.dragVelocity.y = 0;
-        }
-
-        // Animate pulsing markers
-        const time = Date.now() * 0.001;
-        this.markers.forEach((marker, index) => {
-            const ring = marker.children[0];
-            if (ring.userData.isPulsing) {
-                const scale = 1 + Math.sin(time * 2 + index) * 0.3;
-                ring.scale.set(scale, scale, 1);
-                ring.material.opacity = 0.5 + Math.sin(time * 2 + index) * 0.3;
-            }
-        });
-
-        // Animate arcs
-        this.arcs.forEach((arc, index) => {
-            arc.userData.progress += 0.005;
-            if (arc.userData.progress > 1) arc.userData.progress = 0;
-            
-            arc.material.opacity = 0.2 + Math.sin(arc.userData.progress * Math.PI) * 0.4;
-        });
-
-        this.renderer.render(this.scene, this.camera);
+        this.render();
     }
 
-    // Clean up
     destroy() {
-        if (this.renderer) {
-            this.container.removeChild(this.renderer.domElement);
-            this.renderer.dispose();
+        if (this.canvas && this.canvas.parentNode) {
+            this.canvas.parentNode.removeChild(this.canvas);
         }
         if (this.tooltip && this.tooltip.parentNode) {
             this.tooltip.parentNode.removeChild(this.tooltip);
@@ -868,21 +455,15 @@ document.addEventListener('DOMContentLoaded', () => {
         }, { threshold: 0.1, rootMargin: '200px' });
 
         observer.observe(globalSection);
-        
-        // Fallback: initialize after 3 seconds if not triggered
+
         setTimeout(() => {
             if (!window.globeVisualization) {
                 initializeGlobeOnce();
                 observer.disconnect();
             }
-        }, 3000);
+        }, 2000);
         return;
     }
 
-    if ('requestIdleCallback' in window) {
-        requestIdleCallback(() => initializeGlobeOnce(), { timeout: 1500 });
-        return;
-    }
-
-    setTimeout(() => initializeGlobeOnce(), 800);
+    setTimeout(() => initializeGlobeOnce(), 600);
 });
