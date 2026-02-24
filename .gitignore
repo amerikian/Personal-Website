@@ -8,5 +8,17 @@ node_modules/
 dist/
 .azure/
 local.settings.json
-artifacts/screenshots/
-artifacts/visual-diff/
+artifacts/
+
+# Test scripts (keep only visual-check.js and visual-regression.js)
+scripts/check-*.js
+scripts/chrome-*.js
+scripts/deep-*.js
+scripts/diagnose-*.js
+scripts/fast-*.js
+scripts/final-*.js
+scripts/globe-*.js
+scripts/mobile-*.js
+scripts/quick-*.js
+scripts/test-*.js
+scripts/validate-*.js

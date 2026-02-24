@@ -649,7 +649,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const globeContainer = document.getElementById('globe-container');
     if (!globeContainer) return;
 
-    const globalSection = document.getElementById('global') || globeContainer;
+    const globalSection = document.getElementById('global-impact') || globeContainer;
 
     if ('IntersectionObserver' in window) {
         const observer = new IntersectionObserver((entries) => {
@@ -659,9 +659,17 @@ document.addEventListener('DOMContentLoaded', () => {
                     observer.disconnect();
                 }
             });
-        }, { threshold: 0.15, rootMargin: '120px' });
+        }, { threshold: 0.1, rootMargin: '200px' });
 
         observer.observe(globalSection);
+        
+        // Fallback: initialize after 3 seconds if not triggered
+        setTimeout(() => {
+            if (!window.globeVisualization) {
+                initializeGlobeOnce();
+                observer.disconnect();
+            }
+        }, 3000);
         return;
     }
 
