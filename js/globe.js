@@ -340,27 +340,43 @@ class GlobeVisualization {
             for (var ci = 0; ci < this.continentPolygons.length; ci++) {
                 var cont = this.continentPolygons[ci];
 
+                // Outer glow beneath continent
                 drawPoly(cont.points, drawXOff);
-                ctx.shadowColor = 'rgba(99,102,241,0.12)';
-                ctx.shadowBlur = 20;
-                ctx.fillStyle = 'rgba(15,23,55,' + (0.5 * entry) + ')';
+                ctx.shadowColor = 'rgba(56,189,248,' + (0.35 * entry) + ')';
+                ctx.shadowBlur = 28;
+                ctx.fillStyle = 'rgba(12,45,78,' + (0.9 * entry) + ')';
                 ctx.fill();
                 ctx.shadowBlur = 0;
 
+                // Main gradient fill — rich teal tones
                 drawPoly(cont.points, drawXOff);
                 var grad = ctx.createLinearGradient(startX + drawXOff, y, startX + drawXOff + w * 0.5, y + h);
-                grad.addColorStop(0, 'rgba(30,41,82,' + (0.65 * entry) + ')');
-                grad.addColorStop(0.5, 'rgba(22,33,72,' + (0.55 * entry) + ')');
-                grad.addColorStop(1, 'rgba(15,23,55,' + (0.5 * entry) + ')');
+                grad.addColorStop(0, 'rgba(20,80,120,' + (0.88 * entry) + ')');
+                grad.addColorStop(0.35, 'rgba(16,65,100,' + (0.82 * entry) + ')');
+                grad.addColorStop(0.7, 'rgba(12,52,88,' + (0.78 * entry) + ')');
+                grad.addColorStop(1, 'rgba(10,42,72,' + (0.74 * entry) + ')');
                 ctx.fillStyle = grad;
                 ctx.fill();
 
-                ctx.strokeStyle = 'rgba(99,130,241,' + (0.35 * entry) + ')';
-                ctx.lineWidth = 1;
+                // Subtle inner highlight for depth
+                drawPoly(cont.points, drawXOff);
+                var inner = ctx.createLinearGradient(startX + drawXOff, y, startX + drawXOff, y + h);
+                inner.addColorStop(0, 'rgba(100,200,255,' + (0.08 * entry) + ')');
+                inner.addColorStop(0.5, 'rgba(100,200,255,0)');
+                inner.addColorStop(1, 'rgba(56,189,248,' + (0.04 * entry) + ')');
+                ctx.fillStyle = inner;
+                ctx.fill();
+
+                // Coastline outer glow
+                drawPoly(cont.points, drawXOff);
+                ctx.strokeStyle = 'rgba(56,189,248,' + (0.2 * entry) + ')';
+                ctx.lineWidth = 3.5;
                 ctx.stroke();
 
-                ctx.strokeStyle = 'rgba(165,180,252,' + (0.06 * entry) + ')';
-                ctx.lineWidth = 2.5;
+                // Main coastline border — bright and crisp
+                drawPoly(cont.points, drawXOff);
+                ctx.strokeStyle = 'rgba(100,200,255,' + (0.75 * entry) + ')';
+                ctx.lineWidth = 1.2;
                 ctx.stroke();
             }
         }
@@ -383,6 +399,9 @@ class GlobeVisualization {
         ctx.rect(mr.x, mr.y, mr.width, mr.height);
         ctx.clip();
 
+        var arrowLen = 10;
+        var arrowHalf = Math.PI / 7;
+
         for (var idx = 1; idx < this.locations.length; idx++) {
             var loc = this.locations[idx];
             var tBX = x + this.lngToX(loc.lng) - shifted;
@@ -397,16 +416,44 @@ class GlobeVisualization {
             var cx = (pBX + tX) / 2;
             var cy = Math.min(pY, tY) - lift;
 
-            ctx.shadowColor = 'rgba(99,102,241,0.4)';
-            ctx.shadowBlur = 12;
-            ctx.strokeStyle = 'rgba(99,102,241,' + (0.35 * entry) + ')';
-            ctx.lineWidth = 2;
+            // Outer glow arc
+            ctx.shadowColor = 'rgba(99,102,241,0.5)';
+            ctx.shadowBlur = 14;
+            ctx.strokeStyle = 'rgba(99,102,241,' + (0.5 * entry) + ')';
+            ctx.lineWidth = 2.5;
             ctx.beginPath(); ctx.moveTo(pBX, pY); ctx.quadraticCurveTo(cx, cy, tX, tY); ctx.stroke();
             ctx.shadowBlur = 0;
 
-            ctx.strokeStyle = 'rgba(139,150,255,' + (0.55 * entry) + ')';
-            ctx.lineWidth = 1;
+            // Bright inner arc
+            ctx.strokeStyle = 'rgba(165,180,255,' + (0.7 * entry) + ')';
+            ctx.lineWidth = 1.2;
             ctx.beginPath(); ctx.moveTo(pBX, pY); ctx.quadraticCurveTo(cx, cy, tX, tY); ctx.stroke();
+
+            // Arrowhead at destination — tangent at t=1 is (tX-cx, tY-cy)
+            var angle = Math.atan2(tY - cy, tX - cx);
+            ctx.fillStyle = 'rgba(165,180,255,' + (0.85 * entry) + ')';
+            ctx.shadowColor = 'rgba(99,102,241,0.5)';
+            ctx.shadowBlur = 6;
+            ctx.beginPath();
+            ctx.moveTo(tX, tY);
+            ctx.lineTo(tX - arrowLen * Math.cos(angle - arrowHalf), tY - arrowLen * Math.sin(angle - arrowHalf));
+            ctx.lineTo(tX - arrowLen * Math.cos(angle + arrowHalf), tY - arrowLen * Math.sin(angle + arrowHalf));
+            ctx.closePath();
+            ctx.fill();
+            ctx.shadowBlur = 0;
+
+            // Arrowhead at origin — tangent at t=0 is (cx-pBX, cy-pY)
+            var angle0 = Math.atan2(cy - pY, cx - pBX);
+            ctx.fillStyle = 'rgba(249,115,22,' + (0.8 * entry) + ')';
+            ctx.shadowColor = 'rgba(249,115,22,0.4)';
+            ctx.shadowBlur = 6;
+            ctx.beginPath();
+            ctx.moveTo(pBX, pY);
+            ctx.lineTo(pBX + arrowLen * Math.cos(angle0 - arrowHalf), pY + arrowLen * Math.sin(angle0 - arrowHalf));
+            ctx.lineTo(pBX + arrowLen * Math.cos(angle0 + arrowHalf), pY + arrowLen * Math.sin(angle0 + arrowHalf));
+            ctx.closePath();
+            ctx.fill();
+            ctx.shadowBlur = 0;
         }
         ctx.restore();
     }
