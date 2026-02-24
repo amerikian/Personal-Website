@@ -176,7 +176,9 @@ class GlobeVisualization {
             if (e.button !== 0) return;
             e.preventDefault();
             e.stopPropagation();
-            self.canvas.setPointerCapture(e.pointerId);
+            if (self.canvas.setPointerCapture) {
+                try { self.canvas.setPointerCapture(e.pointerId); } catch (_) {}
+            }
             startDrag(e.clientX, e.clientY);
         });
 
@@ -190,17 +192,34 @@ class GlobeVisualization {
 
         this.canvas.addEventListener('pointerup', function(e) {
             if (self.dragState.active) {
-                self.canvas.releasePointerCapture(e.pointerId);
+                if (self.canvas.releasePointerCapture) {
+                    try { self.canvas.releasePointerCapture(e.pointerId); } catch (_) {}
+                }
                 endDrag();
             }
         });
 
         this.canvas.addEventListener('pointercancel', function(e) {
             if (self.dragState.active) {
-                self.canvas.releasePointerCapture(e.pointerId);
+                if (self.canvas.releasePointerCapture) {
+                    try { self.canvas.releasePointerCapture(e.pointerId); } catch (_) {}
+                }
                 endDrag();
             }
         });
+
+        // ── Mouse/touch fallback drag start (older browsers) ──
+        this.canvas.addEventListener('mousedown', function(e) {
+            if (e.button !== 0) return;
+            e.preventDefault();
+            startDrag(e.clientX, e.clientY);
+        });
+
+        this.canvas.addEventListener('touchstart', function(e) {
+            if (e.touches.length !== 1) return;
+            e.preventDefault();
+            startDrag(e.touches[0].clientX, e.touches[0].clientY);
+        }, { passive: false });
 
         // ── Mouse events fallback (document-level for moves outside canvas) ──
         document.addEventListener('mousemove', function(e) {
@@ -211,6 +230,21 @@ class GlobeVisualization {
         });
 
         document.addEventListener('mouseup', function() {
+            if (self.dragState.active) endDrag();
+        });
+
+        document.addEventListener('touchmove', function(e) {
+            if (self.dragState.active && e.touches.length) {
+                e.preventDefault();
+                moveDrag(e.touches[0].clientX, e.touches[0].clientY);
+            }
+        }, { passive: false });
+
+        document.addEventListener('touchend', function() {
+            if (self.dragState.active) endDrag();
+        });
+
+        document.addEventListener('touchcancel', function() {
             if (self.dragState.active) endDrag();
         });
 
@@ -300,6 +334,13 @@ class GlobeVisualization {
 
     renderBackground() {
         var ctx = this.ctx;
+        ctx.clearRect(0, 0, this.width, this.height);
+
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(this.cx, this.cy, this.radius * 1.22, 0, Math.PI * 2);
+        ctx.clip();
+
         var bg = ctx.createRadialGradient(this.cx, this.cy * 0.9, 0, this.cx, this.cy * 0.9, this.width * 0.8);
         bg.addColorStop(0, '#0d1528');
         bg.addColorStop(0.5, '#080e1e');
@@ -318,6 +359,8 @@ class GlobeVisualization {
             ctx.arc(s.x * w, s.y * h, s.r, 0, Math.PI * 2);
             ctx.fill();
         }
+
+        ctx.restore();
     }
 
     /* ─────── Render: Globe Sphere ─────── */
@@ -439,11 +482,6 @@ class GlobeVisualization {
             // Fill — teal gradient
             ctx.fillStyle = 'rgba(16,70,105,' + (0.85 * entry) + ')';
             ctx.fill();
-
-            // Coastline stroke
-            ctx.strokeStyle = 'rgba(80,190,255,' + (0.6 * entry) + ')';
-            ctx.lineWidth = 0.8;
-            ctx.stroke();
         }
 
         ctx.restore();
