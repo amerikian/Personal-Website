@@ -171,15 +171,16 @@ class GlobeVisualization {
             self.container.style.cursor = 'grab';
         }
 
-        // ── Mouse events (most reliable for desktop) ──
-        this.canvas.addEventListener('mousedown', function(e) {
+        // ── Pointer events (primary — unifies mouse + pen + touch) ──
+        this.canvas.addEventListener('pointerdown', function(e) {
             if (e.button !== 0) return;
             e.preventDefault();
             e.stopPropagation();
+            self.canvas.setPointerCapture(e.pointerId);
             startDrag(e.clientX, e.clientY);
         });
 
-        document.addEventListener('mousemove', function(e) {
+        this.canvas.addEventListener('pointermove', function(e) {
             if (self.dragState.active) {
                 e.preventDefault();
                 moveDrag(e.clientX, e.clientY);
@@ -187,45 +188,61 @@ class GlobeVisualization {
             self.updateHover(e.clientX, e.clientY);
         });
 
+        this.canvas.addEventListener('pointerup', function(e) {
+            if (self.dragState.active) {
+                self.canvas.releasePointerCapture(e.pointerId);
+                endDrag();
+            }
+        });
+
+        this.canvas.addEventListener('pointercancel', function(e) {
+            if (self.dragState.active) {
+                self.canvas.releasePointerCapture(e.pointerId);
+                endDrag();
+            }
+        });
+
+        // ── Mouse events fallback (document-level for moves outside canvas) ──
+        document.addEventListener('mousemove', function(e) {
+            if (self.dragState.active) {
+                e.preventDefault();
+                moveDrag(e.clientX, e.clientY);
+            }
+        });
+
         document.addEventListener('mouseup', function() {
             if (self.dragState.active) endDrag();
         });
 
-        // ── Touch events (mobile) ──
-        this.canvas.addEventListener('touchstart', function(e) {
-            if (e.touches.length === 1) {
-                e.preventDefault();
-                e.stopPropagation();
-                startDrag(e.touches[0].clientX, e.touches[0].clientY);
+        // ── Wheel / trackpad scroll → rotate globe ──
+        this.canvas.addEventListener('wheel', function(e) {
+            e.preventDefault();
+            // Horizontal scroll → rotate Y; Vertical scroll → tilt X
+            var wy = e.deltaX !== 0 ? e.deltaX : e.deltaY;
+            self.rotY += wy * 0.003;
+            // Vertical tilt only if shift is held or if it's a true 2D scroll
+            if (e.deltaX !== 0 && e.deltaY !== 0) {
+                self.rotX = Math.max(-1.2, Math.min(1.2, self.rotX - e.deltaY * 0.003));
             }
+            self.velY = 0; // stop inertia during wheel
         }, { passive: false });
 
-        // ── Container fallback — catches events that miss the canvas ──
-        this.container.addEventListener('mousedown', function(e) {
+        // Container fallback for wheel too
+        this.container.addEventListener('wheel', function(e) {
+            e.preventDefault();
+            var wy = e.deltaX !== 0 ? e.deltaX : e.deltaY;
+            self.rotY += wy * 0.003;
+            if (e.deltaX !== 0 && e.deltaY !== 0) {
+                self.rotX = Math.max(-1.2, Math.min(1.2, self.rotX - e.deltaY * 0.003));
+            }
+            self.velY = 0;
+        }, { passive: false });
+
+        // ── Container fallback for pointer/mouse ──
+        this.container.addEventListener('pointerdown', function(e) {
             if (e.button !== 0 || self.dragState.active) return;
             e.preventDefault();
             startDrag(e.clientX, e.clientY);
-        });
-        this.container.addEventListener('touchstart', function(e) {
-            if (e.touches.length === 1 && !self.dragState.active) {
-                e.preventDefault();
-                startDrag(e.touches[0].clientX, e.touches[0].clientY);
-            }
-        }, { passive: false });
-
-        document.addEventListener('touchmove', function(e) {
-            if (self.dragState.active && e.touches.length) {
-                e.preventDefault();
-                moveDrag(e.touches[0].clientX, e.touches[0].clientY);
-                self.updateHover(e.touches[0].clientX, e.touches[0].clientY);
-            }
-        }, { passive: false });
-
-        document.addEventListener('touchend', function() {
-            if (self.dragState.active) endDrag();
-        });
-        document.addEventListener('touchcancel', function() {
-            if (self.dragState.active) endDrag();
         });
 
         this.canvas.addEventListener('mouseleave', function() {
