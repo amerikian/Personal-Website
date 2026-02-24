@@ -130,11 +130,12 @@ class GlobeVisualization {
     }
 
     addContinentOutlines() {
-        // Simplified continent outlines as fallback
+        // Simplified continent outlines - brighter for visibility
         const continentMaterial = new THREE.LineBasicMaterial({
-            color: 0x64748b,
+            color: 0x94a3b8,
             transparent: true,
-            opacity: 0.7
+            opacity: 1.0,
+            depthTest: false
         });
 
         // North America outline (simplified)
@@ -191,10 +192,11 @@ class GlobeVisualization {
 
     addContinentPath(coords, material) {
         const points = coords.map(([lng, lat]) => 
-            this.latLngToVector3(lat, lng, 1.004)
+            this.latLngToVector3(lat, lng, 1.008)
         );
         const geometry = new THREE.BufferGeometry().setFromPoints(points);
         const line = new THREE.Line(geometry, material);
+        line.renderOrder = 1;
         this.globe.add(line);
     }
 
@@ -447,13 +449,15 @@ class GlobeVisualization {
         
         // Set cursor style to indicate draggable
         canvas.style.cursor = 'grab';
+        canvas.style.touchAction = 'none';
 
         canvas.addEventListener('mousedown', (e) => {
             isDragging = true;
             this.isRotating = false;
             canvas.style.cursor = 'grabbing';
             previousMousePosition = { x: e.clientX, y: e.clientY };
-            e.preventDefault(); // Prevent text selection while dragging
+            e.preventDefault();
+            e.stopPropagation();
         });
 
         window.addEventListener('mouseup', () => {
