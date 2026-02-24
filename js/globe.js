@@ -591,20 +591,27 @@ class GlobeVisualization {
             });
 
             canvas.addEventListener('contextmenu', (e) => e.preventDefault());
-            return;
         }
 
         const applyDrag = (clientX, clientY) => {
             const deltaX = clientX - this.previousPosition.x;
             const deltaY = clientY - this.previousPosition.y;
 
-            const dragFactor = 0.0065;
-            this.globe.rotation.y += deltaX * dragFactor;
-            this.globe.rotation.x += deltaY * dragFactor;
-            this.globe.rotation.x = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, this.globe.rotation.x));
+            if (this.controls) {
+                const dragFactor = 0.005;
+                this.controls.rotateLeft(deltaX * dragFactor);
+                this.controls.rotateUp(deltaY * dragFactor);
+                this.controls.update();
+                this.dragVelocity = { x: 0, y: 0 };
+            } else {
+                const dragFactor = 0.0065;
+                this.globe.rotation.y += deltaX * dragFactor;
+                this.globe.rotation.x += deltaY * dragFactor;
+                this.globe.rotation.x = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, this.globe.rotation.x));
 
-            this.dragVelocity.x = deltaX * dragFactor;
-            this.dragVelocity.y = deltaY * dragFactor;
+                this.dragVelocity.x = deltaX * dragFactor;
+                this.dragVelocity.y = deltaY * dragFactor;
+            }
 
             this.previousPosition = { x: clientX, y: clientY };
         };
@@ -614,6 +621,7 @@ class GlobeVisualization {
             this.isDragging = true;
             this.isRotating = false;
             this.activePointerId = e.pointerId;
+            if (this.controls) this.controls.enabled = false;
             canvas.style.cursor = 'grabbing';
             this.previousPosition = { x: e.clientX, y: e.clientY };
             this.dragVelocity = { x: 0, y: 0 };
@@ -640,6 +648,7 @@ class GlobeVisualization {
             if (this.activePointerId !== e.pointerId) return;
             this.isDragging = false;
             this.activePointerId = null;
+            if (this.controls) this.controls.enabled = true;
             canvas.style.cursor = 'grab';
             if (dragElement.hasPointerCapture(e.pointerId)) {
                 dragElement.releasePointerCapture(e.pointerId);
@@ -651,6 +660,7 @@ class GlobeVisualization {
             if (this.isDragging || this.activePointerId !== null) return;
             this.isDragging = true;
             this.isRotating = false;
+            if (this.controls) this.controls.enabled = false;
             canvas.style.cursor = 'grabbing';
             this.previousPosition = { x: e.clientX, y: e.clientY };
             this.dragVelocity = { x: 0, y: 0 };
@@ -665,6 +675,7 @@ class GlobeVisualization {
         const handleMouseUpFallback = () => {
             if (!this.isDragging || this.activePointerId !== null) return;
             this.isDragging = false;
+            if (this.controls) this.controls.enabled = true;
             canvas.style.cursor = 'grab';
             setTimeout(() => { this.isRotating = true; }, 1200);
         };
@@ -674,6 +685,7 @@ class GlobeVisualization {
             const touch = e.touches[0];
             this.isDragging = true;
             this.isRotating = false;
+            if (this.controls) this.controls.enabled = false;
             this.previousPosition = { x: touch.clientX, y: touch.clientY };
             this.dragVelocity = { x: 0, y: 0 };
             e.preventDefault();
@@ -689,6 +701,7 @@ class GlobeVisualization {
         const handleTouchEndFallback = () => {
             if (!this.isDragging || this.activePointerId !== null) return;
             this.isDragging = false;
+            if (this.controls) this.controls.enabled = true;
             setTimeout(() => { this.isRotating = true; }, 1200);
         };
 
