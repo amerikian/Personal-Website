@@ -1633,6 +1633,11 @@ body {
         grid-template-columns: 1fr;
     }
     
+    .expertise-card {
+        opacity: 1 !important;
+        transform: none !important;
+    }
+    
     .contact-grid {
         grid-template-columns: 1fr;
     }
