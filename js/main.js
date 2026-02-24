@@ -15,7 +15,6 @@ document.addEventListener('DOMContentLoaded', () => {
     initChat();
     initContactLinks();
     initContactCardClicks();
-    initContactForm();
 });
 
 function initContactLinks() {
@@ -537,54 +536,7 @@ function generateAIResponse(question) {
 /**
  * Contact Form Handler
  */
-function initContactForm() {
-    const form = document.getElementById('contact-form');
-    if (!form) return;
-
-    const API_BASE = 'https://salmon-rock-093cc6a0f.6.azurestaticapps.net';
-
-    form.addEventListener('submit', (e) => {
-        e.preventDefault();
-        
-        const name = document.getElementById('name')?.value?.trim() || '';
-        const email = document.getElementById('email')?.value?.trim() || '';
-        const message = document.getElementById('message')?.value?.trim() || '';
-
-        if (!name || !email || !message) return;
-
-        const submitBtn = form.querySelector('button[type="submit"]');
-        const originalText = submitBtn.innerHTML;
-        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
-        submitBtn.disabled = true;
-
-        fetch(`${API_BASE}/api/contact`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name, email, message })
-        })
-            .then(async (response) => {
-                if (!response.ok) {
-                    const err = await response.json().catch(() => ({}));
-                    throw new Error(err.error || 'Failed to send message');
-                }
-
-                submitBtn.innerHTML = '<i class="fas fa-check"></i> Message Sent!';
-                form.reset();
-                setTimeout(() => {
-                    submitBtn.innerHTML = originalText;
-                    submitBtn.disabled = false;
-                }, 2200);
-            })
-            .catch((error) => {
-                console.error('Contact form error:', error);
-                submitBtn.innerHTML = '<i class="fas fa-triangle-exclamation"></i> Try Again';
-                setTimeout(() => {
-                    submitBtn.innerHTML = originalText;
-                    submitBtn.disabled = false;
-                }, 2600);
-            });
-    });
-}
+// Contact form removed - using direct links instead (LinkedIn, GitHub, Email)
 
 /**
  * Utility: Debounce function
