@@ -791,6 +791,7 @@ body {
     cursor: grab;
     user-select: none;
     -webkit-user-select: none;
+    touch-action: none;
 }
 
 .globe-3d-container:active {
@@ -799,6 +800,8 @@ body {
 
 .globe-3d-container canvas {
     display: block;
+    position: relative;
+    z-index: 1;
 }
 
 .globe-instructions {
@@ -817,6 +820,7 @@ body {
     border-radius: 50px;
     color: var(--gray-400);
     font-size: 0.85rem;
+    pointer-events: none;
 }
 
 .globe-instructions i {
