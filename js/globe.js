@@ -138,7 +138,7 @@ class GlobeVisualization {
 
     setupEventListeners() {
         var self = this;
-        var sens = 0.005;
+        var sens = 0.006;
 
         // ── Drag helpers ──
         function startDrag(x, y) {
@@ -148,6 +148,7 @@ class GlobeVisualization {
             self.dragState.lastTs = performance.now();
             self.velY = 0;
             self.canvas.style.cursor = 'grabbing';
+            self.container.style.cursor = 'grabbing';
         }
 
         function moveDrag(x, y) {
@@ -167,12 +168,14 @@ class GlobeVisualization {
         function endDrag() {
             self.dragState.active = false;
             self.canvas.style.cursor = 'grab';
+            self.container.style.cursor = 'grab';
         }
 
         // ── Mouse events (most reliable for desktop) ──
         this.canvas.addEventListener('mousedown', function(e) {
             if (e.button !== 0) return;
             e.preventDefault();
+            e.stopPropagation();
             startDrag(e.clientX, e.clientY);
         });
 
@@ -191,6 +194,20 @@ class GlobeVisualization {
         // ── Touch events (mobile) ──
         this.canvas.addEventListener('touchstart', function(e) {
             if (e.touches.length === 1) {
+                e.preventDefault();
+                e.stopPropagation();
+                startDrag(e.touches[0].clientX, e.touches[0].clientY);
+            }
+        }, { passive: false });
+
+        // ── Container fallback — catches events that miss the canvas ──
+        this.container.addEventListener('mousedown', function(e) {
+            if (e.button !== 0 || self.dragState.active) return;
+            e.preventDefault();
+            startDrag(e.clientX, e.clientY);
+        });
+        this.container.addEventListener('touchstart', function(e) {
+            if (e.touches.length === 1 && !self.dragState.active) {
                 e.preventDefault();
                 startDrag(e.touches[0].clientX, e.touches[0].clientY);
             }
