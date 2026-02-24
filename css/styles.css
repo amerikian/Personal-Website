@@ -806,29 +806,6 @@ body {
     cursor: grab !important;
 }
 
-.globe-instructions {
-    position: absolute;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    display: none;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 20px;
-    background: rgba(15, 23, 42, 0.8);
-    -webkit-backdrop-filter: blur(10px);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(99, 102, 241, 0.3);
-    border-radius: 50px;
-    color: var(--gray-400);
-    font-size: 0.85rem;
-    pointer-events: none;
-}
-
-.globe-instructions i {
-    color: var(--primary);
-}
-
 .location-panel {
     background: rgba(255, 255, 255, 0.02);
     border: 1px solid rgba(255, 255, 255, 0.05);

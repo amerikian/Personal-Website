@@ -841,7 +841,7 @@ class GlobeVisualization {
         if (this.entryProgress < 1) this.entryProgress = Math.min(1, this.entryProgress + 0.015);
 
         if (!this.dragState.active) {
-            this.rotY += this.prefersReducedMotion ? 0 : 0.002;
+            this.rotY += this.prefersReducedMotion ? 0.0006 : 0.002;
             this.rotY += this.velY;
             this.velY *= 0.94;
             if (Math.abs(this.velY) < 0.0001) this.velY = 0;
