@@ -23,6 +23,8 @@ class GlobeVisualization {
         this.mouseVector = new THREE.Vector2();
         this.hoveredMarker = null;
         this.tooltip = null;
+        this.activePointerId = null;
+        this.dragVelocity = { x: 0, y: 0 };
 
         this.init();
     }
@@ -84,6 +86,7 @@ class GlobeVisualization {
         
         // Load Earth texture for realistic globe
         const textureLoader = new THREE.TextureLoader();
+        textureLoader.setCrossOrigin('anonymous');
         
         // Create material with texture
         const material = new THREE.MeshPhongMaterial({
@@ -97,22 +100,7 @@ class GlobeVisualization {
         this.globe = new THREE.Mesh(geometry, material);
         this.scene.add(this.globe);
 
-        // Always draw continent outlines first
-        this.addContinentOutlines();
-
-        // Try to load Earth texture as enhancement
-        textureLoader.load(
-            'https://unpkg.com/three-globe@2.31.0/example/img/earth-dark.jpg',
-            (texture) => {
-                material.map = texture;
-                material.color.setHex(0xffffff);
-                material.needsUpdate = true;
-            },
-            undefined,
-            (err) => {
-                console.log('Globe texture failed to load, using continent outlines');
-            }
-        );
+        this.loadEarthTextures(textureLoader, material);
 
         // Add subtle wireframe overlay for tech look
         const wireframeGeometry = new THREE.SphereGeometry(1.002, 36, 36);
@@ -129,13 +117,70 @@ class GlobeVisualization {
         this.addGridLines();
     }
 
+    loadEarthTextures(textureLoader, material) {
+        const mapCandidates = [
+            'https://threejs.org/examples/textures/planets/earth_atmos_2048.jpg',
+            'https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-blue-marble.jpg',
+            'https://unpkg.com/three-globe@2.31.0/example/img/earth-dark.jpg'
+        ];
+
+        const loadTexture = (url) => new Promise((resolve, reject) => {
+            textureLoader.load(url, resolve, undefined, reject);
+        });
+
+        const tryLoadMap = (index = 0) => {
+            if (index >= mapCandidates.length) {
+                this.addContinentOutlines();
+                return;
+            }
+
+            loadTexture(mapCandidates[index])
+                .then((texture) => {
+                    texture.anisotropy = this.renderer.capabilities.getMaxAnisotropy();
+                    if ('colorSpace' in texture && THREE.SRGBColorSpace) {
+                        texture.colorSpace = THREE.SRGBColorSpace;
+                    } else {
+                        texture.encoding = THREE.sRGBEncoding;
+                    }
+                    material.map = texture;
+                    material.color.setHex(0xffffff);
+                    material.shininess = 10;
+                    material.opacity = 1;
+                    material.needsUpdate = true;
+
+                    textureLoader.load(
+                        'https://threejs.org/examples/textures/planets/earth_normal_2048.jpg',
+                        (normalMap) => {
+                            material.normalMap = normalMap;
+                            material.normalScale = new THREE.Vector2(0.5, 0.5);
+                            material.needsUpdate = true;
+                        }
+                    );
+
+                    textureLoader.load(
+                        'https://threejs.org/examples/textures/planets/earth_specular_2048.jpg',
+                        (specularMap) => {
+                            material.specularMap = specularMap;
+                            material.specular = new THREE.Color(0x1e293b);
+                            material.needsUpdate = true;
+                        }
+                    );
+                })
+                .catch(() => {
+                    tryLoadMap(index + 1);
+                });
+        };
+
+        tryLoadMap();
+    }
+
     addContinentOutlines() {
-        // Simplified continent outlines - brighter for visibility
+        // Fallback continent outlines if texture loading fails
         const continentMaterial = new THREE.LineBasicMaterial({
-            color: 0x94a3b8,
+            color: 0x64748b,
             transparent: true,
-            opacity: 1.0,
-            depthTest: false
+            opacity: 0.85,
+            depthTest: true
         });
 
         // North America outline (simplified)
@@ -443,6 +488,7 @@ class GlobeVisualization {
     setupEventListeners() {
         // Get the canvas element that Three.js created
         const canvas = this.renderer.domElement;
+        const dragElement = this.container;
         
         // Ensure canvas receives all pointer events
         canvas.style.cursor = 'grab';
@@ -455,86 +501,60 @@ class GlobeVisualization {
         this.isDragging = false;
         this.previousPosition = { x: 0, y: 0 };
 
-        // Use pointer events for unified mouse/touch handling
-        canvas.addEventListener('pointerdown', (e) => {
-            console.log('Globe pointerdown', e.clientX, e.clientY);
+        const handlePointerDown = (e) => {
+            if (this.activePointerId !== null) return;
             this.isDragging = true;
             this.isRotating = false;
+            this.activePointerId = e.pointerId;
             canvas.style.cursor = 'grabbing';
             this.previousPosition = { x: e.clientX, y: e.clientY };
-            canvas.setPointerCapture(e.pointerId);
+            this.dragVelocity = { x: 0, y: 0 };
+            dragElement.setPointerCapture(e.pointerId);
             e.preventDefault();
-        });
+        };
 
-        canvas.addEventListener('pointerup', (e) => {
-            if (this.isDragging) {
-                this.isDragging = false;
-                canvas.style.cursor = 'grab';
-                canvas.releasePointerCapture(e.pointerId);
-                setTimeout(() => { this.isRotating = true; }, 2000);
-            }
-        });
-
-        canvas.addEventListener('pointercancel', (e) => {
-            this.isDragging = false;
-            canvas.style.cursor = 'grab';
-            setTimeout(() => { this.isRotating = true; }, 2000);
-        });
-
-        canvas.addEventListener('pointermove', (e) => {
+        const handlePointerMove = (e) => {
             const rect = this.container.getBoundingClientRect();
             this.mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
             this.mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
 
-            if (this.isDragging) {
+            if (this.isDragging && this.activePointerId === e.pointerId) {
                 const deltaX = e.clientX - this.previousPosition.x;
                 const deltaY = e.clientY - this.previousPosition.y;
 
-                this.globe.rotation.y += deltaX * 0.01;
-                this.globe.rotation.x += deltaY * 0.01;
+                const dragFactor = 0.0065;
+                this.globe.rotation.y += deltaX * dragFactor;
+                this.globe.rotation.x += deltaY * dragFactor;
                 this.globe.rotation.x = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, this.globe.rotation.x));
+
+                this.dragVelocity.x = deltaX * dragFactor;
+                this.dragVelocity.y = deltaY * dragFactor;
 
                 this.previousPosition = { x: e.clientX, y: e.clientY };
             }
 
             // Check for marker hover
             this.checkMarkerHover(e);
-        });
+        };
+
+        const handlePointerEnd = (e) => {
+            if (this.activePointerId !== e.pointerId) return;
+            this.isDragging = false;
+            this.activePointerId = null;
+            canvas.style.cursor = 'grab';
+            if (dragElement.hasPointerCapture(e.pointerId)) {
+                dragElement.releasePointerCapture(e.pointerId);
+            }
+            setTimeout(() => { this.isRotating = true; }, 1200);
+        };
+
+        dragElement.addEventListener('pointerdown', handlePointerDown);
+        window.addEventListener('pointermove', handlePointerMove, { passive: false });
+        window.addEventListener('pointerup', handlePointerEnd);
+        window.addEventListener('pointercancel', handlePointerEnd);
 
         canvas.addEventListener('pointerleave', () => {
             this.tooltip.style.opacity = '0';
-        });
-
-        // Fallback mouse events for browsers with pointer event issues
-        canvas.addEventListener('mousedown', (e) => {
-            if (this.isDragging) return; // Already handled by pointer events
-            console.log('Globe mousedown fallback', e.clientX, e.clientY);
-            this.isDragging = true;
-            this.isRotating = false;
-            canvas.style.cursor = 'grabbing';
-            this.previousPosition = { x: e.clientX, y: e.clientY };
-            e.preventDefault();
-        });
-
-        document.addEventListener('mouseup', () => {
-            if (this.isDragging) {
-                this.isDragging = false;
-                canvas.style.cursor = 'grab';
-                setTimeout(() => { this.isRotating = true; }, 2000);
-            }
-        });
-
-        document.addEventListener('mousemove', (e) => {
-            if (this.isDragging) {
-                const deltaX = e.clientX - this.previousPosition.x;
-                const deltaY = e.clientY - this.previousPosition.y;
-
-                this.globe.rotation.y += deltaX * 0.01;
-                this.globe.rotation.x += deltaY * 0.01;
-                this.globe.rotation.x = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, this.globe.rotation.x));
-
-                this.previousPosition = { x: e.clientX, y: e.clientY };
-            }
         });
 
         // Resize handler
@@ -606,6 +626,17 @@ class GlobeVisualization {
             this.globe.rotation.y += 0.002;
         }
 
+        // Inertia after drag release
+        if (!this.isDragging && this.activePointerId === null) {
+            this.globe.rotation.y += this.dragVelocity.x;
+            this.globe.rotation.x += this.dragVelocity.y;
+            this.globe.rotation.x = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, this.globe.rotation.x));
+            this.dragVelocity.x *= 0.92;
+            this.dragVelocity.y *= 0.92;
+            if (Math.abs(this.dragVelocity.x) < 0.00001) this.dragVelocity.x = 0;
+            if (Math.abs(this.dragVelocity.y) < 0.00001) this.dragVelocity.y = 0;
+        }
+
         // Animate pulsing markers
         const time = Date.now() * 0.001;
         this.markers.forEach((marker, index) => {
@@ -649,7 +680,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const globeContainer = document.getElementById('globe-container');
     if (!globeContainer) return;
 
-    const globalSection = document.getElementById('global-impact') || globeContainer;
+    const globalSection = document.getElementById('global') || globeContainer;
 
     if ('IntersectionObserver' in window) {
         const observer = new IntersectionObserver((entries) => {
