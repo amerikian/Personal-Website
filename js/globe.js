@@ -57,7 +57,7 @@ class GlobeVisualization {
         this.setupEventListeners();
         this.resize();
         this.spawnArcParticles();
-        if (this.prefersReducedMotion) { this.entryProgress = 1; this.render(); return; }
+        if (this.prefersReducedMotion) this.entryProgress = 1;
         this.animate();
     }
 
@@ -156,10 +156,10 @@ class GlobeVisualization {
             var now = performance.now();
             var dx = x - self.dragState.lastX;
             var dy = y - self.dragState.lastY;
-            self.rotY += dx * sens;
-            self.rotX = Math.max(-1.2, Math.min(1.2, self.rotX - dy * sens));
+            self.rotY -= dx * sens;
+            self.rotX = Math.max(-1.2, Math.min(1.2, self.rotX + dy * sens));
             var dt = Math.max(8, now - self.dragState.lastTs);
-            self.velY = (dx * sens / dt) * 16;
+            self.velY = ((-dx) * sens / dt) * 16;
             self.dragState.lastX = x;
             self.dragState.lastY = y;
             self.dragState.lastTs = now;
@@ -253,10 +253,10 @@ class GlobeVisualization {
             e.preventDefault();
             // Horizontal scroll → rotate Y; Vertical scroll → tilt X
             var wy = e.deltaX !== 0 ? e.deltaX : e.deltaY;
-            self.rotY += wy * 0.003;
+            self.rotY -= wy * 0.003;
             // Vertical tilt only if shift is held or if it's a true 2D scroll
             if (e.deltaX !== 0 && e.deltaY !== 0) {
-                self.rotX = Math.max(-1.2, Math.min(1.2, self.rotX - e.deltaY * 0.003));
+                self.rotX = Math.max(-1.2, Math.min(1.2, self.rotX + e.deltaY * 0.003));
             }
             self.velY = 0; // stop inertia during wheel
         }, { passive: false });
@@ -265,9 +265,9 @@ class GlobeVisualization {
         this.container.addEventListener('wheel', function(e) {
             e.preventDefault();
             var wy = e.deltaX !== 0 ? e.deltaX : e.deltaY;
-            self.rotY += wy * 0.003;
+            self.rotY -= wy * 0.003;
             if (e.deltaX !== 0 && e.deltaY !== 0) {
-                self.rotX = Math.max(-1.2, Math.min(1.2, self.rotX - e.deltaY * 0.003));
+                self.rotX = Math.max(-1.2, Math.min(1.2, self.rotX + e.deltaY * 0.003));
             }
             self.velY = 0;
         }, { passive: false });
