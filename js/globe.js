@@ -29,7 +29,7 @@ class GlobeVisualization {
         this.rotY = -1.5;   // longitude rotation — start centered on Americas
         this.rotX = 0.35;   // latitude tilt — slight downward view
         this.velY = 0;
-        this.dragState = { active: false, pointerId: null, lastX: 0, lastY: 0, lastTs: 0 };
+        this.dragState = { active: false, lastX: 0, lastY: 0, lastTs: 0 };
 
         this.stars = [];
         this.arcParticles = [];
@@ -138,82 +138,78 @@ class GlobeVisualization {
 
     setupEventListeners() {
         var self = this;
+        var sens = 0.005;
 
-        var onDown = function(e) {
-            var x = e.clientX !== undefined ? e.clientX : (e.touches && e.touches[0] ? e.touches[0].clientX : 0);
-            var y = e.clientY !== undefined ? e.clientY : (e.touches && e.touches[0] ? e.touches[0].clientY : 0);
+        // ── Drag helpers ──
+        function startDrag(x, y) {
             self.dragState.active = true;
-            self.dragState.pointerId = (typeof e.pointerId === 'number') ? e.pointerId : null;
             self.dragState.lastX = x;
             self.dragState.lastY = y;
             self.dragState.lastTs = performance.now();
             self.velY = 0;
             self.canvas.style.cursor = 'grabbing';
-            if (typeof e.pointerId === 'number' && self.canvas.setPointerCapture) {
-                try { self.canvas.setPointerCapture(e.pointerId); } catch (ex) {}
-            }
-            e.preventDefault();
-        };
+        }
 
-        var onMove = function(e) {
-            var x = e.clientX !== undefined ? e.clientX : (e.touches && e.touches[0] ? e.touches[0].clientX : 0);
-            var y = e.clientY !== undefined ? e.clientY : (e.touches && e.touches[0] ? e.touches[0].clientY : 0);
-            var pid = (typeof e.pointerId === 'number') ? e.pointerId : null;
-            if (self.dragState.active && (self.dragState.pointerId === null || self.dragState.pointerId === pid)) {
-                var now = performance.now();
-                var dx = x - self.dragState.lastX;
-                var dy = y - self.dragState.lastY;
-                var sens = 0.005;
-                self.rotY += dx * sens;
-                self.rotX = Math.max(-1.2, Math.min(1.2, self.rotX - dy * sens));
-                var dt = Math.max(8, now - self.dragState.lastTs);
-                self.velY = (dx * sens / dt) * 16;
-                self.dragState.lastX = x;
-                self.dragState.lastY = y;
-                self.dragState.lastTs = now;
-            }
-            self.updateHover(
-                e.clientX !== undefined ? e.clientX : (e.touches && e.touches[0] ? e.touches[0].clientX : 0),
-                e.clientY !== undefined ? e.clientY : (e.touches && e.touches[0] ? e.touches[0].clientY : 0)
-            );
-        };
-
-        var onUp = function(e) {
+        function moveDrag(x, y) {
             if (!self.dragState.active) return;
-            var pid = (typeof e.pointerId === 'number') ? e.pointerId : null;
-            if (self.dragState.pointerId !== null && self.dragState.pointerId !== pid) return;
+            var now = performance.now();
+            var dx = x - self.dragState.lastX;
+            var dy = y - self.dragState.lastY;
+            self.rotY += dx * sens;
+            self.rotX = Math.max(-1.2, Math.min(1.2, self.rotX - dy * sens));
+            var dt = Math.max(8, now - self.dragState.lastTs);
+            self.velY = (dx * sens / dt) * 16;
+            self.dragState.lastX = x;
+            self.dragState.lastY = y;
+            self.dragState.lastTs = now;
+        }
+
+        function endDrag() {
             self.dragState.active = false;
-            self.dragState.pointerId = null;
             self.canvas.style.cursor = 'grab';
-            if (typeof e.pointerId === 'number' && self.canvas.releasePointerCapture) {
-                try {
-                    if (self.canvas.hasPointerCapture && self.canvas.hasPointerCapture(e.pointerId)) {
-                        self.canvas.releasePointerCapture(e.pointerId);
-                    }
-                } catch (ex) {}
+        }
+
+        // ── Mouse events (most reliable for desktop) ──
+        this.canvas.addEventListener('mousedown', function(e) {
+            if (e.button !== 0) return;
+            e.preventDefault();
+            startDrag(e.clientX, e.clientY);
+        });
+
+        document.addEventListener('mousemove', function(e) {
+            if (self.dragState.active) {
+                e.preventDefault();
+                moveDrag(e.clientX, e.clientY);
             }
-        };
+            self.updateHover(e.clientX, e.clientY);
+        });
 
-        this.canvas.addEventListener('pointerdown', onDown);
-        window.addEventListener('pointermove', onMove, { passive: true });
-        window.addEventListener('pointerup', onUp);
-        window.addEventListener('pointercancel', onUp);
+        document.addEventListener('mouseup', function() {
+            if (self.dragState.active) endDrag();
+        });
 
-        // Touch fallbacks
+        // ── Touch events (mobile) ──
         this.canvas.addEventListener('touchstart', function(e) {
-            if (e.touches && e.touches.length) {
-                onDown({ clientX: e.touches[0].clientX, clientY: e.touches[0].clientY, pointerId: null, preventDefault: function() { e.preventDefault(); } });
+            if (e.touches.length === 1) {
                 e.preventDefault();
+                startDrag(e.touches[0].clientX, e.touches[0].clientY);
             }
         }, { passive: false });
-        window.addEventListener('touchmove', function(e) {
-            if (e.touches && e.touches.length) {
-                onMove({ clientX: e.touches[0].clientX, clientY: e.touches[0].clientY, pointerId: null });
+
+        document.addEventListener('touchmove', function(e) {
+            if (self.dragState.active && e.touches.length) {
                 e.preventDefault();
+                moveDrag(e.touches[0].clientX, e.touches[0].clientY);
+                self.updateHover(e.touches[0].clientX, e.touches[0].clientY);
             }
         }, { passive: false });
-        window.addEventListener('touchend', function() { onUp({ pointerId: null }); });
-        window.addEventListener('touchcancel', function() { onUp({ pointerId: null }); });
+
+        document.addEventListener('touchend', function() {
+            if (self.dragState.active) endDrag();
+        });
+        document.addEventListener('touchcancel', function() {
+            if (self.dragState.active) endDrag();
+        });
 
         this.canvas.addEventListener('mouseleave', function() {
             self.hoveredLocation = null;
