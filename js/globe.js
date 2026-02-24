@@ -34,6 +34,7 @@ class GlobeVisualization {
         this.tooltip = null;
         this.mapImage = null;
         this.mapReady = false;
+        this.continentPolygons = this.getContinentPolygons();
 
         this.init();
     }
@@ -93,7 +94,6 @@ class GlobeVisualization {
 
     loadMapTexture() {
         const candidates = [
-            'https://upload.wikimedia.org/wikipedia/commons/8/80/World_map_-_low_resolution.svg',
             'https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/World_map_-_low_resolution.svg/2048px-World_map_-_low_resolution.svg.png',
             'https://upload.wikimedia.org/wikipedia/commons/thumb/c/cb/World_Map_Blank_-_with_blue_sea.svg/2048px-World_Map_Blank_-_with_blue_sea.svg.png'
         ];
@@ -270,13 +270,69 @@ class GlobeVisualization {
         return ((90 - lat) / 180) * this.mapRect.height;
     }
 
+    getContinentPolygons() {
+        return [
+            {
+                name: 'North America',
+                points: [
+                    [-168, 71], [-145, 60], [-130, 52], [-125, 48], [-124, 40], [-117, 32], [-105, 25],
+                    [-97, 26], [-83, 29], [-80, 25], [-75, 35], [-67, 45], [-57, 47], [-55, 50],
+                    [-65, 55], [-75, 58], [-95, 62], [-120, 55], [-145, 60], [-168, 71]
+                ]
+            },
+            {
+                name: 'South America',
+                points: [
+                    [-81, 12], [-75, 5], [-70, -5], [-75, -15], [-70, -25], [-65, -35], [-63, -50],
+                    [-70, -55], [-75, -50], [-72, -40], [-75, -30], [-80, -20], [-81, 12]
+                ]
+            },
+            {
+                name: 'Europe',
+                points: [
+                    [-10, 36], [0, 36], [10, 45], [20, 40], [30, 45], [40, 42], [30, 55],
+                    [20, 60], [10, 65], [0, 60], [-8, 52], [-10, 36]
+                ]
+            },
+            {
+                name: 'Africa',
+                points: [
+                    [-17, 35], [5, 37], [30, 32], [35, 28], [40, 10], [45, 0], [40, -10], [35, -25],
+                    [25, -34], [15, -30], [10, -15], [5, 5], [-5, 5], [-15, 15], [-18, 25], [-17, 35]
+                ]
+            },
+            {
+                name: 'Asia',
+                points: [
+                    [30, 45], [50, 40], [60, 45], [70, 40], [80, 30], [90, 25], [100, 22], [110, 20],
+                    [120, 25], [130, 35], [145, 45], [160, 60], [170, 65], [180, 68], [120, 75], [80, 70],
+                    [60, 65], [50, 55], [40, 50], [30, 45]
+                ]
+            },
+            {
+                name: 'Australia',
+                points: [
+                    [112, -20], [120, -18], [135, -12], [145, -15], [150, -25], [151, -34], [145, -40],
+                    [135, -35], [125, -35], [115, -30], [112, -20]
+                ]
+            }
+        ];
+    }
+
     renderMapBackground() {
         const { x, y, width, height } = this.mapRect;
 
-        this.ctx.fillStyle = '#0f172a';
+        const oceanGradient = this.ctx.createLinearGradient(0, 0, 0, this.height);
+        oceanGradient.addColorStop(0, '#0b1220');
+        oceanGradient.addColorStop(0.55, '#0f172a');
+        oceanGradient.addColorStop(1, '#111827');
+        this.ctx.fillStyle = oceanGradient;
         this.ctx.fillRect(0, 0, this.width, this.height);
 
-        this.ctx.fillStyle = 'rgba(99, 102, 241, 0.08)';
+        const mapGradient = this.ctx.createLinearGradient(x, y, x, y + height);
+        mapGradient.addColorStop(0, 'rgba(30, 64, 175, 0.22)');
+        mapGradient.addColorStop(1, 'rgba(15, 23, 42, 0.2)');
+        this.ctx.fillStyle = mapGradient;
         this.ctx.fillRect(x, y, width, height);
 
         const shifted = this.offsetX;
@@ -309,9 +365,69 @@ class GlobeVisualization {
             }
         }
 
+        this.ctx.strokeStyle = 'rgba(148, 163, 184, 0.12)';
+        this.ctx.lineWidth = 1;
+        for (let lon = -180; lon <= 180; lon += 30) {
+            const mapX = x + ((lon + 180) / 360) * width - shifted;
+            for (let drawX = mapX - width; drawX <= mapX + width; drawX += width) {
+                this.ctx.beginPath();
+                this.ctx.moveTo(drawX, y);
+                this.ctx.lineTo(drawX, y + height);
+                this.ctx.stroke();
+            }
+        }
+
+        for (let lat = -60; lat <= 60; lat += 30) {
+            const mapY = y + ((90 - lat) / 180) * height;
+            this.ctx.beginPath();
+            this.ctx.moveTo(x, mapY);
+            this.ctx.lineTo(x + width, mapY);
+            this.ctx.stroke();
+        }
+
+        const vignette = this.ctx.createRadialGradient(
+            this.width * 0.5,
+            this.height * 0.5,
+            this.height * 0.2,
+            this.width * 0.5,
+            this.height * 0.5,
+            this.width * 0.75
+        );
+        vignette.addColorStop(0, 'rgba(15, 23, 42, 0)');
+        vignette.addColorStop(1, 'rgba(2, 6, 23, 0.48)');
+        this.ctx.fillStyle = vignette;
+        this.ctx.fillRect(0, 0, this.width, this.height);
+
         this.ctx.strokeStyle = 'rgba(99, 102, 241, 0.35)';
         this.ctx.lineWidth = 1;
         this.ctx.strokeRect(x, y, width, height);
+    }
+
+    renderContinents() {
+        const { x, y, width, height } = this.mapRect;
+        const shifted = this.offsetX;
+        const startX = x - shifted - width;
+
+        const drawPolygon = (polygon, drawXOffset = 0) => {
+            this.ctx.beginPath();
+            polygon.points.forEach(([lng, lat], idx) => {
+                const px = startX + drawXOffset + this.locationToMapX(lng);
+                const py = y + this.locationToMapY(lat);
+                if (idx === 0) this.ctx.moveTo(px, py);
+                else this.ctx.lineTo(px, py);
+            });
+            this.ctx.closePath();
+            this.ctx.fill();
+            this.ctx.stroke();
+        };
+
+        this.ctx.fillStyle = 'rgba(51, 65, 85, 0.42)';
+        this.ctx.strokeStyle = 'rgba(148, 163, 184, 0.55)';
+        this.ctx.lineWidth = 1.1;
+
+        for (let drawX = 0; drawX < width * 3; drawX += width) {
+            this.continentPolygons.forEach((polygon) => drawPolygon(polygon, drawX));
+        }
     }
 
     renderConnections() {
@@ -324,7 +440,7 @@ class GlobeVisualization {
         const primaryBaseX = x + this.locationToMapX(primary.lng) - shifted;
         const primaryY = y + this.locationToMapY(primary.lat);
 
-        this.ctx.lineWidth = 1.5;
+        this.ctx.lineWidth = 1.8;
 
         this.locations.slice(1).forEach((location, index) => {
             const targetBaseX = x + this.locationToMapX(location.lng) - shifted;
@@ -337,11 +453,11 @@ class GlobeVisualization {
                 return candDist < bestDist ? candidate : best;
             }, targetBaseX);
 
-            const lift = 30 + (index % 3) * 8;
+            const lift = 32 + (index % 3) * 9;
             const controlX = (primaryBaseX + targetX) / 2;
             const controlY = Math.min(primaryY, targetY) - lift;
 
-            this.ctx.strokeStyle = 'rgba(99, 102, 241, 0.45)';
+            this.ctx.strokeStyle = 'rgba(99, 102, 241, 0.5)';
             this.ctx.beginPath();
             this.ctx.moveTo(primaryBaseX, primaryY);
             this.ctx.quadraticCurveTo(controlX, controlY, targetX, targetY);
@@ -377,6 +493,12 @@ class GlobeVisualization {
                 this.ctx.arc(markerX, markerY, 4, 0, Math.PI * 2);
                 this.ctx.fill();
 
+                this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.85)';
+                this.ctx.lineWidth = 1;
+                this.ctx.beginPath();
+                this.ctx.arc(markerX, markerY, 5.8, 0, Math.PI * 2);
+                this.ctx.stroke();
+
                 this.markerPoints.push({
                     x: markerX,
                     y: markerY,
@@ -403,6 +525,7 @@ class GlobeVisualization {
     render() {
         this.normalizeOffset();
         this.renderMapBackground();
+        this.renderContinents();
         this.renderConnections();
         this.renderMarkers();
     }
