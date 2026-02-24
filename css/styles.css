@@ -1191,15 +1191,19 @@ body {
 
 .contact-grid {
     display: grid;
-    grid-template-columns: 1fr 1.5fr;
+    grid-template-columns: 1fr;
     gap: 64px;
     align-items: start;
+    justify-items: center;
+    max-width: 500px;
+    margin: 0 auto;
 }
 
 .contact-info {
     display: flex;
     flex-direction: column;
     gap: 24px;
+    width: 100%;
 }
 
 .contact-item {
