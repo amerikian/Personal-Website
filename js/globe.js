@@ -25,6 +25,9 @@ class GlobeVisualization {
         this.tooltip = null;
         this.activePointerId = null;
         this.dragVelocity = { x: 0, y: 0 };
+        this.globeWireframe = null;
+        this.globeGridLines = [];
+        this.hasTextureMap = false;
 
         this.init();
     }
@@ -92,7 +95,7 @@ class GlobeVisualization {
         const material = new THREE.MeshPhongMaterial({
             color: 0x1a365d,
             emissive: 0x0f172a,
-            shininess: 25,
+            shininess: 12,
             transparent: true,
             opacity: 0.98
         });
@@ -108,9 +111,10 @@ class GlobeVisualization {
             color: 0x6366f1,
             wireframe: true,
             transparent: true,
-            opacity: 0.08
+            opacity: 0.03
         });
         const wireframe = new THREE.Mesh(wireframeGeometry, wireframeMaterial);
+        this.globeWireframe = wireframe;
         this.globe.add(wireframe);
 
         // Add latitude/longitude lines
@@ -131,6 +135,7 @@ class GlobeVisualization {
         const tryLoadMap = (index = 0) => {
             if (index >= mapCandidates.length) {
                 this.addContinentOutlines();
+                this.tuneOverlayForTexture(false);
                 return;
             }
 
@@ -147,6 +152,8 @@ class GlobeVisualization {
                     material.shininess = 10;
                     material.opacity = 1;
                     material.needsUpdate = true;
+                    this.hasTextureMap = true;
+                    this.tuneOverlayForTexture(true);
 
                     textureLoader.load(
                         'https://threejs.org/examples/textures/planets/earth_normal_2048.jpg',
@@ -172,6 +179,20 @@ class GlobeVisualization {
         };
 
         tryLoadMap();
+    }
+
+    tuneOverlayForTexture(hasTexture) {
+        if (this.globeWireframe?.material) {
+            this.globeWireframe.material.opacity = hasTexture ? 0.015 : 0.06;
+            this.globeWireframe.material.needsUpdate = true;
+        }
+
+        this.globeGridLines.forEach((line) => {
+            if (line?.material) {
+                line.material.opacity = hasTexture ? 0.025 : 0.08;
+                line.material.needsUpdate = true;
+            }
+        });
     }
 
     addContinentOutlines() {
@@ -249,7 +270,7 @@ class GlobeVisualization {
         const linesMaterial = new THREE.LineBasicMaterial({
             color: 0x6366f1,
             transparent: true,
-            opacity: 0.1
+            opacity: 0.05
         });
 
         // Latitude lines
@@ -271,6 +292,7 @@ class GlobeVisualization {
             const geometry = new THREE.BufferGeometry().setFromPoints(points);
             const line = new THREE.Line(geometry, linesMaterial);
             this.globe.add(line);
+            this.globeGridLines.push(line);
         }
 
         // Longitude lines
@@ -290,6 +312,7 @@ class GlobeVisualization {
             const geometry = new THREE.BufferGeometry().setFromPoints(points);
             const line = new THREE.Line(geometry, linesMaterial);
             this.globe.add(line);
+            this.globeGridLines.push(line);
         }
     }
 
@@ -501,6 +524,21 @@ class GlobeVisualization {
         this.isDragging = false;
         this.previousPosition = { x: 0, y: 0 };
 
+        const applyDrag = (clientX, clientY) => {
+            const deltaX = clientX - this.previousPosition.x;
+            const deltaY = clientY - this.previousPosition.y;
+
+            const dragFactor = 0.0065;
+            this.globe.rotation.y += deltaX * dragFactor;
+            this.globe.rotation.x += deltaY * dragFactor;
+            this.globe.rotation.x = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, this.globe.rotation.x));
+
+            this.dragVelocity.x = deltaX * dragFactor;
+            this.dragVelocity.y = deltaY * dragFactor;
+
+            this.previousPosition = { x: clientX, y: clientY };
+        };
+
         const handlePointerDown = (e) => {
             if (this.activePointerId !== null) return;
             this.isDragging = true;
@@ -509,7 +547,11 @@ class GlobeVisualization {
             canvas.style.cursor = 'grabbing';
             this.previousPosition = { x: e.clientX, y: e.clientY };
             this.dragVelocity = { x: 0, y: 0 };
-            dragElement.setPointerCapture(e.pointerId);
+            try {
+                dragElement.setPointerCapture(e.pointerId);
+            } catch (_) {
+                // no-op fallback where pointer capture is unavailable
+            }
             e.preventDefault();
         };
 
@@ -519,18 +561,7 @@ class GlobeVisualization {
             this.mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
 
             if (this.isDragging && this.activePointerId === e.pointerId) {
-                const deltaX = e.clientX - this.previousPosition.x;
-                const deltaY = e.clientY - this.previousPosition.y;
-
-                const dragFactor = 0.0065;
-                this.globe.rotation.y += deltaX * dragFactor;
-                this.globe.rotation.x += deltaY * dragFactor;
-                this.globe.rotation.x = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, this.globe.rotation.x));
-
-                this.dragVelocity.x = deltaX * dragFactor;
-                this.dragVelocity.y = deltaY * dragFactor;
-
-                this.previousPosition = { x: e.clientX, y: e.clientY };
+                applyDrag(e.clientX, e.clientY);
             }
 
             // Check for marker hover
@@ -548,10 +579,64 @@ class GlobeVisualization {
             setTimeout(() => { this.isRotating = true; }, 1200);
         };
 
+        const handleMouseDownFallback = (e) => {
+            if (this.isDragging || this.activePointerId !== null) return;
+            this.isDragging = true;
+            this.isRotating = false;
+            canvas.style.cursor = 'grabbing';
+            this.previousPosition = { x: e.clientX, y: e.clientY };
+            this.dragVelocity = { x: 0, y: 0 };
+            e.preventDefault();
+        };
+
+        const handleMouseMoveFallback = (e) => {
+            if (!this.isDragging || this.activePointerId !== null) return;
+            applyDrag(e.clientX, e.clientY);
+        };
+
+        const handleMouseUpFallback = () => {
+            if (!this.isDragging || this.activePointerId !== null) return;
+            this.isDragging = false;
+            canvas.style.cursor = 'grab';
+            setTimeout(() => { this.isRotating = true; }, 1200);
+        };
+
+        const handleTouchStartFallback = (e) => {
+            if (this.activePointerId !== null || !e.touches?.length) return;
+            const touch = e.touches[0];
+            this.isDragging = true;
+            this.isRotating = false;
+            this.previousPosition = { x: touch.clientX, y: touch.clientY };
+            this.dragVelocity = { x: 0, y: 0 };
+            e.preventDefault();
+        };
+
+        const handleTouchMoveFallback = (e) => {
+            if (!this.isDragging || this.activePointerId !== null || !e.touches?.length) return;
+            const touch = e.touches[0];
+            applyDrag(touch.clientX, touch.clientY);
+            e.preventDefault();
+        };
+
+        const handleTouchEndFallback = () => {
+            if (!this.isDragging || this.activePointerId !== null) return;
+            this.isDragging = false;
+            setTimeout(() => { this.isRotating = true; }, 1200);
+        };
+
         dragElement.addEventListener('pointerdown', handlePointerDown);
         window.addEventListener('pointermove', handlePointerMove, { passive: false });
         window.addEventListener('pointerup', handlePointerEnd);
         window.addEventListener('pointercancel', handlePointerEnd);
+
+        canvas.addEventListener('mousedown', handleMouseDownFallback);
+        window.addEventListener('mousemove', handleMouseMoveFallback);
+        window.addEventListener('mouseup', handleMouseUpFallback);
+
+        canvas.addEventListener('touchstart', handleTouchStartFallback, { passive: false });
+        window.addEventListener('touchmove', handleTouchMoveFallback, { passive: false });
+        window.addEventListener('touchend', handleTouchEndFallback);
+        window.addEventListener('touchcancel', handleTouchEndFallback);
 
         canvas.addEventListener('pointerleave', () => {
             this.tooltip.style.opacity = '0';
@@ -566,6 +651,8 @@ class GlobeVisualization {
             this.camera.updateProjectionMatrix();
             this.renderer.setSize(width, height);
         });
+
+        canvas.addEventListener('contextmenu', (e) => e.preventDefault());
     }
 
     checkMarkerHover(e) {
@@ -680,7 +767,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const globeContainer = document.getElementById('globe-container');
     if (!globeContainer) return;
 
-    const globalSection = document.getElementById('global') || globeContainer;
+    const globalSection =
+        document.getElementById('global') ||
+        document.getElementById('global-impact') ||
+        globeContainer;
 
     if ('IntersectionObserver' in window) {
         const observer = new IntersectionObserver((entries) => {
