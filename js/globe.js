@@ -28,6 +28,7 @@ class GlobeVisualization {
         this.globeWireframe = null;
         this.globeGridLines = [];
         this.hasTextureMap = false;
+        this.controls = null;
 
         this.init();
     }
@@ -69,6 +70,21 @@ class GlobeVisualization {
         this.renderer.setSize(width, height);
         this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
         this.container.appendChild(this.renderer.domElement);
+
+        if (typeof THREE.OrbitControls === 'function') {
+            this.controls = new THREE.OrbitControls(this.camera, this.renderer.domElement);
+            this.controls.enablePan = false;
+            this.controls.enableZoom = false;
+            this.controls.enableDamping = true;
+            this.controls.dampingFactor = 0.08;
+            this.controls.rotateSpeed = 0.75;
+            this.controls.minPolarAngle = 0.2;
+            this.controls.maxPolarAngle = Math.PI - 0.2;
+            this.controls.autoRotate = !this.prefersReducedMotion;
+            this.controls.autoRotateSpeed = 0.75;
+            this.controls.target.set(0, 0, 0);
+            this.controls.update();
+        }
 
         // Lighting
         const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
@@ -524,6 +540,60 @@ class GlobeVisualization {
         this.isDragging = false;
         this.previousPosition = { x: 0, y: 0 };
 
+        const updatePointerPosition = (clientX, clientY) => {
+            const rect = this.container.getBoundingClientRect();
+            this.mouse.x = ((clientX - rect.left) / rect.width) * 2 - 1;
+            this.mouse.y = -((clientY - rect.top) / rect.height) * 2 + 1;
+        };
+
+        if (this.controls) {
+            const stopAutoRotate = () => {
+                this.isRotating = false;
+                this.controls.autoRotate = false;
+                canvas.style.cursor = 'grabbing';
+            };
+
+            const resumeAutoRotate = () => {
+                canvas.style.cursor = 'grab';
+                setTimeout(() => {
+                    this.isRotating = true;
+                    this.controls.autoRotate = !this.prefersReducedMotion;
+                }, 1000);
+            };
+
+            this.controls.addEventListener('start', stopAutoRotate);
+            this.controls.addEventListener('end', resumeAutoRotate);
+
+            canvas.addEventListener('mousemove', (e) => {
+                updatePointerPosition(e.clientX, e.clientY);
+                this.checkMarkerHover(e);
+            });
+
+            canvas.addEventListener('touchmove', (e) => {
+                if (!e.touches?.length) return;
+                const touch = e.touches[0];
+                updatePointerPosition(touch.clientX, touch.clientY);
+                this.checkMarkerHover({ clientX: touch.clientX, clientY: touch.clientY });
+            }, { passive: true });
+
+            canvas.addEventListener('pointerleave', () => {
+                this.tooltip.style.opacity = '0';
+            });
+
+            window.addEventListener('resize', () => {
+                const width = this.container.clientWidth;
+                const height = this.container.clientHeight || 500;
+
+                this.camera.aspect = width / height;
+                this.camera.updateProjectionMatrix();
+                this.renderer.setSize(width, height);
+                this.controls.update();
+            });
+
+            canvas.addEventListener('contextmenu', (e) => e.preventDefault());
+            return;
+        }
+
         const applyDrag = (clientX, clientY) => {
             const deltaX = clientX - this.previousPosition.x;
             const deltaY = clientY - this.previousPosition.y;
@@ -556,9 +626,7 @@ class GlobeVisualization {
         };
 
         const handlePointerMove = (e) => {
-            const rect = this.container.getBoundingClientRect();
-            this.mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
-            this.mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+            updatePointerPosition(e.clientX, e.clientY);
 
             if (this.isDragging && this.activePointerId === e.pointerId) {
                 applyDrag(e.clientX, e.clientY);
@@ -708,13 +776,17 @@ class GlobeVisualization {
     animate() {
         requestAnimationFrame(() => this.animate());
 
+        if (this.controls) {
+            this.controls.update();
+        }
+
         // Auto-rotate when not dragging
-        if (this.isRotating) {
+        if (!this.controls && this.isRotating) {
             this.globe.rotation.y += 0.002;
         }
 
         // Inertia after drag release
-        if (!this.isDragging && this.activePointerId === null) {
+        if (!this.controls && !this.isDragging && this.activePointerId === null) {
             this.globe.rotation.y += this.dragVelocity.x;
             this.globe.rotation.x += this.dragVelocity.y;
             this.globe.rotation.x = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, this.globe.rotation.x));
