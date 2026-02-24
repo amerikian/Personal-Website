@@ -13,8 +13,45 @@ document.addEventListener('DOMContentLoaded', () => {
     renderLocations();
     renderTechStack();
     initChat();
+    initContactLinks();
+    initContactCardClicks();
     initContactForm();
 });
+
+function initContactLinks() {
+    const profile = careerData?.profile || {};
+    const linkedInUrl = profile.linkedIn || 'https://linkedin.com';
+    const githubUrl = profile.github || 'https://github.com';
+    const emailAddress = profile.email || 'contact@example.com';
+    const emailHref = `mailto:${emailAddress}`;
+
+    const mapping = [
+        ['contact-linkedin', linkedInUrl],
+        ['footer-linkedin', linkedInUrl],
+        ['contact-github', githubUrl],
+        ['footer-github', githubUrl],
+        ['contact-email', emailHref],
+        ['footer-email', emailHref],
+    ];
+
+    mapping.forEach(([id, href]) => {
+        const el = document.getElementById(id);
+        if (el) el.setAttribute('href', href);
+    });
+}
+
+function initContactCardClicks() {
+    const cards = document.querySelectorAll('.contact-info .contact-item');
+    cards.forEach((card) => {
+        const link = card.querySelector('a[href]');
+        if (!link) return;
+        card.style.cursor = 'pointer';
+        card.addEventListener('click', (event) => {
+            if (event.target.closest('a')) return;
+            link.click();
+        });
+    });
+}
 
 /**
  * Navigation Scroll Effects
@@ -507,18 +544,26 @@ function initContactForm() {
     form.addEventListener('submit', (e) => {
         e.preventDefault();
         
-        const name = document.getElementById('name')?.value;
-        const email = document.getElementById('email')?.value;
-        const message = document.getElementById('message')?.value;
+        const name = document.getElementById('name')?.value?.trim() || '';
+        const email = document.getElementById('email')?.value?.trim() || '';
+        const message = document.getElementById('message')?.value?.trim() || '';
 
-        // Placeholder - would connect to backend/email service
-        console.log('Form submitted:', { name, email, message });
+        if (!name || !email || !message) return;
+
+        const recipient = careerData?.profile?.email || 'contact@example.com';
+        const subject = encodeURIComponent(`Portfolio inquiry from ${name}`);
+        const body = encodeURIComponent(
+            `Hi Ian,\n\n${message}\n\n---\nName: ${name}\nEmail: ${email}`
+        );
+        const mailtoUrl = `mailto:${recipient}?subject=${subject}&body=${body}`;
         
         // Show success feedback
         const submitBtn = form.querySelector('button[type="submit"]');
         const originalText = submitBtn.innerHTML;
         submitBtn.innerHTML = '<i class="fas fa-check"></i> Message Sent!';
         submitBtn.disabled = true;
+
+        window.location.href = mailtoUrl;
 
         setTimeout(() => {
             submitBtn.innerHTML = originalText;
