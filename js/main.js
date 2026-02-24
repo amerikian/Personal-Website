@@ -541,6 +541,8 @@ function initContactForm() {
     const form = document.getElementById('contact-form');
     if (!form) return;
 
+    const API_BASE = 'https://salmon-rock-093cc6a0f.6.azurestaticapps.net';
+
     form.addEventListener('submit', (e) => {
         e.preventDefault();
         
@@ -550,26 +552,37 @@ function initContactForm() {
 
         if (!name || !email || !message) return;
 
-        const recipient = careerData?.profile?.email || 'contact@example.com';
-        const subject = encodeURIComponent(`Portfolio inquiry from ${name}`);
-        const body = encodeURIComponent(
-            `Hi Ian,\n\n${message}\n\n---\nName: ${name}\nEmail: ${email}`
-        );
-        const mailtoUrl = `mailto:${recipient}?subject=${subject}&body=${body}`;
-        
-        // Show success feedback
         const submitBtn = form.querySelector('button[type="submit"]');
         const originalText = submitBtn.innerHTML;
-        submitBtn.innerHTML = '<i class="fas fa-check"></i> Message Sent!';
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
         submitBtn.disabled = true;
 
-        window.location.href = mailtoUrl;
+        fetch(`${API_BASE}/api/contact`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, email, message })
+        })
+            .then(async (response) => {
+                if (!response.ok) {
+                    const err = await response.json().catch(() => ({}));
+                    throw new Error(err.error || 'Failed to send message');
+                }
 
-        setTimeout(() => {
-            submitBtn.innerHTML = originalText;
-            submitBtn.disabled = false;
-            form.reset();
-        }, 3000);
+                submitBtn.innerHTML = '<i class="fas fa-check"></i> Message Sent!';
+                form.reset();
+                setTimeout(() => {
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
+                }, 2200);
+            })
+            .catch((error) => {
+                console.error('Contact form error:', error);
+                submitBtn.innerHTML = '<i class="fas fa-triangle-exclamation"></i> Try Again';
+                setTimeout(() => {
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
+                }, 2600);
+            });
     });
 }
 
