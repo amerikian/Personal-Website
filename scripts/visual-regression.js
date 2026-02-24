@@ -26,6 +26,13 @@ function ensureDirs() {
   fs.mkdirSync(diffDir, { recursive: true });
 }
 
+function clearDiffDir() {
+  if (!fs.existsSync(diffDir)) return;
+  for (const file of fs.readdirSync(diffDir)) {
+    fs.rmSync(path.join(diffDir, file), { force: true });
+  }
+}
+
 async function captureAll() {
   const browser = await chromium.launch({ headless: true });
 
@@ -58,14 +65,25 @@ async function captureAll() {
   const desktop = await browser.newContext({ viewport: { width: 1440, height: 2200 } });
   const desktopPage = await desktop.newPage();
   await desktopPage.goto(baseUrl, { waitUntil: 'networkidle', timeout: 60000 });
+  await desktopPage.emulateMedia({ reducedMotion: 'reduce', colorScheme: 'dark' });
+  await desktopPage.evaluate(async () => {
+    if (document.fonts && document.fonts.ready) {
+      try { await document.fonts.ready; } catch (_) {}
+    }
+  });
   await prepareStableView(desktopPage);
   await desktopPage.waitForSelector('#hero', { timeout: 15000 });
   await desktopPage.waitForSelector('#assessment', { timeout: 15000 });
   await desktopPage.waitForSelector('#global', { timeout: 15000 });
 
-  const mobile = await browser.newContext({ ...devices['iPhone 14'] });
+  const mobile = await browser.newContext({ ...devices['iPhone 14'], colorScheme: 'dark', reducedMotion: 'reduce' });
   const mobilePage = await mobile.newPage();
   await mobilePage.goto(baseUrl, { waitUntil: 'networkidle', timeout: 60000 });
+  await mobilePage.evaluate(async () => {
+    if (document.fonts && document.fonts.ready) {
+      try { await document.fonts.ready; } catch (_) {}
+    }
+  });
   await prepareStableView(mobilePage);
   await mobilePage.waitForSelector('#assessment', { timeout: 15000 });
 
@@ -74,9 +92,9 @@ async function captureAll() {
     const outPath = path.join(runDir, target.name);
 
     if (target.selector) {
-      await page.locator(target.selector).screenshot({ path: outPath });
+      await page.locator(target.selector).screenshot({ path: outPath, animations: 'disabled', scale: 'css' });
     } else {
-      await page.screenshot({ path: outPath, fullPage: !!target.fullPage });
+      await page.screenshot({ path: outPath, fullPage: !!target.fullPage, animations: 'disabled', scale: 'css' });
     }
   }
 
@@ -146,6 +164,7 @@ function compareAgainstBaseline() {
 
 (async () => {
   ensureDirs();
+  if (mode === 'compare') clearDiffDir();
   await captureAll();
 
   if (mode === 'baseline') {
