@@ -441,55 +441,63 @@ class GlobeVisualization {
     }
 
     setupEventListeners() {
-        let isDragging = false;
-        let previousMousePosition = { x: 0, y: 0 };
-
         // Get the canvas element that Three.js created
         const canvas = this.renderer.domElement;
         
-        // Set cursor style to indicate draggable
+        // Set cursor and touch styles
         canvas.style.cursor = 'grab';
         canvas.style.touchAction = 'none';
+        
+        // Track dragging state on the instance for reliable access
+        this.isDragging = false;
+        this.previousPosition = { x: 0, y: 0 };
 
-        canvas.addEventListener('mousedown', (e) => {
-            isDragging = true;
+        // Use pointer events for unified mouse/touch handling
+        canvas.addEventListener('pointerdown', (e) => {
+            this.isDragging = true;
             this.isRotating = false;
             canvas.style.cursor = 'grabbing';
-            previousMousePosition = { x: e.clientX, y: e.clientY };
+            this.previousPosition = { x: e.clientX, y: e.clientY };
+            canvas.setPointerCapture(e.pointerId);
             e.preventDefault();
-            e.stopPropagation();
         });
 
-        window.addEventListener('mouseup', () => {
-            if (isDragging) {
-                isDragging = false;
+        canvas.addEventListener('pointerup', (e) => {
+            if (this.isDragging) {
+                this.isDragging = false;
                 canvas.style.cursor = 'grab';
+                canvas.releasePointerCapture(e.pointerId);
                 setTimeout(() => { this.isRotating = true; }, 2000);
             }
         });
 
-        // Use window for mousemove to track even when mouse leaves canvas
-        window.addEventListener('mousemove', (e) => {
+        canvas.addEventListener('pointercancel', (e) => {
+            this.isDragging = false;
+            canvas.style.cursor = 'grab';
+            setTimeout(() => { this.isRotating = true; }, 2000);
+        });
+
+        canvas.addEventListener('pointermove', (e) => {
             const rect = this.container.getBoundingClientRect();
             this.mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
             this.mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
 
-            if (isDragging) {
-                const deltaX = e.clientX - previousMousePosition.x;
-                const deltaY = e.clientY - previousMousePosition.y;
+            if (this.isDragging) {
+                const deltaX = e.clientX - this.previousPosition.x;
+                const deltaY = e.clientY - this.previousPosition.y;
 
                 this.globe.rotation.y += deltaX * 0.01;
                 this.globe.rotation.x += deltaY * 0.01;
                 this.globe.rotation.x = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, this.globe.rotation.x));
 
-                previousMousePosition = { x: e.clientX, y: e.clientY };
+                this.previousPosition = { x: e.clientX, y: e.clientY };
             }
 
             // Check for marker hover
             this.checkMarkerHover(e);
         });
 
-        canvas.addEventListener('mouseleave', () => {
+        canvas.addEventListener('pointerleave', () => {
             this.tooltip.style.opacity = '0';
         });
 
@@ -501,38 +509,6 @@ class GlobeVisualization {
             this.camera.aspect = width / height;
             this.camera.updateProjectionMatrix();
             this.renderer.setSize(width, height);
-        });
-
-        // Touch support
-        canvas.addEventListener('touchstart', (e) => {
-            isDragging = true;
-            this.isRotating = false;
-            previousMousePosition = { 
-                x: e.touches[0].clientX, 
-                y: e.touches[0].clientY 
-            };
-        });
-
-        canvas.addEventListener('touchmove', (e) => {
-            if (isDragging) {
-                e.preventDefault(); // Prevent page scroll while dragging globe
-                const deltaX = e.touches[0].clientX - previousMousePosition.x;
-                const deltaY = e.touches[0].clientY - previousMousePosition.y;
-
-                this.globe.rotation.y += deltaX * 0.01;
-                this.globe.rotation.x += deltaY * 0.01;
-                this.globe.rotation.x = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, this.globe.rotation.x));
-
-                previousMousePosition = { 
-                    x: e.touches[0].clientX, 
-                    y: e.touches[0].clientY 
-                };
-            }
-        }, { passive: false });
-
-        canvas.addEventListener('touchend', () => {
-            isDragging = false;
-            setTimeout(() => { this.isRotating = true; }, 2000);
         });
     }
 
