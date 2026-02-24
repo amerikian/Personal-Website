@@ -336,31 +336,32 @@ class GlobeVisualization {
         var ctx = this.ctx;
         ctx.clearRect(0, 0, this.width, this.height);
 
-        ctx.save();
-        ctx.beginPath();
-        ctx.arc(this.cx, this.cy, this.radius * 1.22, 0, Math.PI * 2);
-        ctx.clip();
-
-        var bg = ctx.createRadialGradient(this.cx, this.cy * 0.9, 0, this.cx, this.cy * 0.9, this.width * 0.8);
+        var bgRadius = this.radius * 1.25;
+        var bg = ctx.createRadialGradient(this.cx, this.cy * 0.95, 0, this.cx, this.cy * 0.95, bgRadius);
         bg.addColorStop(0, '#0d1528');
-        bg.addColorStop(0.5, '#080e1e');
-        bg.addColorStop(1, '#040812');
+        bg.addColorStop(0.6, '#080e1e');
+        bg.addColorStop(1, 'rgba(4,8,18,0)');
         ctx.fillStyle = bg;
-        ctx.fillRect(0, 0, this.width, this.height);
+        ctx.beginPath();
+        ctx.arc(this.cx, this.cy, bgRadius, 0, Math.PI * 2);
+        ctx.fill();
 
         // Stars
         var t = this.animFrame;
         var w = this.width, h = this.height;
         for (var i = 0; i < this.stars.length; i++) {
             var s = this.stars[i];
+            var sx = s.x * w;
+            var sy = s.y * h;
+            var dx = sx - this.cx;
+            var dy = sy - this.cy;
+            if ((dx * dx + dy * dy) > (bgRadius * bgRadius)) continue;
             var bri = 0.3 + 0.7 * ((Math.sin(t * s.speed + s.phase) + 1) / 2);
             ctx.fillStyle = 'rgba(200,210,255,' + (bri * 0.5) + ')';
             ctx.beginPath();
-            ctx.arc(s.x * w, s.y * h, s.r, 0, Math.PI * 2);
+            ctx.arc(sx, sy, s.r, 0, Math.PI * 2);
             ctx.fill();
         }
-
-        ctx.restore();
     }
 
     /* ─────── Render: Globe Sphere ─────── */
@@ -539,8 +540,8 @@ class GlobeVisualization {
 
             ctx.strokeStyle = 'rgba(99,102,241,' + (0.6 * entry) + ')';
             ctx.lineWidth = 2;
-            ctx.shadowColor = 'rgba(99,102,241,0.4)';
-            ctx.shadowBlur = 10;
+            ctx.shadowColor = 'transparent';
+            ctx.shadowBlur = 0;
             ctx.beginPath();
 
             for (var si = 0; si <= steps; si++) {
@@ -556,6 +557,10 @@ class GlobeVisualization {
                 var liftedDist = screenDist * lift;
                 var sx = this.cx + (dx / (screenDist || 1)) * liftedDist;
                 var sy = this.cy + (dy / (screenDist || 1)) * liftedDist;
+                if (!Number.isFinite(sx) || !Number.isFinite(sy)) {
+                    prevVisible = false;
+                    continue;
+                }
 
                 if (p.visible) {
                     if (!prevVisible) ctx.moveTo(sx, sy);
@@ -573,7 +578,6 @@ class GlobeVisualization {
                 prevY = sy;
             }
             ctx.stroke();
-            ctx.shadowBlur = 0;
 
             // Bright inner line
             ctx.strokeStyle = 'rgba(165,180,255,' + (0.5 * entry) + ')';
@@ -590,6 +594,10 @@ class GlobeVisualization {
                 var sd2 = Math.sqrt(dx2 * dx2 + dy2 * dy2);
                 var sx2 = this.cx + (dx2 / (sd2 || 1)) * sd2 * lift2;
                 var sy2 = this.cy + (dy2 / (sd2 || 1)) * sd2 * lift2;
+                if (!Number.isFinite(sx2) || !Number.isFinite(sy2)) {
+                    prevVisible = false;
+                    continue;
+                }
                 if (p2.visible) {
                     if (!prevVisible) ctx.moveTo(sx2, sy2);
                     else ctx.lineTo(sx2, sy2);
@@ -599,18 +607,17 @@ class GlobeVisualization {
             ctx.stroke();
 
             // Arrowhead at destination
-            if (hasVisible && (lastVisX !== lastVisPrevX || lastVisY !== lastVisPrevY)) {
+            if (hasVisible && Number.isFinite(lastVisX) && Number.isFinite(lastVisY) && (lastVisX !== lastVisPrevX || lastVisY !== lastVisPrevY)) {
                 var angle = Math.atan2(lastVisY - lastVisPrevY, lastVisX - lastVisPrevX);
                 ctx.fillStyle = 'rgba(165,180,255,' + (0.85 * entry) + ')';
-                ctx.shadowColor = 'rgba(99,102,241,0.5)';
-                ctx.shadowBlur = 6;
+                ctx.shadowColor = 'transparent';
+                ctx.shadowBlur = 0;
                 ctx.beginPath();
                 ctx.moveTo(lastVisX, lastVisY);
                 ctx.lineTo(lastVisX - arrowLen * Math.cos(angle - arrowHalf), lastVisY - arrowLen * Math.sin(angle - arrowHalf));
                 ctx.lineTo(lastVisX - arrowLen * Math.cos(angle + arrowHalf), lastVisY - arrowLen * Math.sin(angle + arrowHalf));
                 ctx.closePath();
                 ctx.fill();
-                ctx.shadowBlur = 0;
             }
         }
         ctx.restore();
