@@ -8,9 +8,9 @@ const careerData = {
     // Personal Info
     profile: {
         name: "Ian Cassiman",
-        title: "Product Leadership & Innovation Expert",
-        tagline: "20+ Years Driving Product Innovation Globally",
-        summary: "Seasoned product leader with extensive international experience spanning fitness technology, fintech, blockchain, IoT, and enterprise innovation. Proven track record of launching award-winning products, managing $100M+ product lines, and leading cross-functional teams across North America, Southeast Asia, and Europe. PMP certified with expertise in Scaled Agile Framework and data-driven decision making.",
+        title: "Product & Delivery Leader",
+        tagline: "20+ Years in Product Management and Agile Delivery",
+        summary: "Product and delivery leader with international experience spanning fitness technology, fintech, blockchain, IoT, and professional services. Track record includes managing a $100M product line, launching award-winning products, and leading cross-functional teams across North America, Southeast Asia, and Europe. PMP certified with strong focus on Scrum, release management, and data-informed decision making.",
         linkedIn: "https://linkedin.com/in/iancassiman",
         github: "https://github.com/amerikian",
         email: "iancassiman@gmail.com"
@@ -24,7 +24,7 @@ const careerData = {
             title: "Scrum Master & Release Manager",
             company: "RSM US LLP",
             location: "Ironwood, Michigan",
-            description: "Started as Project Manager on Audit Innovation Team, evolved to Scrum Master & Release Manager overseeing 2 scrum teams and releases across 2 Azure DevOps projects. Currently building DevOps AI tools (HTML dashboards, wiki integration, and bot) to improve SAFe Agile metrics & visibility—developed during personal time to fill critical organizational needs.",
+            description: "Started as a Project Manager on the Audit Innovation Team and evolved into Scrum Master & Release Manager, overseeing 2 scrum teams and releases across 2 Azure DevOps projects. Built DevOps AI tools (HTML dashboards, wiki integration, and bot workflows) to improve SAFe metrics visibility and delivery decision-making.",
             tags: ["Scrum Master", "Release Management", "Azure DevOps", "SAFe Agile", "AI Tools", "Audit Innovation"],
             icon: "chart-line"
         },
@@ -34,7 +34,7 @@ const careerData = {
             title: "Product Management Consultant (Owner)",
             company: "SKY CONSULTING LLC",
             location: "Global",
-            description: "Founded consultancy delivering product and project management for fintech, blockchain, and cryptocurrency ventures. Notable: CEO of Swedish Fintech startup Sprinkle Group (blockchain platform on Stockholm exchange), Co-Founder of ProfitOps.com (Bitcoin investment), Project Manager for Digital Motorsports World Cup 2021.",
+            description: "Founded a consultancy delivering product and project management for fintech, blockchain, and cryptocurrency ventures. Experience includes Acting CEO for Sprinkle Group (Stockholm-listed fintech venture), Co-Founder of ProfitOps.com (bitcoin investment platform), and Project Manager for Digital Motorsports World Cup 2021.",
             tags: ["Fintech", "Blockchain", "Cryptocurrency", "CEO", "Startup"],
             icon: "rocket"
         },
@@ -74,7 +74,7 @@ const careerData = {
             title: "Product Manager",
             company: "Pacific Cycle (Schwinn/Mongoose)",
             location: "Madison, Wisconsin",
-            description: "Led Bicycle Parts & Accessories line for iconic Schwinn & Mongoose brands. Worked directly with Target & Walmart buyers. Achieved 3 Patents including a Walmart exclusive product. Streamlined SKU portfolio and developed new packaging.",
+            description: "Led the Bicycle Parts & Accessories line for Schwinn and Mongoose brands. Worked directly with Target and Walmart buyers, earned 3 patents (including a Walmart-exclusive product), streamlined the SKU portfolio, and led packaging updates.",
             tags: ["Consumer Products", "Retail", "Patents", "Target", "Walmart"],
             icon: "bicycle"
         },
