@@ -980,7 +980,22 @@ body:not(.product-portfolio-page) .impact-label {
     width: 100%;
     overflow: hidden;
     perspective: 1800px;
-    padding: 6px 0;
+    padding: 14px 0 24px;
+    position: relative;
+}
+
+.portfolio-3d-viewport::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 56%;
+    width: min(860px, 94%);
+    height: 260px;
+    transform: translate(-50%, -50%);
+    border: 1px solid rgba(99, 102, 241, 0.22);
+    border-radius: 999px;
+    background: radial-gradient(ellipse at center, rgba(6, 182, 212, 0.08) 0%, rgba(6, 182, 212, 0) 72%);
+    pointer-events: none;
 }
 
 .portfolio-3d-track {
@@ -994,7 +1009,7 @@ body:not(.product-portfolio-page) .impact-label {
     position: absolute;
     top: 0;
     left: 50%;
-    width: min(940px, 90vw);
+    width: min(700px, 78vw);
     transform-origin: center center;
     transition: transform 0.55s ease, opacity 0.45s ease, filter 0.45s ease;
     will-change: transform, opacity;
@@ -2136,6 +2151,10 @@ body:not(.product-portfolio-page) .impact-label {
         left: 0;
         top: 0;
         transform-origin: center top;
+    }
+
+    .portfolio-3d-viewport::before {
+        display: none;
     }
 
     .portfolio-3d-track .portfolio-card.carousel-pos-0,

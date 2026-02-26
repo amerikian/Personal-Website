@@ -327,6 +327,7 @@ function initProductCardCarousel() {
     if (!carousel.dataset.bound) {
         prevButton.addEventListener('click', () => shiftProductCardCarousel(-1));
         nextButton.addEventListener('click', () => shiftProductCardCarousel(1));
+        window.addEventListener('resize', () => updateProductCardCarousel());
         carousel.dataset.bound = 'true';
     }
 
@@ -365,14 +366,12 @@ function updateProductCardCarousel(resetActive = false) {
     const visibleCards = getVisibleProductCards();
 
     allCards.forEach((card) => {
-        card.classList.remove(
-            'carousel-pos-0',
-            'carousel-pos-1',
-            'carousel-pos-2',
-            'carousel-pos-n1',
-            'carousel-pos-n2',
-            'carousel-pos-far'
-        );
+        card.style.transform = '';
+        card.style.opacity = '';
+        card.style.zIndex = '';
+        card.style.pointerEvents = '';
+        card.style.filter = '';
+        card.style.display = card.classList.contains('is-hidden') ? 'none' : '';
     });
 
     if (!visibleCards.length) {
@@ -384,19 +383,52 @@ function updateProductCardCarousel(resetActive = false) {
         productCarouselState.activeIndex = 0;
     }
 
+    const isMobile = window.innerWidth <= 768;
+    const orbitRadiusX = 320;
+    const orbitRadiusY = 90;
+    const depth = 220;
+
     visibleCards.forEach((card, index) => {
         const delta = normalizedDistance(index - productCarouselState.activeIndex, visibleCards.length);
 
-        if (delta === 0) card.classList.add('carousel-pos-0');
-        else if (delta === 1) card.classList.add('carousel-pos-1');
-        else if (delta === 2) card.classList.add('carousel-pos-2');
-        else if (delta === -1) card.classList.add('carousel-pos-n1');
-        else if (delta === -2) card.classList.add('carousel-pos-n2');
-        else card.classList.add('carousel-pos-far');
+        if (isMobile) {
+            const isActive = delta === 0;
+            card.style.display = isActive ? 'block' : 'none';
+            card.style.transform = 'translate3d(-50%, 0, 0) rotateY(0deg) scale(1)';
+            card.style.opacity = isActive ? '1' : '0';
+            card.style.zIndex = isActive ? '12' : '1';
+            card.style.pointerEvents = isActive ? 'auto' : 'none';
+            return;
+        }
+
+        if (Math.abs(delta) > 3) {
+            card.style.opacity = '0';
+            card.style.pointerEvents = 'none';
+            card.style.transform = 'translate3d(-50%, 95px, -360px) scale(0.55)';
+            card.style.zIndex = '1';
+            return;
+        }
+
+        const angle = delta * 0.62;
+        const x = Math.sin(angle) * orbitRadiusX;
+        const y = (1 - Math.cos(angle)) * orbitRadiusY;
+        const z = Math.cos(angle) * depth - 180;
+        const rotateY = -Math.sin(angle) * 38;
+        const scale = 1 - Math.abs(delta) * 0.13;
+        const opacity = Math.max(0.28, 1 - Math.abs(delta) * 0.2);
+        const zIndex = 12 - Math.abs(delta);
+
+        card.style.transform = `translate3d(calc(-50% + ${x}px), ${y}px, ${z}px) rotateY(${rotateY}deg) scale(${scale})`;
+        card.style.opacity = String(opacity);
+        card.style.zIndex = String(zIndex);
+        card.style.pointerEvents = delta === 0 ? 'auto' : 'none';
+        card.style.filter = delta === 0 ? 'none' : 'saturate(0.85)';
     });
 
     const activeCard = visibleCards[productCarouselState.activeIndex];
-    const carouselHeight = Math.max(680, activeCard?.offsetHeight || 0);
+    const carouselHeight = isMobile
+        ? Math.max(620, activeCard?.offsetHeight || 0)
+        : Math.max(720, (activeCard?.offsetHeight || 0) + 120);
     track.style.height = `${carouselHeight}px`;
 }
 
