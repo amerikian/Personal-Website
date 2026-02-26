@@ -1442,24 +1442,29 @@ body {
    =================================== */
 .footer {
     background: var(--dark);
-    padding: 40px 0;
+    padding: 28px 0 24px;
     border-top: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .footer-content {
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
+    justify-content: center;
     align-items: center;
+    gap: 14px;
+    text-align: center;
 }
 
 .footer p {
     color: var(--gray-500);
     font-size: 0.875rem;
+    margin: 0;
 }
 
 .footer-links {
     display: flex;
     gap: 16px;
+    justify-content: center;
 }
 
 .footer-links a {
@@ -1661,9 +1666,7 @@ body {
     }
     
     .footer-content {
-        flex-direction: column;
-        gap: 20px;
-        text-align: center;
+        gap: 16px;
     }
 }
 
