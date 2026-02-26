@@ -24,7 +24,7 @@ const careerData = {
             title: "Scrum Master & Release Manager",
             company: "RSM US LLP",
             location: "Ironwood, Michigan",
-            description: "Started as a Project Manager on the Audit Innovation Team and evolved into Scrum Master & Release Manager, overseeing 2 scrum teams and releases across 2 Azure DevOps projects. Built DevOps AI tools (HTML dashboards, wiki integration, and bot workflows) to improve SAFe metrics visibility and delivery decision-making.",
+            description: "Started as a Project Manager on the Audit Innovation Team and evolved into Scrum Master & Release Manager, overseeing 2 scrum teams and releases across 2 Azure DevOps projects. Building DevOps AI tools (HTML dashboards, wiki integration, and bot workflows) to improve SAFe metrics visibility and delivery decision-making.",
             tags: ["Scrum Master", "Release Management", "Azure DevOps", "SAFe Agile", "AI Tools", "Audit Innovation"],
             icon: "chart-line"
         },
