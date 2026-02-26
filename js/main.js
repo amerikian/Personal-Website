@@ -416,6 +416,35 @@ function initChat() {
     });
 
     let isSending = false;
+    let backendChecked = false;
+    let backendAvailable = false;
+    let backendUnavailableNotified = false;
+
+    const SWA_API_BASE = 'https://salmon-rock-093cc6a0f.6.azurestaticapps.net';
+    const host = window.location.hostname;
+    const isLocal = host === 'localhost' || host === '127.0.0.1';
+    const isGitHubPages = host.endsWith('github.io');
+    const API_BASE = (isLocal || isGitHubPages) ? SWA_API_BASE : '';
+
+    const checkBackendAvailability = async () => {
+        if (backendChecked) return backendAvailable;
+        backendChecked = true;
+
+        try {
+            const controller = new AbortController();
+            const timeout = setTimeout(() => controller.abort(), 4000);
+            const response = await fetch(`${API_BASE}/api/health`, {
+                method: 'GET',
+                signal: controller.signal
+            });
+            clearTimeout(timeout);
+            backendAvailable = response.ok;
+        } catch (error) {
+            backendAvailable = false;
+        }
+
+        return backendAvailable;
+    };
 
     // Send message
     const sendMessage = async () => {
@@ -441,24 +470,33 @@ function initChat() {
         chatMessages.appendChild(typingDiv);
 
         try {
-            // Call the Azure Functions API (hosted on Azure SWA)
-            const SWA_API_BASE = 'https://salmon-rock-093cc6a0f.6.azurestaticapps.net';
-            const host = window.location.hostname;
-            const isLocal = host === 'localhost' || host === '127.0.0.1';
-            const isGitHubPages = host.endsWith('github.io');
-            const API_BASE = (isLocal || isGitHubPages) ? SWA_API_BASE : '';
+            const canUseBackend = await checkBackendAvailability();
+            if (!canUseBackend) {
+                typingDiv.remove();
+
+                if (!backendUnavailableNotified) {
+                    backendUnavailableNotified = true;
+                    addChatMessage('Live AI service is temporarily unavailable, so I’m using local portfolio responses for now.', 'bot');
+                }
+
+                addChatMessage(generateAIResponse(message), 'bot');
+                return;
+            }
 
             const controller = new AbortController();
             const timeout = setTimeout(() => controller.abort(), 12000);
 
-            const response = await fetch(`${API_BASE}/api/chat`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message }),
-                signal: controller.signal
-            });
-
-            clearTimeout(timeout);
+            let response;
+            try {
+                response = await fetch(`${API_BASE}/api/chat`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message }),
+                    signal: controller.signal
+                });
+            } finally {
+                clearTimeout(timeout);
+            }
 
             typingDiv.remove();
 
