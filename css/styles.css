@@ -747,7 +747,7 @@ body {
 body:not(.product-portfolio-page) .product-impact {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 14px;
+    gap: 10px;
     padding-top: 18px;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
@@ -755,23 +755,33 @@ body:not(.product-portfolio-page) .product-impact {
 body:not(.product-portfolio-page) .impact-stat {
     text-align: center;
     min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 4px;
 }
 
 body:not(.product-portfolio-page) .impact-number {
     display: block;
     color: var(--white);
-    font-size: clamp(1.05rem, 2.1vw, 1.5rem);
-    line-height: 1.25;
+    font-size: clamp(0.95rem, 1.35vw, 1.15rem);
+    line-height: 1.2;
     font-weight: 700;
-    overflow-wrap: anywhere;
+    letter-spacing: 0;
+    word-break: normal;
+    overflow-wrap: normal;
+    white-space: normal;
 }
 
 body:not(.product-portfolio-page) .impact-label {
     color: var(--gray-500);
-    font-size: 0.72rem;
+    font-size: 0.62rem;
     text-transform: uppercase;
-    letter-spacing: 0.02em;
-    overflow-wrap: anywhere;
+    letter-spacing: 0.03em;
+    line-height: 1.2;
+    word-break: normal;
+    overflow-wrap: normal;
 }
 
 /* ===================================
