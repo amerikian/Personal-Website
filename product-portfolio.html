@@ -13,7 +13,7 @@
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link rel="stylesheet" href="css/styles.css?v=4">
 </head>
-<body>
+<body class="product-portfolio-page">
     <canvas id="particle-canvas"></canvas>
 
     <nav class="navbar scrolled" id="navbar">
@@ -36,7 +36,9 @@
     </nav>
 
     <section class="hero product-hero">
-        <div class="hero-content">
+        <div class="hero-depth-layer hero-depth-layer-a" aria-hidden="true"></div>
+        <div class="hero-depth-layer hero-depth-layer-b" aria-hidden="true"></div>
+        <div class="hero-content hero-3d-shell" data-tilt="hero" data-depth="18">
             <div class="hero-badge">
                 <i class="fas fa-layer-group"></i>
                 <span>Separate Product Portfolio</span>
@@ -46,12 +48,12 @@
                 <span class="line-2 gradient-text" id="portfolio-meta-title">Product Portfolio Map</span>
             </h1>
             <p class="hero-subtitle" id="portfolio-meta-summary"></p>
-            <div class="hero-stats compact-stats">
-                <div class="stat-item">
+            <div class="hero-stats compact-stats depth-stats" data-tilt="stats" data-depth="12">
+                <div class="stat-item depth-panel">
                     <span class="stat-number" id="portfolio-count">16</span>
                     <span class="stat-label">Mapped Products</span>
                 </div>
-                <div class="stat-item">
+                <div class="stat-item depth-panel">
                     <span class="stat-number" id="portfolio-meta-period">2006 - Present</span>
                     <span class="stat-label">Coverage</span>
                 </div>
@@ -80,7 +82,7 @@
 
             <div class="domain-summary" id="domain-summary"></div>
 
-            <div class="product-map-table">
+            <div class="product-map-table depth-surface" data-tilt="map" data-depth="10">
                 <div class="product-map-head">
                     <span>Company</span>
                     <span>Product</span>

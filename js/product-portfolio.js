@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
     renderProductCards();
     renderDomainSummary();
     bindDomainFilters();
+    init3DPortfolioExperience();
 });
 
 function initPortfolioNavigation() {
@@ -55,7 +56,7 @@ function renderProductMap() {
 
     const rows = productPortfolioData.mappedProducts
         .map((item) => `
-            <article class="product-map-row" data-domain="${item.domain}">
+            <article class="product-map-row depth-row" data-domain="${item.domain}" data-tilt-item data-depth="8">
                 <div class="map-company">${item.company}</div>
                 <div class="map-product">${item.productName}</div>
                 <div class="map-type">${item.productType}</div>
@@ -78,7 +79,7 @@ function renderProductCards() {
             const carouselId = `carousel-${index}`;
 
             return `
-            <article class="product-card portfolio-card" data-domain="${item.domain}">
+            <article class="product-card portfolio-card" data-domain="${item.domain}" data-tilt-item data-depth="14">
                 <div class="product-logo">
                     <i class="fas fa-${item.icon}"></i>
                 </div>
@@ -305,6 +306,47 @@ function applyDomainFilter(filter) {
         collection.forEach((item) => {
             const isVisible = filter === 'all' || item.getAttribute('data-domain') === filter;
             item.classList.toggle('is-hidden', !isVisible);
+        });
+    });
+}
+
+function init3DPortfolioExperience() {
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (prefersReduced) return;
+
+    const applyTilt = (element, event) => {
+        const rect = element.getBoundingClientRect();
+        const x = (event.clientX - rect.left) / rect.width;
+        const y = (event.clientY - rect.top) / rect.height;
+        const depth = Number(element.getAttribute('data-depth') || 10);
+        const rotateY = (x - 0.5) * depth;
+        const rotateX = (0.5 - y) * depth;
+
+        element.style.transform = `perspective(1200px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateZ(0)`;
+    };
+
+    const clearTilt = (element) => {
+        element.style.transform = '';
+    };
+
+    const bindTilt = (selector) => {
+        document.querySelectorAll(selector).forEach((element) => {
+            element.addEventListener('mousemove', (event) => applyTilt(element, event));
+            element.addEventListener('mouseleave', () => clearTilt(element));
+        });
+    };
+
+    bindTilt('[data-tilt]');
+    bindTilt('[data-tilt-item]');
+
+    const depthLayers = document.querySelectorAll('.hero-depth-layer');
+    window.addEventListener('mousemove', (event) => {
+        const xRatio = (event.clientX / window.innerWidth - 0.5) * 2;
+        const yRatio = (event.clientY / window.innerHeight - 0.5) * 2;
+
+        depthLayers.forEach((layer, index) => {
+            const factor = (index + 1) * 10;
+            layer.style.transform = `translate3d(${xRatio * factor}px, ${yRatio * factor}px, 0)`;
         });
     });
 }
