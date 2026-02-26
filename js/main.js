@@ -168,7 +168,7 @@ function renderProducts() {
             <div class="product-impact">
                 ${Object.entries(product.impact).map(([key, value]) => `
                     <div class="impact-stat">
-                        <span class="impact-number">${value}</span>
+                        <span class="impact-number" title="${String(value)}">${value}</span>
                         <span class="impact-label">${formatImpactLabel(key)}</span>
                     </div>
                 `).join('')}

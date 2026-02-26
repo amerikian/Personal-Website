@@ -769,9 +769,9 @@ body:not(.product-portfolio-page) .impact-number {
     line-height: 1.2;
     font-weight: 700;
     letter-spacing: 0;
-    word-break: normal;
-    overflow-wrap: normal;
-    white-space: normal;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 body:not(.product-portfolio-page) .impact-label {
