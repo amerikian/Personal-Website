@@ -100,7 +100,7 @@ const careerData = {
             impact: {
                 platforms: "5+",
                 exchanges: "Stockholm",
-                role: "CEO/Founder"
+                role: "CEO"
             },
             icon: "bitcoin",
             tags: ["Blockchain", "Fintech", "Security Tokens", "ICO"]
@@ -406,7 +406,7 @@ const careerData = {
             {
                 company: "SKY CONSULTING LLC / Sprinkle Group",
                 period: "2017 - 2021",
-                role: "Consultant / Founder / CEO",
+                role: "Consultant / CEO",
                 companyContext: "Entrepreneurial portfolio spanning fintech, blockchain, and digital asset initiatives focused on emerging market models and platform-led growth.",
                 productLines: ["Blockchain Platform Concepts", "Crypto Investment Platforms", "Tokenization/Fintech Ventures"],
                 roleImpact: "Drove product strategy and execution in early-stage environments, balancing innovation velocity, stakeholder alignment, and commercialization readiness."
