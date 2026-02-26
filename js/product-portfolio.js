@@ -8,6 +8,10 @@ document.addEventListener('DOMContentLoaded', () => {
     init3DPortfolioExperience();
 });
 
+const productCarouselState = {
+    activeIndex: 0
+};
+
 function initPortfolioNavigation() {
     const navToggle = document.getElementById('portfolio-nav-toggle');
     const navMenu = document.getElementById('portfolio-nav-menu');
@@ -79,7 +83,7 @@ function renderProductCards() {
             const carouselId = `carousel-${index}`;
 
             return `
-            <article class="product-card portfolio-card" data-domain="${item.domain}" data-tilt-item data-depth="14">
+            <article class="product-card portfolio-card" data-domain="${item.domain}">
                 <div class="product-logo">
                     <i class="fas fa-${item.icon}"></i>
                 </div>
@@ -131,6 +135,7 @@ function renderProductCards() {
         .join('');
 
     initVisualCarousels();
+    initProductCardCarousel();
 }
 
 function getVisualsForProduct(item) {
@@ -308,6 +313,91 @@ function applyDomainFilter(filter) {
             item.classList.toggle('is-hidden', !isVisible);
         });
     });
+
+    updateProductCardCarousel(true);
+}
+
+function initProductCardCarousel() {
+    const carousel = document.getElementById('portfolio-3d-carousel');
+    const prevButton = document.getElementById('portfolio-cards-prev');
+    const nextButton = document.getElementById('portfolio-cards-next');
+
+    if (!carousel || !prevButton || !nextButton) return;
+
+    if (!carousel.dataset.bound) {
+        prevButton.addEventListener('click', () => shiftProductCardCarousel(-1));
+        nextButton.addEventListener('click', () => shiftProductCardCarousel(1));
+        carousel.dataset.bound = 'true';
+    }
+
+    updateProductCardCarousel(true);
+}
+
+function getVisibleProductCards() {
+    const allCards = Array.from(document.querySelectorAll('#product-portfolio-grid .portfolio-card'));
+    return allCards.filter((card) => !card.classList.contains('is-hidden'));
+}
+
+function shiftProductCardCarousel(direction) {
+    const visibleCards = getVisibleProductCards();
+    if (!visibleCards.length) return;
+
+    productCarouselState.activeIndex = (productCarouselState.activeIndex + direction + visibleCards.length) % visibleCards.length;
+    updateProductCardCarousel();
+}
+
+function normalizedDistance(distance, length) {
+    if (!length) return distance;
+    let output = distance;
+    const midpoint = Math.floor(length / 2);
+
+    if (output > midpoint) output -= length;
+    if (output < -midpoint) output += length;
+
+    return output;
+}
+
+function updateProductCardCarousel(resetActive = false) {
+    const track = document.getElementById('product-portfolio-grid');
+    if (!track) return;
+
+    const allCards = Array.from(track.querySelectorAll('.portfolio-card'));
+    const visibleCards = getVisibleProductCards();
+
+    allCards.forEach((card) => {
+        card.classList.remove(
+            'carousel-pos-0',
+            'carousel-pos-1',
+            'carousel-pos-2',
+            'carousel-pos-n1',
+            'carousel-pos-n2',
+            'carousel-pos-far'
+        );
+    });
+
+    if (!visibleCards.length) {
+        track.style.height = '0px';
+        return;
+    }
+
+    if (resetActive || productCarouselState.activeIndex >= visibleCards.length) {
+        productCarouselState.activeIndex = 0;
+    }
+
+    visibleCards.forEach((card, index) => {
+        const delta = normalizedDistance(index - productCarouselState.activeIndex, visibleCards.length);
+
+        if (delta === 0) card.classList.add('carousel-pos-0');
+        else if (delta === 1) card.classList.add('carousel-pos-1');
+        else if (delta === 2) card.classList.add('carousel-pos-2');
+        else if (delta === -1) card.classList.add('carousel-pos-n1');
+        else if (delta === -2) card.classList.add('carousel-pos-n2');
+        else card.classList.add('carousel-pos-far');
+    });
+
+    const activeCard = visibleCards[productCarouselState.activeIndex];
+    const carouselHeight = Math.max(680, activeCard?.offsetHeight || 0);
+    track.style.height = `${carouselHeight}px`;
 }
 
 function init3DPortfolioExperience() {
@@ -331,6 +421,7 @@ function init3DPortfolioExperience() {
 
     const bindTilt = (selector) => {
         document.querySelectorAll(selector).forEach((element) => {
+            if (element.classList.contains('portfolio-card')) return;
             element.addEventListener('mousemove', (event) => applyTilt(element, event));
             element.addEventListener('mouseleave', () => clearTilt(element));
         });
