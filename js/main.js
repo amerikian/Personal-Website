@@ -442,9 +442,11 @@ function initChat() {
 
         try {
             // Call the Azure Functions API (hosted on Azure SWA)
-            const API_BASE = window.location.hostname === 'localhost'
-                ? 'https://salmon-rock-093cc6a0f.6.azurestaticapps.net'
-                : '';
+            const SWA_API_BASE = 'https://salmon-rock-093cc6a0f.6.azurestaticapps.net';
+            const host = window.location.hostname;
+            const isLocal = host === 'localhost' || host === '127.0.0.1';
+            const isGitHubPages = host.endsWith('github.io');
+            const API_BASE = (isLocal || isGitHubPages) ? SWA_API_BASE : '';
 
             const controller = new AbortController();
             const timeout = setTimeout(() => controller.abort(), 12000);
