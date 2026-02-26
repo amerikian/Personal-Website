@@ -13,7 +13,7 @@ const careerData = {
         summary: "Product and delivery leader with international experience spanning fitness technology, fintech, blockchain, IoT, and professional services. Track record includes managing a $100M product line, launching award-winning products, and leading cross-functional teams across North America, Southeast Asia, and Europe. PMP certified with strong focus on Scrum, release management, and data-informed decision making.",
         linkedIn: "https://linkedin.com/in/iancassiman",
         github: "https://github.com/amerikian",
-        email: "iancassiman@gmail.com"
+        email: "contact@example.com"
     },
 
     // Career Timeline

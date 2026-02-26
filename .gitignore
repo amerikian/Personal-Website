@@ -22,3 +22,5 @@ scripts/mobile-*.js
 scripts/quick-*.js
 scripts/test-*.js
 scripts/validate-*.js
+scripts/*.swift
+scripts/check_*.py
