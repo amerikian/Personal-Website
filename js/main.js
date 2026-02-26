@@ -415,10 +415,17 @@ function initChat() {
         chatWidget.classList.remove('active');
     });
 
+    let isSending = false;
+
     // Send message
     const sendMessage = async () => {
+        if (isSending) return;
+
         const message = chatInput?.value.trim();
         if (!message) return;
+
+        isSending = true;
+        if (sendBtn) sendBtn.disabled = true;
 
         // Add user message
         addChatMessage(message, 'user');
@@ -435,18 +442,27 @@ function initChat() {
 
         try {
             // Call the Azure Functions API (hosted on Azure SWA)
-            const API_BASE = 'https://salmon-rock-093cc6a0f.6.azurestaticapps.net';
+            const API_BASE = window.location.hostname === 'localhost'
+                ? 'https://salmon-rock-093cc6a0f.6.azurestaticapps.net'
+                : '';
+
+            const controller = new AbortController();
+            const timeout = setTimeout(() => controller.abort(), 12000);
+
             const response = await fetch(`${API_BASE}/api/chat`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message })
+                body: JSON.stringify({ message }),
+                signal: controller.signal
             });
+
+            clearTimeout(timeout);
 
             typingDiv.remove();
 
             if (response.ok) {
                 const data = await response.json();
-                addChatMessage(data.response, 'bot');
+                addChatMessage(data.response || generateAIResponse(message), 'bot');
             } else {
                 // Fallback to local response if API fails
                 addChatMessage(generateAIResponse(message), 'bot');
@@ -455,6 +471,10 @@ function initChat() {
             typingDiv.remove();
             // Fallback to local response if API unavailable
             addChatMessage(generateAIResponse(message), 'bot');
+        } finally {
+            isSending = false;
+            if (sendBtn) sendBtn.disabled = false;
+            chatInput?.focus();
         }
     };
 
@@ -478,9 +498,14 @@ function addChatMessage(message, type) {
             <i class="fas fa-${type === 'bot' ? 'robot' : 'user'}"></i>
         </div>
         <div class="message-content">
-            <p>${message}</p>
+            <p></p>
         </div>
     `;
+
+    const textNode = messageDiv.querySelector('.message-content p');
+    if (textNode) {
+        textNode.textContent = message;
+    }
 
     chatMessages.appendChild(messageDiv);
     chatMessages.scrollTop = chatMessages.scrollHeight;
@@ -494,19 +519,19 @@ function generateAIResponse(question) {
 
     // Simple keyword-based responses (placeholder for AI integration)
     if (lowerQ.includes('experience') || lowerQ.includes('years')) {
-        return `Based on the portfolio, there's over ${careerData.stats.years}+ years of experience spanning ${careerData.stats.countries} countries, with expertise in AI/ML, DevOps, and enterprise architecture. What specific area would you like to know more about?`;
+        return `Based on the portfolio, Ian has ${careerData.stats.years}+ years of experience across ${careerData.stats.countries} countries, with strengths in product management, Scrum leadership, release delivery, and DevOps-focused execution. What area would you like to explore?`;
     }
     
     if (lowerQ.includes('ai') || lowerQ.includes('copilot') || lowerQ.includes('machine learning')) {
-        return "The AI/Copilot expertise includes architecting enterprise AI solutions, working with LLMs, implementing RAG patterns, and building developer productivity tools. Recent focus has been on Azure OpenAI and Copilot architecture.";
+        return "Recent AI work includes building DevOps-focused tools such as dashboards, wiki automation, and bot workflows using Azure OpenAI and GitHub Copilot to improve delivery visibility and decision-making.";
     }
     
     if (lowerQ.includes('devops') || lowerQ.includes('cicd') || lowerQ.includes('pipeline')) {
-        return "Deep expertise in DevOps practices including CI/CD pipelines (Azure DevOps, GitHub Actions), infrastructure as code (Terraform), containerization (Kubernetes, Docker), and platform engineering.";
+        return "Experience includes Azure DevOps pipelines, release management, metrics dashboards, and workflow automation to support team delivery quality and release confidence.";
     }
     
     if (lowerQ.includes('product') || lowerQ.includes('leadership') || lowerQ.includes('management')) {
-        return `Strong product leadership background with ${careerData.stats.products}+ products shipped, including experience scaling teams, defining strategy, and executing go-to-market plans for enterprise software.`;
+        return "Strong product management background across fitness technology, fintech, and IoT, including strategy, roadmap execution, and cross-functional delivery from concept through launch.";
     }
 
     if (lowerQ.includes('education') || lowerQ.includes('university') || lowerQ.includes('study abroad')) {
@@ -523,7 +548,7 @@ function generateAIResponse(question) {
     }
     
     if (lowerQ.includes('hire') || lowerQ.includes('fit') || lowerQ.includes('role') || lowerQ.includes('opportunity')) {
-        return "Great question! To assess fit, could you share more about the role you're considering? Key areas of strength include: AI architecture, developer experience optimization, and technical leadership. What's your team looking for?";
+        return "Great question. If you share the role scope and team needs, I can map relevant experience across product leadership, Scrum/release delivery, DevOps tooling, and global commercialization work.";
     }
     
     if (lowerQ.includes('contact') || lowerQ.includes('reach') || lowerQ.includes('connect')) {

@@ -26,6 +26,19 @@ Be helpful, professional, and encourage visitors to connect for opportunities.
 Keep responses concise (2-3 sentences) unless asked for detail.
 `;
 
+const REQUEST_TIMEOUT_MS = 12000;
+const MAX_MESSAGE_LENGTH = 1200;
+
+function withTimeout(url, options = {}, timeoutMs = REQUEST_TIMEOUT_MS) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), timeoutMs);
+
+    return fetch(url, {
+        ...options,
+        signal: controller.signal
+    }).finally(() => clearTimeout(timer));
+}
+
 module.exports = async function (context, req) {
     context.log('Chat API triggered');
 
@@ -42,13 +55,22 @@ module.exports = async function (context, req) {
         return;
     }
 
-    const message = req.body?.message;
+    const message = (req.body?.message || '').trim();
 
     if (!message) {
         context.res = {
             status: 400,
             headers: corsHeaders,
             body: { error: 'Message is required' }
+        };
+        return;
+    }
+
+    if (message.length > MAX_MESSAGE_LENGTH) {
+        context.res = {
+            status: 400,
+            headers: corsHeaders,
+            body: { error: `Message must be ${MAX_MESSAGE_LENGTH} characters or less` }
         };
         return;
     }
@@ -102,7 +124,7 @@ module.exports = async function (context, req) {
 };
 
 async function callGitHubModels(token, userMessage) {
-    const response = await fetch('https://models.inference.ai.azure.com/chat/completions', {
+    const response = await withTimeout('https://models.inference.ai.azure.com/chat/completions', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -114,8 +136,8 @@ async function callGitHubModels(token, userMessage) {
                 { role: 'system', content: careerContext },
                 { role: 'user', content: userMessage }
             ],
-            max_tokens: 500,
-            temperature: 0.7
+            max_tokens: 350,
+            temperature: 0.4
         })
     });
 
@@ -124,13 +146,13 @@ async function callGitHubModels(token, userMessage) {
     }
 
     const data = await response.json();
-    return data.choices[0].message.content;
+    return data?.choices?.[0]?.message?.content || generateFallbackResponse(userMessage);
 }
 
 async function callAzureOpenAI(endpoint, apiKey, deploymentName, userMessage) {
     const url = `${endpoint}/openai/deployments/${deploymentName}/chat/completions?api-version=2024-02-15-preview`;
     
-    const response = await fetch(url, {
+    const response = await withTimeout(url, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -141,8 +163,8 @@ async function callAzureOpenAI(endpoint, apiKey, deploymentName, userMessage) {
                 { role: 'system', content: careerContext },
                 { role: 'user', content: userMessage }
             ],
-            max_tokens: 500,
-            temperature: 0.7
+            max_tokens: 350,
+            temperature: 0.4
         })
     });
 
@@ -151,18 +173,18 @@ async function callAzureOpenAI(endpoint, apiKey, deploymentName, userMessage) {
     }
 
     const data = await response.json();
-    return data.choices[0].message.content;
+    return data?.choices?.[0]?.message?.content || generateFallbackResponse(userMessage);
 }
 
 function generateFallbackResponse(question) {
     const lowerQ = question.toLowerCase();
 
     if (lowerQ.includes('experience') || lowerQ.includes('years')) {
-        return "With over 25 years of experience spanning 15+ countries, the portfolio showcases deep expertise in AI/ML, DevOps, and enterprise architecture. What specific area interests you?";
+        return "Ian brings 20+ years of experience across product management, Scrum leadership, and release delivery, with work spanning 9 countries. I can share details by role, industry, or capability if helpful.";
     }
     
     if (lowerQ.includes('ai') || lowerQ.includes('copilot')) {
-        return "The AI/Copilot expertise includes enterprise AI architecture, LLM implementation, RAG patterns, and developer productivity tools - particularly with Azure OpenAI and Copilot integration.";
+        return "Recent AI work includes DevOps-focused tools such as dashboards, wiki automation, and bot workflows using platforms like Azure OpenAI and GitHub Copilot to improve visibility and delivery decisions.";
     }
     
     if (lowerQ.includes('contact') || lowerQ.includes('hire')) {
