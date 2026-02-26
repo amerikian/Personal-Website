@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-label="IoT innovation visual">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#166534"/>
+    </linearGradient>
+  </defs>
+  <rect width="1600" height="900" fill="url(#bg)"/>
+  <rect x="600" y="260" width="400" height="360" rx="28" fill="#111827" stroke="#4ade80"/>
+  <circle cx="420" cy="320" r="78" fill="#1f2937" stroke="#22c55e"/>
+  <circle cx="1180" cy="320" r="78" fill="#1f2937" stroke="#22c55e"/>
+  <circle cx="420" cy="620" r="78" fill="#1f2937" stroke="#22c55e"/>
+  <circle cx="1180" cy="620" r="78" fill="#1f2937" stroke="#22c55e"/>
+  <g stroke="#86efac" stroke-width="4">
+    <line x1="498" y1="320" x2="600" y2="360"/>
+    <line x1="1102" y1="320" x2="1000" y2="360"/>
+    <line x1="498" y1="620" x2="600" y2="520"/>
+    <line x1="1102" y1="620" x2="1000" y2="520"/>
+  </g>
+  <text x="120" y="100" fill="#dcfce7" font-family="Inter,Arial" font-size="44" font-weight="700">Connected Home Innovation Program</text>
+  <text x="120" y="790" fill="#bbf7d0" font-family="Inter,Arial" font-size="30">MVP experiments • Go/No-Go decisions • Partner ecosystem</text>
+</svg>

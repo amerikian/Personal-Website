@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-label="Award winning product visual">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#78350f"/>
+      <stop offset="100%" stop-color="#92400e"/>
+    </linearGradient>
+  </defs>
+  <rect width="1600" height="900" fill="url(#bg)"/>
+  <rect x="110" y="130" width="1380" height="640" rx="30" fill="rgba(17,24,39,0.5)" stroke="rgba(255,255,255,0.2)"/>
+  <polygon points="800,210 860,340 1000,360 900,460 930,600 800,530 670,600 700,460 600,360 740,340" fill="#fbbf24"/>
+  <rect x="190" y="620" width="1220" height="90" rx="16" fill="#111827"/>
+  <text x="130" y="98" fill="#fef3c7" font-family="Inter,Arial" font-size="44" font-weight="700">Product Innovation Award Line</text>
+  <text x="220" y="676" fill="#fde68a" font-family="Inter,Arial" font-size="34">Matrix Ascent • ClimbMill • Vision X20 / X30 Ellipticals</text>
+</svg>

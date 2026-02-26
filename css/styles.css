@@ -895,33 +895,91 @@ body {
     margin-top: 14px;
 }
 
-.visual-slots {
+.visual-carousel {
     margin-top: 14px;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-    gap: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 12px;
+    background: rgba(2, 6, 23, 0.55);
+    overflow: hidden;
 }
 
-.visual-slot {
-    border: 1px dashed rgba(255, 255, 255, 0.2);
-    border-radius: 10px;
-    padding: 10px;
-    background: rgba(255, 255, 255, 0.02);
+.carousel-track {
+    position: relative;
+    min-height: 220px;
 }
 
-.visual-slot-label {
-    display: inline-block;
-    color: var(--secondary);
-    font-size: 0.72rem;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    margin-bottom: 4px;
+.carousel-slide {
+    display: none;
+    animation: fadeInUp 0.25s ease;
 }
 
-.visual-slot p {
-    color: var(--gray-400);
-    font-size: 0.78rem;
+.carousel-slide.active {
+    display: block;
+}
+
+.carousel-slide img {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    display: block;
+    background: var(--dark-lighter);
+}
+
+.carousel-slide figcaption {
+    font-size: 0.8rem;
+    color: var(--gray-300);
+    padding: 10px 12px 12px;
     line-height: 1.45;
+}
+
+.carousel-controls {
+    display: grid;
+    grid-template-columns: 40px 1fr 40px;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px 10px;
+}
+
+.carousel-btn {
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--white);
+    width: 32px;
+    height: 32px;
+    border-radius: 999px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition-fast);
+}
+
+.carousel-btn:hover {
+    background: rgba(99, 102, 241, 0.22);
+    border-color: rgba(99, 102, 241, 0.55);
+}
+
+.carousel-dots {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    align-items: center;
+}
+
+.carousel-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(255, 255, 255, 0.3);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.carousel-dot.active {
+    width: 18px;
+    border-radius: 20px;
+    background: var(--secondary);
 }
 
 .portfolio-evidence {

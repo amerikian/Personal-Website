@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-label="Global portfolio visual">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0c4a6e"/>
+      <stop offset="100%" stop-color="#1e3a8a"/>
+    </linearGradient>
+  </defs>
+  <rect width="1600" height="900" fill="url(#bg)"/>
+  <ellipse cx="800" cy="450" rx="520" ry="250" fill="rgba(2,6,23,0.55)" stroke="rgba(125,211,252,0.5)" stroke-width="6"/>
+  <circle cx="520" cy="410" r="24" fill="#38bdf8"/>
+  <circle cx="760" cy="360" r="24" fill="#38bdf8"/>
+  <circle cx="1020" cy="420" r="24" fill="#38bdf8"/>
+  <circle cx="890" cy="550" r="24" fill="#38bdf8"/>
+  <line x1="520" y1="410" x2="760" y2="360" stroke="#7dd3fc" stroke-width="4"/>
+  <line x1="760" y1="360" x2="1020" y2="420" stroke="#7dd3fc" stroke-width="4"/>
+  <line x1="760" y1="360" x2="890" y2="550" stroke="#7dd3fc" stroke-width="4"/>
+  <text x="130" y="98" fill="#e0f2fe" font-family="Inter,Arial" font-size="44" font-weight="700">Global Product Portfolio Network</text>
+  <text x="130" y="790" fill="#bae6fd" font-family="Inter,Arial" font-size="30">Cross-functional teams • International launch coordination</text>
+</svg>
