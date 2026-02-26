@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ian Cassiman | Product Portfolio Map</title>
+    <meta name="description" content="Dedicated product portfolio mapping specific products, platforms, and innovation initiatives across Ian Cassiman's career.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="stylesheet" href="css/styles.css?v=4">
+</head>
+<body>
+    <canvas id="particle-canvas"></canvas>
+
+    <nav class="navbar scrolled" id="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <span class="logo-text">Product Portfolio</span>
+                <span class="logo-dot"></span>
+            </div>
+            <ul class="nav-menu" id="portfolio-nav-menu">
+                <li><a href="index.html" class="nav-link">Career Portfolio</a></li>
+                <li><a href="#product-map" class="nav-link">Product Map</a></li>
+                <li><a href="#portfolio-cards" class="nav-link">Product Cards</a></li>
+            </ul>
+            <button class="nav-toggle" id="portfolio-nav-toggle" aria-label="Toggle navigation menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </nav>
+
+    <section class="hero product-hero">
+        <div class="hero-content">
+            <div class="hero-badge">
+                <i class="fas fa-layer-group"></i>
+                <span>Separate Product Portfolio</span>
+            </div>
+            <h1 class="hero-title">
+                <span class="line-1">Ian Cassiman</span>
+                <span class="line-2 gradient-text" id="portfolio-meta-title">Product Portfolio Map</span>
+            </h1>
+            <p class="hero-subtitle" id="portfolio-meta-summary"></p>
+            <div class="hero-stats compact-stats">
+                <div class="stat-item">
+                    <span class="stat-number" id="portfolio-count">16</span>
+                    <span class="stat-label">Mapped Products</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" id="portfolio-meta-period">2006 - Present</span>
+                    <span class="stat-label">Coverage</span>
+                </div>
+            </div>
+            <div class="hero-cta">
+                <a href="#product-map" class="btn btn-primary">
+                    <span>View Product Map</span>
+                    <i class="fas fa-arrow-down"></i>
+                </a>
+                <a href="index.html" class="btn btn-outline">
+                    <span>Back to Career Portfolio</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <section id="product-map" class="section products-section">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-badge">Mapping View</span>
+                <h2 class="section-title">Product-to-Role Matrix</h2>
+                <p class="section-description">
+                    Specific product inventory by company, product type, delivery stage, and role ownership
+                </p>
+            </div>
+
+            <div class="domain-summary" id="domain-summary"></div>
+
+            <div class="product-map-table">
+                <div class="product-map-head">
+                    <span>Company</span>
+                    <span>Product</span>
+                    <span>Type</span>
+                    <span>Stage</span>
+                    <span>Role</span>
+                </div>
+                <div class="product-map-grid" id="product-map-grid"></div>
+            </div>
+        </div>
+    </section>
+
+    <section id="portfolio-cards" class="section products-section">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-badge">Detailed Portfolio</span>
+                <h2 class="section-title">Individual Product Breakdown</h2>
+                <p class="section-description">
+                    Product-level story per initiative: problem, delivery, outcomes, and evidence trail
+                </p>
+            </div>
+
+            <div class="products-showcase" id="product-portfolio-grid"></div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <p>&copy; 2026 Product Portfolio Map • Ian Cassiman</p>
+                <div class="footer-links">
+                    <a href="index.html" aria-label="Career portfolio"><i class="fas fa-briefcase"></i></a>
+                    <a href="https://linkedin.com/in/iancassiman" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+                    <a href="https://github.com/amerikian" target="_blank" rel="noopener noreferrer" aria-label="GitHub"><i class="fab fa-github"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script defer src="js/particles.js"></script>
+    <script defer src="js/product-portfolio-data.js"></script>
+    <script defer src="js/product-portfolio.js"></script>
+</body>
+</html>

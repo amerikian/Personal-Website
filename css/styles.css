@@ -689,6 +689,12 @@ body {
     gap: 32px;
 }
 
+.section-cta {
+    margin-top: 28px;
+    display: flex;
+    justify-content: center;
+}
+
 .product-card {
     background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(6, 182, 212, 0.1) 100%);
     border: 1px solid rgba(255, 255, 255, 0.1);
@@ -760,6 +766,173 @@ body {
     color: var(--gray-500);
     font-size: 0.75rem;
     text-transform: uppercase;
+}
+
+/* ===================================
+   PRODUCT PORTFOLIO PAGE
+   =================================== */
+.product-hero {
+    min-height: 70vh;
+    padding-top: 140px;
+}
+
+.compact-stats .stat-item {
+    min-width: 180px;
+}
+
+.compact-stats .stat-number {
+    font-size: 1.5rem;
+}
+
+.domain-summary {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.domain-pill {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 999px;
+    color: var(--gray-300);
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 14px;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.domain-pill strong {
+    color: var(--white);
+    font-size: 0.85rem;
+}
+
+.domain-pill.active,
+.domain-pill:hover {
+    border-color: rgba(99, 102, 241, 0.6);
+    color: var(--white);
+    background: rgba(99, 102, 241, 0.18);
+}
+
+.product-map-table {
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    overflow: hidden;
+    background: rgba(10, 12, 24, 0.7);
+}
+
+.product-map-head,
+.product-map-row {
+    display: grid;
+    grid-template-columns: 1.2fr 1.4fr 1fr 0.9fr 1.4fr;
+    gap: 16px;
+    padding: 14px 18px;
+    align-items: start;
+}
+
+.product-map-head {
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--gray-400);
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.04em;
+}
+
+.product-map-row {
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    color: var(--gray-200);
+    font-size: 0.9rem;
+}
+
+.map-company {
+    color: var(--secondary);
+    font-weight: 600;
+}
+
+.map-product {
+    color: var(--white);
+    font-weight: 500;
+}
+
+.portfolio-card .portfolio-role,
+.portfolio-card .portfolio-domain {
+    color: var(--gray-300);
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+}
+
+.portfolio-card .portfolio-block {
+    margin-top: 14px;
+}
+
+.portfolio-card .portfolio-block h4 {
+    color: var(--white);
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 6px;
+}
+
+.portfolio-card .portfolio-block p {
+    color: var(--gray-400);
+    font-size: 0.9rem;
+}
+
+.portfolio-list {
+    margin-left: 18px;
+    color: var(--gray-300);
+    display: grid;
+    gap: 6px;
+    font-size: 0.9rem;
+}
+
+.portfolio-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 14px;
+}
+
+.visual-slots {
+    margin-top: 14px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 10px;
+}
+
+.visual-slot {
+    border: 1px dashed rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.visual-slot-label {
+    display: inline-block;
+    color: var(--secondary);
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 4px;
+}
+
+.visual-slot p {
+    color: var(--gray-400);
+    font-size: 0.78rem;
+    line-height: 1.45;
+}
+
+.portfolio-evidence {
+    margin-top: 14px;
+    color: var(--gray-500);
+    font-size: 0.82rem;
+    line-height: 1.6;
+}
+
+.is-hidden {
+    display: none;
 }
 
 /* ===================================
@@ -1559,6 +1732,11 @@ body {
     .expertise-grid {
         grid-template-columns: repeat(2, 1fr);
     }
+
+    .product-map-head,
+    .product-map-row {
+        grid-template-columns: 1.1fr 1.2fr 0.9fr 0.8fr 1.1fr;
+    }
     
     .globe-container {
         grid-template-columns: 1fr;
@@ -1664,6 +1842,44 @@ body {
         right: 24px;
         left: 24px;
     }
+
+    .product-map-head,
+    .product-map-row {
+        grid-template-columns: 1fr;
+        gap: 6px;
+    }
+
+    .product-map-head {
+        display: none;
+    }
+
+    .product-map-row {
+        padding: 14px;
+    }
+
+    .product-map-row > div::before {
+        content: attr(class);
+        display: block;
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        color: var(--gray-500);
+        margin-bottom: 2px;
+    }
+
+    .product-map-row .map-company::before { content: 'Company'; }
+    .product-map-row .map-product::before { content: 'Product'; }
+    .product-map-row .map-type::before { content: 'Type'; }
+    .product-map-row .map-stage::before { content: 'Stage'; }
+    .product-map-row .map-role::before { content: 'Role'; }
+
+    .domain-summary {
+        gap: 8px;
+    }
+
+    .domain-pill {
+        font-size: 0.8rem;
+        padding: 8px 12px;
+    }
     
     .footer-content {
         gap: 16px;
@@ -1682,6 +1898,10 @@ body {
     
     .products-showcase {
         grid-template-columns: 1fr;
+    }
+
+    .portfolio-card {
+        padding: 20px;
     }
 
     .assessment-summary-card {
