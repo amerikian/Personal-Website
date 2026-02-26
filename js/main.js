@@ -150,6 +150,13 @@ function renderProducts() {
     const productsContainer = document.getElementById('products-showcase');
     if (!productsContainer || !careerData?.products) return;
 
+    const formatImpactLabel = (key) => {
+        return key
+            .replace(/([a-z])([A-Z])/g, '$1 $2')
+            .replace(/_/g, ' ')
+            .trim();
+    };
+
     const productsHTML = careerData.products.map(product => `
         <div class="product-card">
             <div class="product-logo">
@@ -162,7 +169,7 @@ function renderProducts() {
                 ${Object.entries(product.impact).map(([key, value]) => `
                     <div class="impact-stat">
                         <span class="impact-number">${value}</span>
-                        <span class="impact-label">${key}</span>
+                        <span class="impact-label">${formatImpactLabel(key)}</span>
                     </div>
                 `).join('')}
             </div>

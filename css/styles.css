@@ -744,28 +744,34 @@ body {
     margin-bottom: 20px;
 }
 
-.product-impact {
-    display: flex;
-    gap: 24px;
-    padding-top: 20px;
+body:not(.product-portfolio-page) .product-impact {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+    padding-top: 18px;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.impact-stat {
+body:not(.product-portfolio-page) .impact-stat {
     text-align: center;
+    min-width: 0;
 }
 
-.impact-number {
+body:not(.product-portfolio-page) .impact-number {
     display: block;
     color: var(--white);
-    font-size: 1.5rem;
+    font-size: clamp(1.05rem, 2.1vw, 1.5rem);
+    line-height: 1.25;
     font-weight: 700;
+    overflow-wrap: anywhere;
 }
 
-.impact-label {
+body:not(.product-portfolio-page) .impact-label {
     color: var(--gray-500);
-    font-size: 0.75rem;
+    font-size: 0.72rem;
     text-transform: uppercase;
+    letter-spacing: 0.02em;
+    overflow-wrap: anywhere;
 }
 
 /* ===================================
@@ -2102,6 +2108,10 @@ body {
         padding: 8px 12px;
     }
 
+    body:not(.product-portfolio-page) .product-impact {
+        gap: 10px;
+    }
+
     .portfolio-3d-carousel {
         grid-template-columns: 1fr;
         gap: 10px;
@@ -2153,6 +2163,10 @@ body {
     
     .products-showcase {
         grid-template-columns: 1fr;
+    }
+
+    body:not(.product-portfolio-page) .product-impact {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
     .portfolio-card {
