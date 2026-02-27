@@ -981,7 +981,7 @@ body:not(.product-portfolio-page) .impact-label {
 .portfolio-3d-viewport {
     width: 100%;
     overflow: hidden;
-    perspective: 1800px;
+    perspective: 2400px;
     padding: 14px 0 24px;
     position: relative;
     touch-action: pan-y;
@@ -1019,15 +1019,13 @@ body:not(.product-portfolio-page) .impact-label {
     position: absolute;
     top: 0;
     left: 50%;
-    width: min(700px, 78vw);
+    width: min(560px, 64vw);
     transform-origin: center center;
     transition: transform 0.55s ease, opacity 0.45s ease, filter 0.45s ease;
     will-change: transform, opacity;
     transform-style: preserve-3d;
     backface-visibility: hidden;
     isolation: isolate;
-    -webkit-backdrop-filter: blur(8px);
-    backdrop-filter: blur(8px);
 }
 
 .portfolio-3d-carousel.is-dragging .portfolio-3d-track .portfolio-card {
@@ -1036,11 +1034,9 @@ body:not(.product-portfolio-page) .impact-label {
 
 .portfolio-3d-track .portfolio-card.is-active {
     background: linear-gradient(135deg, rgb(18, 25, 56) 0%, rgb(20, 48, 90) 100%);
-    border-color: rgba(255, 255, 255, 0.22);
+    border-color: rgba(191, 219, 254, 0.38);
     box-shadow: 0 28px 80px rgba(2, 6, 23, 0.55), 0 0 0 1px rgba(255, 255, 255, 0.06) inset;
     clip-path: inset(0 0 0 0 round 20px);
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
 }
 
 .portfolio-3d-track .portfolio-card:not(.is-active) .product-name,
@@ -1051,11 +1047,11 @@ body:not(.product-portfolio-page) .impact-label {
 .portfolio-3d-track .portfolio-card:not(.is-active) .portfolio-block,
 .portfolio-3d-track .portfolio-card:not(.is-active) .portfolio-tags,
 .portfolio-3d-track .portfolio-card:not(.is-active) .portfolio-evidence {
-    opacity: 0.46;
+    opacity: 0.56;
 }
 
 .portfolio-3d-track .portfolio-card:not(.is-active) .product-logo {
-    opacity: 0.68;
+    opacity: 0.74;
 }
 
 .portfolio-3d-track .portfolio-card:not(.is-active) {
@@ -1069,16 +1065,16 @@ body:not(.product-portfolio-page) .impact-label {
     position: absolute;
     inset: 0;
     border-radius: inherit;
-    background: linear-gradient(180deg, rgba(8, 15, 38, 0.5) 0%, rgba(8, 15, 38, 0.78) 100%);
+    background: linear-gradient(180deg, rgba(8, 15, 38, 0.22) 0%, rgba(8, 15, 38, 0.42) 100%);
     pointer-events: none;
 }
 
 .portfolio-3d-track .portfolio-card.is-left:not(.is-active) {
-    clip-path: inset(0 58% 0 0 round 20px);
+    clip-path: inset(0 44% 0 0 round 20px);
 }
 
 .portfolio-3d-track .portfolio-card.is-right:not(.is-active) {
-    clip-path: inset(0 0 0 58% round 20px);
+    clip-path: inset(0 0 0 44% round 20px);
 }
 
 .portfolio-3d-track .portfolio-card.is-hidden {
@@ -1124,7 +1120,11 @@ body:not(.product-portfolio-page) .impact-label {
 }
 
 .portfolio-card .portfolio-block {
-    margin-top: 14px;
+    margin-top: 12px;
+}
+
+.product-portfolio-page .portfolio-card {
+    padding: 24px;
 }
 
 .portfolio-card .product-name {

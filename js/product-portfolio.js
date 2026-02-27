@@ -324,9 +324,10 @@ function updateProductCardCarousel(resetActive = false) {
     }
 
     const isMobile = window.innerWidth <= 768;
-    const orbitRadiusX = 300;
-    const orbitRadiusY = 90;
-    const depth = 220;
+    const viewportWidth = window.innerWidth;
+    const orbitRadiusX = Math.min(420, Math.max(300, viewportWidth * 0.34));
+    const orbitRadiusY = 84;
+    const depth = 340;
 
     visibleCards.forEach((card, index) => {
         const delta = normalizedDistance(index - productCarouselState.activeIndex, visibleCards.length);
@@ -347,26 +348,26 @@ function updateProductCardCarousel(resetActive = false) {
         if (Math.abs(delta) > 3) {
             card.style.opacity = '0';
             card.style.pointerEvents = 'none';
-            card.style.transform = 'translate3d(-50%, 95px, -360px) scale(0.55)';
+            card.style.transform = 'translate3d(-50%, 98px, -460px) scale(0.48)';
             card.style.zIndex = '1';
             return;
         }
 
-        const angle = delta * 0.62;
+        const angle = delta * 0.74;
         const distance = Math.abs(delta);
         const x = Math.sin(angle) * orbitRadiusX;
         const y = (1 - Math.cos(angle)) * orbitRadiusY;
-        const z = Math.cos(angle) * depth - 180;
-        const rotateY = -Math.sin(angle) * 38;
-        const scale = 1 - distance * 0.13;
-        const opacity = distance === 0 ? 1 : Math.max(0.24, 0.54 - (distance - 1) * 0.14);
-        const zIndex = delta === 0 ? 40 : 14 - distance;
+        const z = Math.cos(angle) * depth - 280;
+        const rotateY = -Math.sin(angle) * 52;
+        const scale = 1 - distance * 0.16;
+        const opacity = distance === 0 ? 1 : Math.max(0.18, 0.64 - (distance - 1) * 0.18);
+        const zIndex = delta === 0 ? 80 : 28 - distance;
 
         card.style.transform = `translate3d(calc(-50% + ${x}px), ${y}px, ${z}px) rotateY(${rotateY}deg) scale(${scale})`;
         card.style.opacity = String(opacity);
         card.style.zIndex = String(zIndex);
         card.style.pointerEvents = delta === 0 ? 'auto' : 'none';
-        card.style.filter = delta === 0 ? 'none' : 'saturate(0.74) blur(1.15px) brightness(0.9)';
+        card.style.filter = delta === 0 ? 'none' : 'saturate(0.78) blur(0.95px) brightness(0.92)';
         card.classList.toggle('is-active', delta === 0);
         card.classList.toggle('is-left', delta < 0);
         card.classList.toggle('is-right', delta > 0);
@@ -375,7 +376,7 @@ function updateProductCardCarousel(resetActive = false) {
     const activeCard = visibleCards[productCarouselState.activeIndex];
     const carouselHeight = isMobile
         ? Math.max(620, activeCard?.offsetHeight || 0)
-        : Math.max(720, (activeCard?.offsetHeight || 0) + 120);
+        : Math.max(660, (activeCard?.offsetHeight || 0) + 92);
     track.style.height = `${carouselHeight}px`;
 }
 
