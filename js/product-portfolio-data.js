@@ -55,7 +55,7 @@ const productPortfolioData = {
             ],
             evidence: "Resume: Solution Center deployment and adoption rates are explicitly listed.",
             tags: ["Power Apps", "Adoption", "Internal Platform"],
-            icon: "grid-2",
+            icon: "layer-group",
             visualIdeas: [
                 "Screenshot: Solution Center landing page",
                 "Screenshot: adoption trend by LOB",
