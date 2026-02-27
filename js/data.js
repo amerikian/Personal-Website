@@ -233,24 +233,6 @@ const careerData = {
             details: "CEO - Sprinkle Group (Stockholm Exchange listed)"
         },
         { 
-            country: "Myanmar", 
-            flag: "🇲🇲", 
-            cities: ["Yangon"], 
-            years: "<1",
-            lat: 16.8661,
-            lng: 96.1951,
-            details: "Market expansion - First company deals"
-        },
-        { 
-            country: "Cambodia", 
-            flag: "🇰🇭", 
-            cities: ["Phnom Penh"], 
-            years: "<1",
-            lat: 11.5564,
-            lng: 104.9282,
-            details: "Market expansion - First company deals"
-        },
-        { 
             country: "Poland", 
             flag: "🇵🇱", 
             cities: ["Krakow", "Warsaw"], 
@@ -417,7 +399,7 @@ const careerData = {
     // Stats for hero section
     stats: {
         years: 20,
-        countries: 9,
+        countries: 7,
         products: 50,
         users: 1000000  // Estimated product reach
     }
