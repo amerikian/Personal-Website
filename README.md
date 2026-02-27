@@ -17,10 +17,10 @@ An interactive, visually stunning portfolio website showcasing a distinguished c
 - **Hero** - Dynamic intro with animated stats and call-to-action
 - **Career Timeline** - Interactive chronological journey through 25+ years
 - **Expertise** - Skill visualization with animated progress bars
-- **Products** - Showcase of flagship products and their impact
+- **Products** - Index-primary 3D portfolio carousel with measurable impact evidence
 - **Global Map** - Visual representation of worldwide experience
 - **Tech Stack** - Animated technology universe
-- **Contact** - Professional contact form and social links
+- **Contact** - Direct professional links and social channels
 
 ### AI Integration
 - **Career Assistant Chatbot** - AI-powered Q&A about experience and fit
@@ -78,6 +78,8 @@ Personal-Website/
 │   └── styles.css          # All styles with CSS variables
 ├── js/
 │   ├── data.js             # Career data structure
+│   ├── product-portfolio-data.js # Product portfolio dataset for index carousel
+│   ├── product-portfolio.js # 3D product carousel renderer/interaction logic
 │   ├── particles.js        # Particle background system
 │   ├── animations.js       # GSAP scroll animations
 │   └── main.js             # Core functionality & chat
@@ -186,6 +188,12 @@ To populate with actual career data:
 1. **LinkedIn Import** - Use LinkedIn export feature for base data
 2. **Manual Entry** - Update `js/data.js` with detailed information
 3. **Company Research** - Add product details and impact metrics
+
+## 🗂 Architecture Notes
+
+- The primary user experience is now `index.html`.
+- The standalone product portfolio page has been retired from active use.
+- Product carousel rendering remains in `js/product-portfolio.js` and is consumed directly by the `#products` section in `index.html`.
 
 ## 🎨 Recommended VS Code Extensions
 

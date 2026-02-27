@@ -21,7 +21,7 @@ function renderProductCards() {
     cardsContainer.innerHTML = productPortfolioData.mappedProducts
         .map((item) => {
             return `
-            <article class="portfolio-card" data-domain="${item.domain}">
+            <article class="product-card portfolio-card" data-domain="${item.domain}">
                 <div class="product-logo">
                     <i class="fas fa-${item.icon}"></i>
                 </div>

@@ -266,16 +266,15 @@ const careerData = {
     // Certifications & Recognition
     certifications: [
         "Project Management Professional (PMP)",
-        "Certified ScrumMaster (CSM)",
-        "SAFe Agile 6.0 Practitioner",
+        "Google Data Analytics Certificates",
         "3x Product Innovation Award Winner"
     ],
 
     // Patents
     patents: [
-        "EASY-CONNECT ATTACHMENT HEAD AND Related U.S. Application",
+        "EASY-CONNECT ATTACHMENT HEAD",
         "Data ADAPTER",
-        "Modular accessory connector"
+        "Modular Accessory Connector"
     ],
 
     // Languages

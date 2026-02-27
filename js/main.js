@@ -8,7 +8,6 @@ document.addEventListener('DOMContentLoaded', () => {
     initNavigation();
     initMobileMenu();
     renderTimeline();
-    renderCredentials();
     renderAssessment();
     renderLocations();
     renderTechStack();
@@ -16,17 +15,6 @@ document.addEventListener('DOMContentLoaded', () => {
     initContactLinks();
     initContactCardClicks();
 });
-
-const homeProductsCarouselState = {
-    activeIndex: 0,
-    drag: {
-        pointerId: null,
-        startX: 0,
-        lastX: 0,
-        moved: false,
-        stepCount: 0
-    }
-};
 
 function initContactLinks() {
     const profile = careerData?.profile || {};
@@ -154,62 +142,6 @@ function renderTimeline() {
     timelineContainer.innerHTML = timelineHTML;
 }
 
-/**
- * Render Credentials & Recognition
- */
-function renderCredentials() {
-    const container = document.getElementById('credentials-grid');
-    if (!container || !careerData) return;
-
-    let html = '';
-
-    // Certifications
-    if (careerData.certifications && careerData.certifications.length > 0) {
-        html += `
-            <div class="credential-category">
-                <div class="credential-header">
-                    <i class="fas fa-certificate"></i>
-                    <h3>Certifications & Awards</h3>
-                </div>
-                <ul class="credential-list">
-                    ${careerData.certifications.map(cert => `<li>${cert}</li>`).join('')}
-                </ul>
-            </div>
-        `;
-    }
-
-    // Patents
-    if (careerData.patents && careerData.patents.length > 0) {
-        html += `
-            <div class="credential-category">
-                <div class="credential-header">
-                    <i class="fas fa-lightbulb"></i>
-                    <h3>Patents</h3>
-                </div>
-                <ul class="credential-list">
-                    ${careerData.patents.map(patent => `<li>${patent}</li>`).join('')}
-                </ul>
-            </div>
-        `;
-    }
-
-    // Languages
-    if (careerData.languages && careerData.languages.length > 0) {
-        html += `
-            <div class="credential-category">
-                <div class="credential-header">
-                    <i class="fas fa-language"></i>
-                    <h3>Languages</h3>
-                </div>
-                <ul class="credential-list">
-                    ${careerData.languages.map(lang => `<li><strong>${lang.lang}</strong>: ${lang.level}</li>`).join('')}
-                </ul>
-            </div>
-        `;
-    }
-
-    container.innerHTML = html;
-}
 
 /**
  * Render Employer-Ready Assessment
