@@ -1038,11 +1038,11 @@ body:not(.product-portfolio-page) .impact-label {
 }
 
 .portfolio-3d-track .portfolio-card.is-left:not(.is-active) {
-    clip-path: inset(0 48% 0 0 round 20px);
+    clip-path: inset(0 56% 0 0 round 20px);
 }
 
 .portfolio-3d-track .portfolio-card.is-right:not(.is-active) {
-    clip-path: inset(0 0 0 48% round 20px);
+    clip-path: inset(0 0 0 56% round 20px);
 }
 
 .portfolio-3d-track .portfolio-card.is-hidden {
