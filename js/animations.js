@@ -36,26 +36,6 @@ function initDynamicContentAnimations() {
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (reducedMotion) return;
     
-    // Product cards
-    const productCards = document.querySelectorAll('.product-card');
-    if (productCards.length > 0) {
-        gsap.fromTo('.product-card', 
-            { opacity: 0, y: 60 },
-            {
-                scrollTrigger: {
-                    trigger: '.products-showcase',
-                    start: 'top 85%',
-                    toggleActions: 'play none none reverse'
-                },
-                opacity: 1,
-                y: 0,
-                stagger: 0.15,
-                duration: 0.8,
-                ease: 'power3.out'
-            }
-        );
-    }
-
     // Location cards
     const locationCards = document.querySelectorAll('.location-card');
     if (locationCards.length > 0) {
@@ -71,6 +51,26 @@ function initDynamicContentAnimations() {
                 x: 0,
                 stagger: 0.1,
                 duration: 0.6,
+                ease: 'power3.out'
+            }
+        );
+    }
+
+    // Credential categories
+    const credentialCategories = document.querySelectorAll('.credential-category');
+    if (credentialCategories.length > 0) {
+        gsap.fromTo('.credential-category',
+            { opacity: 0, y: 40 },
+            {
+                scrollTrigger: {
+                    trigger: '.credentials-grid',
+                    start: 'top 85%',
+                    toggleActions: 'play none none reverse'
+                },
+                opacity: 1,
+                y: 0,
+                stagger: 0.15,
+                duration: 0.7,
                 ease: 'power3.out'
             }
         );
@@ -215,7 +215,7 @@ function initScrollAnimations() {
         ease: 'power3.out'
     });
 
-    // Note: Product cards, location cards, and tech icons are animated by
+    // Note: Location cards and tech icons are animated by
     // initDynamicContentAnimations() which runs after main.js renders them
 
     // Contact section
@@ -353,7 +353,7 @@ function initHoverEffects() {
     });
 
     // Card tilt effect
-    const cards = document.querySelectorAll('.expertise-card, .product-card');
+    const cards = document.querySelectorAll('.expertise-card');
     
     cards.forEach(card => {
         card.addEventListener('mousemove', (e) => {

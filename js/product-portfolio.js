@@ -1,11 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    initPortfolioNavigation();
-    renderProductPortfolioMeta();
-    renderProductMap();
     renderProductCards();
-    renderDomainSummary();
-    bindDomainFilters();
-    init3DPortfolioExperience();
 });
 
 const productCarouselState = {
@@ -20,67 +14,6 @@ const productCarouselState = {
     }
 };
 
-function initPortfolioNavigation() {
-    const navToggle = document.getElementById('portfolio-nav-toggle');
-    const navMenu = document.getElementById('portfolio-nav-menu');
-    const navLinks = document.querySelectorAll('#portfolio-nav-menu .nav-link');
-
-    if (navToggle && navMenu) {
-        navToggle.addEventListener('click', () => {
-            navMenu.classList.toggle('active');
-            navToggle.classList.toggle('active');
-        });
-    }
-
-    navLinks.forEach((link) => {
-        link.addEventListener('click', (event) => {
-            const href = link.getAttribute('href') || '';
-            if (!href.startsWith('#')) return;
-
-            event.preventDefault();
-            const target = document.querySelector(href);
-            if (target) target.scrollIntoView({ behavior: 'smooth' });
-
-            navMenu?.classList.remove('active');
-            navToggle?.classList.remove('active');
-        });
-    });
-}
-
-function renderProductPortfolioMeta() {
-    const meta = productPortfolioData?.meta;
-    if (!meta) return;
-
-    const titleEl = document.getElementById('portfolio-meta-title');
-    const summaryEl = document.getElementById('portfolio-meta-summary');
-    const periodEl = document.getElementById('portfolio-meta-period');
-    const countEl = document.getElementById('portfolio-count');
-
-    if (titleEl) titleEl.textContent = meta.title;
-    if (summaryEl) summaryEl.textContent = meta.summary;
-    if (periodEl) periodEl.textContent = meta.period;
-    if (countEl) countEl.textContent = String(productPortfolioData?.mappedProducts?.length || 0);
-}
-
-function renderProductMap() {
-    const mapContainer = document.getElementById('product-map-grid');
-    if (!mapContainer || !productPortfolioData?.mappedProducts) return;
-
-    const rows = productPortfolioData.mappedProducts
-        .map((item) => `
-            <article class="product-map-row depth-row" data-domain="${item.domain}" data-tilt-item data-depth="8">
-                <div class="map-company">${item.company}</div>
-                <div class="map-product">${item.productName}</div>
-                <div class="map-type">${item.productType}</div>
-                <div class="map-stage">${item.stage}</div>
-                <div class="map-role">${item.role}</div>
-            </article>
-        `)
-        .join('');
-
-    mapContainer.innerHTML = rows;
-}
-
 function renderProductCards() {
     const cardsContainer = document.getElementById('product-portfolio-grid');
     if (!cardsContainer || !productPortfolioData?.mappedProducts) return;
@@ -88,7 +21,7 @@ function renderProductCards() {
     cardsContainer.innerHTML = productPortfolioData.mappedProducts
         .map((item) => {
             return `
-            <article class="product-card portfolio-card" data-domain="${item.domain}">
+            <article class="portfolio-card" data-domain="${item.domain}">
                 <div class="product-logo">
                     <i class="fas fa-${item.icon}"></i>
                 </div>
@@ -119,66 +52,6 @@ function renderProductCards() {
     initProductCardCarousel();
 }
 
-function renderDomainSummary() {
-    const summaryContainer = document.getElementById('domain-summary');
-    if (!summaryContainer || !productPortfolioData?.mappedProducts) return;
-
-    const counts = productPortfolioData.mappedProducts.reduce((acc, item) => {
-        acc[item.domain] = (acc[item.domain] || 0) + 1;
-        return acc;
-    }, {});
-
-    const summaryHtml = Object.entries(counts)
-        .sort((a, b) => b[1] - a[1])
-        .map(([domain, count]) => `
-            <button class="domain-pill" data-domain-filter="${domain}">
-                <span>${domain}</span>
-                <strong>${count}</strong>
-            </button>
-        `)
-        .join('');
-
-    summaryContainer.innerHTML = `
-        <button class="domain-pill active" data-domain-filter="all">
-            <span>All Domains</span>
-            <strong>${productPortfolioData.mappedProducts.length}</strong>
-        </button>
-        ${summaryHtml}
-    `;
-}
-
-function bindDomainFilters() {
-    const summaryContainer = document.getElementById('domain-summary');
-    if (!summaryContainer) return;
-
-    summaryContainer.addEventListener('click', (event) => {
-        const button = event.target.closest('[data-domain-filter]');
-        if (!button) return;
-
-        const filter = button.getAttribute('data-domain-filter');
-        summaryContainer.querySelectorAll('[data-domain-filter]').forEach((el) => {
-            el.classList.remove('active');
-        });
-        button.classList.add('active');
-
-        applyDomainFilter(filter);
-    });
-}
-
-function applyDomainFilter(filter) {
-    const rows = document.querySelectorAll('#product-map-grid .product-map-row');
-    const cards = document.querySelectorAll('#product-portfolio-grid .portfolio-card');
-
-    [rows, cards].forEach((collection) => {
-        collection.forEach((item) => {
-            const isVisible = filter === 'all' || item.getAttribute('data-domain') === filter;
-            item.classList.toggle('is-hidden', !isVisible);
-        });
-    });
-
-    updateProductCardCarousel(true);
-}
-
 function initProductCardCarousel() {
     const carousel = document.getElementById('portfolio-3d-carousel');
     const viewport = carousel?.querySelector('.portfolio-3d-viewport');
@@ -199,8 +72,7 @@ function initProductCardCarousel() {
 }
 
 function getVisibleProductCards() {
-    const allCards = Array.from(document.querySelectorAll('#product-portfolio-grid .portfolio-card'));
-    return allCards.filter((card) => !card.classList.contains('is-hidden'));
+    return Array.from(document.querySelectorAll('#product-portfolio-grid .portfolio-card'));
 }
 
 function shiftProductCardCarousel(direction) {
@@ -315,7 +187,7 @@ function updateProductCardCarousel(resetActive = false) {
         card.style.zIndex = '';
         card.style.pointerEvents = '';
         card.style.filter = '';
-        card.style.display = card.classList.contains('is-hidden') ? 'none' : '';
+        card.style.display = '';
     });
 
     if (!visibleCards.length) {
@@ -382,46 +254,4 @@ function updateProductCardCarousel(resetActive = false) {
         ? Math.max(620, activeCard?.offsetHeight || 0)
         : Math.max(660, (activeCard?.offsetHeight || 0) + 92);
     track.style.height = `${carouselHeight}px`;
-}
-
-function init3DPortfolioExperience() {
-    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (prefersReduced) return;
-
-    const applyTilt = (element, event) => {
-        const rect = element.getBoundingClientRect();
-        const x = (event.clientX - rect.left) / rect.width;
-        const y = (event.clientY - rect.top) / rect.height;
-        const depth = Number(element.getAttribute('data-depth') || 10);
-        const rotateY = (x - 0.5) * depth;
-        const rotateX = (0.5 - y) * depth;
-
-        element.style.transform = `perspective(1200px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateZ(0)`;
-    };
-
-    const clearTilt = (element) => {
-        element.style.transform = '';
-    };
-
-    const bindTilt = (selector) => {
-        document.querySelectorAll(selector).forEach((element) => {
-            if (element.classList.contains('portfolio-card')) return;
-            element.addEventListener('mousemove', (event) => applyTilt(element, event));
-            element.addEventListener('mouseleave', () => clearTilt(element));
-        });
-    };
-
-    bindTilt('[data-tilt]');
-    bindTilt('[data-tilt-item]');
-
-    const depthLayers = document.querySelectorAll('.hero-depth-layer');
-    window.addEventListener('mousemove', (event) => {
-        const xRatio = (event.clientX / window.innerWidth - 0.5) * 2;
-        const yRatio = (event.clientY / window.innerHeight - 0.5) * 2;
-
-        depthLayers.forEach((layer, index) => {
-            const factor = (index + 1) * 10;
-            layer.style.transform = `translate3d(${xRatio * factor}px, ${yRatio * factor}px, 0)`;
-        });
-    });
 }

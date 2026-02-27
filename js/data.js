@@ -266,7 +266,9 @@ const careerData = {
     // Certifications & Recognition
     certifications: [
         "Project Management Professional (PMP)",
-        "Google Data Analytics Certificates",
+        "Google Data Analytics: Ask Questions to Make Data-Driven Decisions",
+        "Google Data Analytics: Foundations: Data, Data, Everywhere",
+        "Google Data Analytics: Prepare Data for Exploration",
         "3x Product Innovation Award Winner"
     ],
 
