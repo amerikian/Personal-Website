@@ -13,31 +13,6 @@ const productPortfolioData = {
 
     mappedProducts: [
         {
-            id: "rsm-powerbi-ado-dashboard",
-            productName: "Azure DevOps Leadership Status Dashboard (Power BI)",
-            company: "RSM US LLP",
-            period: "2022 - Present",
-            role: "Project Manager / Scrum Master",
-            domain: "Professional Services / DevOps",
-            productType: "Internal Product",
-            stage: "Operational",
-            users: "Audit leadership + program stakeholders",
-            problem: "Leadership needed a consolidated view of Azure DevOps status across active delivery work.",
-            delivery: "Built and rolled out a Power BI status dashboard for delivery reporting and leadership visibility.",
-            outcomes: [
-                "Improved executive visibility into project progress",
-                "Created repeatable reporting cadence for audit transformation"
-            ],
-            evidence: "Resume: Previous accomplishments cite Power BI dashboard for Azure DevOps project status.",
-            tags: ["Power BI", "Azure DevOps", "Executive Reporting"],
-            icon: "gauge-high",
-            visualIdeas: [
-                "Screenshot: leadership status dashboard home view",
-                "Screenshot: sprint/release KPI panel",
-                "Screenshot: executive summary tile layout"
-            ]
-        },
-        {
             id: "rsm-sec-workpaper-pilot",
             productName: "SEC Workpaper Pilot (Audit Digital Transformation)",
             company: "RSM US LLP",
