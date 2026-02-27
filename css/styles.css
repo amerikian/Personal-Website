@@ -1049,19 +1049,38 @@ body:not(.product-portfolio-page) .impact-label {
 .portfolio-3d-track .portfolio-card:not(.is-active) .portfolio-block,
 .portfolio-3d-track .portfolio-card:not(.is-active) .portfolio-tags,
 .portfolio-3d-track .portfolio-card:not(.is-active) .portfolio-evidence {
-    opacity: 0.16;
+    opacity: 0;
 }
 
 .portfolio-3d-track .portfolio-card:not(.is-active) .product-logo {
-    opacity: 0.45;
+    opacity: 0;
+}
+
+.portfolio-3d-track .portfolio-card:not(.is-active) {
+    background: linear-gradient(135deg, rgba(18, 25, 56, 0.58) 0%, rgba(20, 48, 90, 0.52) 100%);
+    border-color: rgba(147, 197, 253, 0.18);
+    box-shadow: 0 10px 28px rgba(2, 6, 23, 0.34);
+}
+
+.portfolio-3d-track .portfolio-card:not(.is-active) > * {
+    visibility: hidden;
+}
+
+.portfolio-3d-track .portfolio-card:not(.is-active)::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(180deg, rgba(8, 15, 38, 0.5) 0%, rgba(8, 15, 38, 0.78) 100%);
+    pointer-events: none;
 }
 
 .portfolio-3d-track .portfolio-card.is-left:not(.is-active) {
-    clip-path: inset(0 56% 0 0 round 20px);
+    clip-path: inset(0 64% 0 0 round 20px);
 }
 
 .portfolio-3d-track .portfolio-card.is-right:not(.is-active) {
-    clip-path: inset(0 0 0 56% round 20px);
+    clip-path: inset(0 0 0 64% round 20px);
 }
 
 .portfolio-3d-track .portfolio-card.is-hidden {
