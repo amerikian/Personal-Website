@@ -63,7 +63,7 @@ const careerData = {
             year: "2014",
             title: "Senior Product Manager",
             company: "SportsArt",
-            location: "Seattle Area",
+            location: "San Francisco Area",
             description: "Managed global commercial fitness product line. Planned new product and rebranding launch at Europe's largest fitness trade show. Rationalized product line, finalized touchscreen console software and mobile apps.",
             tags: ["Commercial Fitness", "Global PM", "Rebranding", "Mobile Apps"],
             icon: "dumbbell"
@@ -190,7 +190,7 @@ const careerData = {
         { 
             country: "United States", 
             flag: "🇺🇸", 
-            cities: ["Madison, WI", "Seattle", "Ironwood, MI"], 
+            cities: ["Madison, WI", "San Francisco", "Ironwood, MI"], 
             years: "18+",
             lat: 43.0731,
             lng: -89.4012,
