@@ -273,9 +273,9 @@ const careerData = {
 
     // Patents
     patents: [
-        "EASY-CONNECT ATTACHMENT HEAD",
+        "EASY-CONNECT ATTACHMENT HEAD AND Related U.S. Application",
         "Data ADAPTER",
-        "Modular Accessory Connector"
+        "Modular accessory connector"
     ],
 
     // Languages
