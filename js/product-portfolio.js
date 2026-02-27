@@ -359,14 +359,14 @@ function updateProductCardCarousel(resetActive = false) {
         const z = Math.cos(angle) * depth - 180;
         const rotateY = -Math.sin(angle) * 38;
         const scale = 1 - distance * 0.13;
-        const opacity = distance === 0 ? 1 : Math.max(0.16, 0.38 - (distance - 1) * 0.1);
+        const opacity = distance === 0 ? 1 : Math.max(0.24, 0.54 - (distance - 1) * 0.14);
         const zIndex = delta === 0 ? 40 : 14 - distance;
 
         card.style.transform = `translate3d(calc(-50% + ${x}px), ${y}px, ${z}px) rotateY(${rotateY}deg) scale(${scale})`;
         card.style.opacity = String(opacity);
         card.style.zIndex = String(zIndex);
         card.style.pointerEvents = delta === 0 ? 'auto' : 'none';
-        card.style.filter = delta === 0 ? 'none' : 'saturate(0.62) blur(0.9px) brightness(0.82)';
+        card.style.filter = delta === 0 ? 'none' : 'saturate(0.74) blur(1.15px) brightness(0.9)';
         card.classList.toggle('is-active', delta === 0);
         card.classList.toggle('is-left', delta < 0);
         card.classList.toggle('is-right', delta > 0);
