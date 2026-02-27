@@ -69,28 +69,11 @@ function renderProductMap() {
     const rows = productPortfolioData.mappedProducts
         .map((item) => `
             <article class="product-map-row depth-row" data-domain="${item.domain}" data-tilt-item data-depth="8">
-                <div class="map-main">
-                    <p class="map-company">${item.company}</p>
-                    <h3 class="map-product">${item.productName}</h3>
-                </div>
-                <div class="map-meta">
-                    <div class="map-chip">
-                        <span class="chip-label">Type</span>
-                        <span class="chip-value map-type">${item.productType}</span>
-                    </div>
-                    <div class="map-chip">
-                        <span class="chip-label">Stage</span>
-                        <span class="chip-value map-stage">${item.stage}</span>
-                    </div>
-                    <div class="map-chip map-chip-role">
-                        <span class="chip-label">Role</span>
-                        <span class="chip-value map-role">${item.role}</span>
-                    </div>
-                    <div class="map-chip">
-                        <span class="chip-label">Domain</span>
-                        <span class="chip-value map-domain">${item.domain}</span>
-                    </div>
-                </div>
+                <div class="map-company">${item.company}</div>
+                <div class="map-product">${item.productName}</div>
+                <div class="map-type">${item.productType}</div>
+                <div class="map-stage">${item.stage}</div>
+                <div class="map-role">${item.role}</div>
             </article>
         `)
         .join('');
