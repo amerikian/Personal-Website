@@ -15,7 +15,8 @@ const productCarouselState = {
         isDragging: false,
         startX: 0,
         lastX: 0,
-        moved: false
+        moved: false,
+        stepCount: 0
     }
 };
 
@@ -213,7 +214,7 @@ function shiftProductCardCarousel(direction) {
 function bindProductCarouselDrag(carousel, viewport) {
     if (viewport.dataset.dragBound === 'true') return;
 
-    const dragThresholdPx = 90;
+    const getDragThreshold = () => (window.innerWidth <= 768 ? 56 : 72);
 
     const shouldIgnoreDragStart = (target) => {
         return Boolean(target.closest('.visual-carousel button, .visual-carousel .carousel-dot, .portfolio-carousel-nav, a, input, textarea, select, label'));
@@ -228,6 +229,7 @@ function bindProductCarouselDrag(carousel, viewport) {
         productCarouselState.drag.startX = event.clientX;
         productCarouselState.drag.lastX = event.clientX;
         productCarouselState.drag.moved = false;
+        productCarouselState.drag.stepCount = 0;
 
         carousel.classList.add('is-dragging');
         viewport.setPointerCapture(event.pointerId);
@@ -244,10 +246,11 @@ function bindProductCarouselDrag(carousel, viewport) {
             productCarouselState.drag.moved = true;
         }
 
-        if (Math.abs(deltaX) >= dragThresholdPx) {
+        if (Math.abs(deltaX) >= getDragThreshold()) {
             const direction = deltaX < 0 ? 1 : -1;
             shiftProductCardCarousel(direction);
             productCarouselState.drag.lastX = event.clientX;
+            productCarouselState.drag.stepCount += 1;
         }
     };
 
@@ -256,7 +259,7 @@ function bindProductCarouselDrag(carousel, viewport) {
 
         const totalDeltaX = event.clientX - productCarouselState.drag.startX;
 
-        if (Math.abs(totalDeltaX) >= 36) {
+        if (productCarouselState.drag.stepCount === 0 && Math.abs(totalDeltaX) >= 36) {
             const direction = totalDeltaX < 0 ? 1 : -1;
             shiftProductCardCarousel(direction);
         }
@@ -265,6 +268,7 @@ function bindProductCarouselDrag(carousel, viewport) {
         productCarouselState.drag.isDragging = false;
         productCarouselState.drag.startX = 0;
         productCarouselState.drag.lastX = 0;
+        productCarouselState.drag.stepCount = 0;
 
         carousel.classList.remove('is-dragging');
     };
