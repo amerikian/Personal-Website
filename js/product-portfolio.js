@@ -85,10 +85,7 @@ function renderProductCards() {
     if (!cardsContainer || !productPortfolioData?.mappedProducts) return;
 
     cardsContainer.innerHTML = productPortfolioData.mappedProducts
-        .map((item, index) => {
-            const visuals = getVisualsForProduct(item);
-            const carouselId = `carousel-${index}`;
-
+        .map((item) => {
             return `
             <article class="product-card portfolio-card" data-domain="${item.domain}">
                 <div class="product-logo">
@@ -99,29 +96,6 @@ function renderProductCards() {
                 <p class="portfolio-role"><strong>Role:</strong> ${item.role}</p>
                 <p class="portfolio-domain"><strong>Domain:</strong> ${item.domain}</p>
                 <p class="product-description">${item.delivery}</p>
-                <div class="visual-carousel" data-carousel-id="${carouselId}">
-                    <div class="carousel-track">
-                        ${visuals.map((visual, visualIndex) => `
-                            <figure class="carousel-slide ${visualIndex === 0 ? 'active' : ''}">
-                                <img src="${visual.src}" alt="${visual.alt}">
-                                <figcaption>${visual.caption}</figcaption>
-                            </figure>
-                        `).join('')}
-                    </div>
-                    <div class="carousel-controls">
-                        <button class="carousel-btn" data-carousel-nav="prev" aria-label="Previous image">
-                            <i class="fas fa-chevron-left"></i>
-                        </button>
-                        <div class="carousel-dots">
-                            ${visuals.map((_, visualIndex) => `
-                                <button class="carousel-dot ${visualIndex === 0 ? 'active' : ''}" data-carousel-dot="${visualIndex}" aria-label="Go to image ${visualIndex + 1}"></button>
-                            `).join('')}
-                        </div>
-                        <button class="carousel-btn" data-carousel-nav="next" aria-label="Next image">
-                            <i class="fas fa-chevron-right"></i>
-                        </button>
-                    </div>
-                </div>
                 <div class="portfolio-block">
                     <h4>Problem</h4>
                     <p>${item.problem}</p>
@@ -141,127 +115,7 @@ function renderProductCards() {
         })
         .join('');
 
-    initVisualCarousels();
     initProductCardCarousel();
-}
-
-function getVisualsForProduct(item) {
-    const id = item?.id || '';
-    const domain = item?.domain || '';
-    const ideas = item?.visualIdeas || [
-        'Product snapshot',
-        'Feature walkthrough',
-        'Outcome or launch artifact'
-    ];
-
-    const imageSet = (() => {
-        if (id.startsWith('rsm-')) return [
-            'images/products/devops-dashboard.svg',
-            'images/products/audit-pilot.svg',
-            'images/products/global-portfolio.svg'
-        ];
-
-        if (id.startsWith('sky-')) return [
-            'images/products/fintech-platform.svg',
-            'images/products/global-portfolio.svg',
-            'images/products/devops-dashboard.svg'
-        ];
-
-        if (id.startsWith('amfam-')) return [
-            'images/products/iot-innovation.svg',
-            'images/products/partner-ecosystem.svg',
-            'images/products/devops-dashboard.svg'
-        ];
-
-        if (id.startsWith('sportsart-')) return [
-            'images/products/fitness-launch.svg',
-            'images/products/global-portfolio.svg',
-            'images/products/award-product.svg'
-        ];
-
-        if (id.startsWith('pacific-')) return [
-            'images/products/patent-product.svg',
-            'images/products/global-portfolio.svg',
-            'images/products/fitness-launch.svg'
-        ];
-
-        if (id.startsWith('jht-award-')) return [
-            'images/products/award-product.svg',
-            'images/products/fitness-launch.svg',
-            'images/products/global-portfolio.svg'
-        ];
-
-        if (id.startsWith('jht-')) return [
-            'images/products/fitness-launch.svg',
-            'images/products/global-portfolio.svg',
-            'images/products/award-product.svg'
-        ];
-
-        if (domain.includes('Fintech')) return [
-            'images/products/fintech-platform.svg',
-            'images/products/global-portfolio.svg',
-            'images/products/devops-dashboard.svg'
-        ];
-
-        if (domain.includes('IoT') || domain.includes('Insurance')) return [
-            'images/products/iot-innovation.svg',
-            'images/products/partner-ecosystem.svg',
-            'images/products/devops-dashboard.svg'
-        ];
-
-        if (domain.includes('Fitness')) return [
-            'images/products/fitness-launch.svg',
-            'images/products/global-portfolio.svg',
-            'images/products/award-product.svg'
-        ];
-
-        return [
-            'images/products/global-portfolio.svg',
-            'images/products/devops-dashboard.svg',
-            'images/products/fitness-launch.svg'
-        ];
-    })();
-
-    return ideas.slice(0, 3).map((caption, index) => ({
-        src: imageSet[index] || imageSet[0],
-        caption,
-        alt: `${item.productName} visual ${index + 1}`
-    }));
-}
-
-function initVisualCarousels() {
-    document.querySelectorAll('.visual-carousel').forEach((carousel) => {
-        const slides = carousel.querySelectorAll('.carousel-slide');
-        const dots = carousel.querySelectorAll('.carousel-dot');
-        const prevBtn = carousel.querySelector('[data-carousel-nav="prev"]');
-        const nextBtn = carousel.querySelector('[data-carousel-nav="next"]');
-
-        if (!slides.length) return;
-
-        let activeIndex = 0;
-
-        const setActiveSlide = (nextIndex) => {
-            activeIndex = ((nextIndex % slides.length) + slides.length) % slides.length;
-
-            slides.forEach((slide, index) => {
-                slide.classList.toggle('active', index === activeIndex);
-            });
-
-            dots.forEach((dot, index) => {
-                dot.classList.toggle('active', index === activeIndex);
-            });
-        };
-
-        prevBtn?.addEventListener('click', () => setActiveSlide(activeIndex - 1));
-        nextBtn?.addEventListener('click', () => setActiveSlide(activeIndex + 1));
-
-        dots.forEach((dot) => {
-            dot.addEventListener('click', () => {
-                const nextIndex = Number(dot.getAttribute('data-carousel-dot'));
-                if (!Number.isNaN(nextIndex)) setActiveSlide(nextIndex);
-            });
-        });
-    });
 }
 
 function renderDomainSummary() {
