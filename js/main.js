@@ -17,6 +17,17 @@ document.addEventListener('DOMContentLoaded', () => {
     initContactCardClicks();
 });
 
+const homeProductsCarouselState = {
+    activeIndex: 0,
+    drag: {
+        pointerId: null,
+        startX: 0,
+        lastX: 0,
+        moved: false,
+        stepCount: 0
+    }
+};
+
 function initContactLinks() {
     const profile = careerData?.profile || {};
     const linkedInUrl = profile.linkedIn || 'https://linkedin.com';
@@ -158,7 +169,7 @@ function renderProducts() {
     };
 
     const productsHTML = careerData.products.map(product => `
-        <div class="product-card">
+        <div class="product-card home-product-card">
             <div class="product-logo">
                 <i class="fas fa-${product.icon}"></i>
             </div>
@@ -177,6 +188,155 @@ function renderProducts() {
     `).join('');
 
     productsContainer.innerHTML = productsHTML;
+    initHomeProductsCarousel();
+}
+
+function initHomeProductsCarousel() {
+    const carousel = document.getElementById('home-products-carousel');
+    const viewport = carousel?.querySelector('.home-products-viewport');
+    const prevBtn = document.getElementById('home-products-prev');
+    const nextBtn = document.getElementById('home-products-next');
+    const track = document.getElementById('products-showcase');
+    if (!carousel || !viewport || !prevBtn || !nextBtn || !track) return;
+
+    const cards = () => Array.from(track.querySelectorAll('.home-product-card'));
+    if (!cards().length) return;
+
+    if (!carousel.dataset.bound) {
+        prevBtn.addEventListener('click', () => shiftHomeProductsCarousel(-1));
+        nextBtn.addEventListener('click', () => shiftHomeProductsCarousel(1));
+
+        viewport.addEventListener('pointerdown', (event) => {
+            if (event.pointerType === 'mouse' && event.button !== 0) return;
+            homeProductsCarouselState.drag.pointerId = event.pointerId;
+            homeProductsCarouselState.drag.startX = event.clientX;
+            homeProductsCarouselState.drag.lastX = event.clientX;
+            homeProductsCarouselState.drag.moved = false;
+            homeProductsCarouselState.drag.stepCount = 0;
+            carousel.classList.add('is-dragging');
+            viewport.setPointerCapture(event.pointerId);
+        });
+
+        viewport.addEventListener('pointermove', (event) => {
+            if (event.pointerId !== homeProductsCarouselState.drag.pointerId) return;
+            const deltaX = event.clientX - homeProductsCarouselState.drag.lastX;
+            const totalDelta = event.clientX - homeProductsCarouselState.drag.startX;
+            if (Math.abs(totalDelta) > 6) homeProductsCarouselState.drag.moved = true;
+
+            const threshold = window.innerWidth <= 768 ? 54 : 70;
+            if (Math.abs(deltaX) >= threshold) {
+                shiftHomeProductsCarousel(deltaX < 0 ? 1 : -1);
+                homeProductsCarouselState.drag.lastX = event.clientX;
+                homeProductsCarouselState.drag.stepCount += 1;
+            }
+        });
+
+        const stopDrag = (event) => {
+            if (event.pointerId !== homeProductsCarouselState.drag.pointerId) return;
+            const totalDelta = event.clientX - homeProductsCarouselState.drag.startX;
+            if (homeProductsCarouselState.drag.stepCount === 0 && Math.abs(totalDelta) >= 34) {
+                shiftHomeProductsCarousel(totalDelta < 0 ? 1 : -1);
+            }
+            homeProductsCarouselState.drag.pointerId = null;
+            homeProductsCarouselState.drag.startX = 0;
+            homeProductsCarouselState.drag.lastX = 0;
+            homeProductsCarouselState.drag.stepCount = 0;
+            carousel.classList.remove('is-dragging');
+        };
+
+        viewport.addEventListener('pointerup', stopDrag);
+        viewport.addEventListener('pointercancel', stopDrag);
+        viewport.addEventListener('pointerleave', stopDrag);
+        viewport.addEventListener('click', (event) => {
+            if (!homeProductsCarouselState.drag.moved) return;
+            event.preventDefault();
+            event.stopPropagation();
+            homeProductsCarouselState.drag.moved = false;
+        }, true);
+
+        window.addEventListener('resize', () => updateHomeProductsCarousel());
+        carousel.dataset.bound = 'true';
+    }
+
+    homeProductsCarouselState.activeIndex = 0;
+    updateHomeProductsCarousel(true);
+}
+
+function shiftHomeProductsCarousel(direction) {
+    const track = document.getElementById('products-showcase');
+    if (!track) return;
+    const cards = Array.from(track.querySelectorAll('.home-product-card'));
+    if (!cards.length) return;
+
+    homeProductsCarouselState.activeIndex = (homeProductsCarouselState.activeIndex + direction + cards.length) % cards.length;
+    updateHomeProductsCarousel();
+}
+
+function updateHomeProductsCarousel(resetActive = false) {
+    const track = document.getElementById('products-showcase');
+    const prevBtn = document.getElementById('home-products-prev');
+    const nextBtn = document.getElementById('home-products-next');
+    if (!track) return;
+
+    const cards = Array.from(track.querySelectorAll('.home-product-card'));
+    if (!cards.length) return;
+    if (resetActive || homeProductsCarouselState.activeIndex >= cards.length) {
+        homeProductsCarouselState.activeIndex = 0;
+    }
+
+    const isMobile = window.innerWidth <= 768;
+    const orbitRadiusX = Math.min(390, Math.max(260, window.innerWidth * 0.28));
+    const orbitRadiusY = 70;
+    const depth = 250;
+
+    cards.forEach((card, index) => {
+        let delta = index - homeProductsCarouselState.activeIndex;
+        const midpoint = Math.floor(cards.length / 2);
+        if (delta > midpoint) delta -= cards.length;
+        if (delta < -midpoint) delta += cards.length;
+
+        card.classList.toggle('is-active', delta === 0);
+        if (isMobile) {
+            const active = delta === 0;
+            card.style.display = active ? 'block' : 'none';
+            card.style.transform = 'translate3d(-50%, 0, 0) rotateY(0deg) scale(1)';
+            card.style.opacity = active ? '1' : '0';
+            card.style.zIndex = active ? '30' : '1';
+            return;
+        }
+
+        if (Math.abs(delta) > 3) {
+            card.style.opacity = '0';
+            card.style.transform = 'translate3d(-50%, 90px, -360px) scale(0.55)';
+            card.style.zIndex = '1';
+            return;
+        }
+
+        const angle = delta * 0.7;
+        const distance = Math.abs(delta);
+        const x = Math.sin(angle) * orbitRadiusX;
+        const y = (1 - Math.cos(angle)) * orbitRadiusY;
+        const z = Math.cos(angle) * depth - 190;
+        const rotateY = -Math.sin(angle) * 44;
+        const scale = 1 - distance * 0.14;
+        const opacity = distance === 0 ? 1 : Math.max(0.22, 0.62 - distance * 0.18);
+
+        card.style.display = 'block';
+        card.style.transform = `translate3d(calc(-50% + ${x}px), ${y}px, ${z}px) rotateY(${rotateY}deg) scale(${scale})`;
+        card.style.opacity = String(opacity);
+        card.style.zIndex = String(delta === 0 ? 40 : 16 - distance);
+        card.style.filter = delta === 0 ? 'none' : 'saturate(0.8) blur(0.8px)';
+    });
+
+    const activeCard = cards[homeProductsCarouselState.activeIndex];
+    const height = isMobile ? Math.max(620, activeCard?.offsetHeight || 0) : Math.max(660, (activeCard?.offsetHeight || 0) + 80);
+    track.style.height = `${height}px`;
+
+    const disableNav = cards.length <= 1;
+    if (prevBtn && nextBtn) {
+        prevBtn.disabled = disableNav;
+        nextBtn.disabled = disableNav;
+    }
 }
 
 /**
