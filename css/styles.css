@@ -982,6 +982,14 @@ body:not(.product-portfolio-page) .impact-label {
     perspective: 1800px;
     padding: 14px 0 24px;
     position: relative;
+    touch-action: pan-y;
+    cursor: grab;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+.portfolio-3d-carousel.is-dragging .portfolio-3d-viewport {
+    cursor: grabbing;
 }
 
 .portfolio-3d-viewport::before {
@@ -1013,6 +1021,28 @@ body:not(.product-portfolio-page) .impact-label {
     transform-origin: center center;
     transition: transform 0.55s ease, opacity 0.45s ease, filter 0.45s ease;
     will-change: transform, opacity;
+    transform-style: preserve-3d;
+    backface-visibility: hidden;
+    isolation: isolate;
+}
+
+.portfolio-3d-carousel.is-dragging .portfolio-3d-track .portfolio-card {
+    transition: none !important;
+}
+
+.portfolio-3d-track .portfolio-card.is-active {
+    background: linear-gradient(135deg, rgb(18, 25, 56) 0%, rgb(20, 48, 90) 100%);
+    border-color: rgba(255, 255, 255, 0.22);
+    box-shadow: 0 28px 80px rgba(2, 6, 23, 0.55), 0 0 0 1px rgba(255, 255, 255, 0.06) inset;
+    clip-path: inset(0 0 0 0 round 20px);
+}
+
+.portfolio-3d-track .portfolio-card.is-left:not(.is-active) {
+    clip-path: inset(0 38% 0 0 round 20px);
+}
+
+.portfolio-3d-track .portfolio-card.is-right:not(.is-active) {
+    clip-path: inset(0 0 0 38% round 20px);
 }
 
 .portfolio-3d-track .portfolio-card.is-hidden {
