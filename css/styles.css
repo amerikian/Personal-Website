@@ -689,82 +689,6 @@ body {
     gap: 32px;
 }
 
-.home-products-carousel {
-    display: grid;
-    grid-template-columns: 46px 1fr 46px;
-    gap: 14px;
-    align-items: center;
-}
-
-.home-products-viewport {
-    width: 100%;
-    overflow: hidden;
-    perspective: 2200px;
-    position: relative;
-    touch-action: pan-y;
-    cursor: grab;
-    -webkit-user-select: none;
-    user-select: none;
-}
-
-.home-products-carousel.is-dragging .home-products-viewport {
-    cursor: grabbing;
-}
-
-.home-products-track.products-showcase {
-    display: block;
-    position: relative;
-    width: 100%;
-}
-
-.home-products-track .home-product-card {
-    position: absolute;
-    top: 0;
-    left: 50%;
-    width: min(520px, 62vw);
-    transform-origin: center center;
-    transition: transform 0.6s cubic-bezier(0.22, 0.61, 0.36, 1), opacity 0.45s ease, filter 0.45s ease;
-    will-change: transform, opacity;
-}
-
-.home-products-carousel.is-dragging .home-products-track .home-product-card {
-    transition: none;
-}
-
-.home-products-track .home-product-card.is-active {
-    border-color: rgba(125, 211, 252, 0.4);
-    box-shadow: 0 28px 70px rgba(2, 6, 23, 0.52), 0 0 0 1px rgba(255, 255, 255, 0.08) inset;
-}
-
-.home-products-track .home-product-card:not(.is-active) {
-    -webkit-backdrop-filter: blur(4px);
-    backdrop-filter: blur(4px);
-}
-
-.home-carousel-nav {
-    width: 42px;
-    height: 42px;
-    border-radius: 999px;
-    border: 1px solid rgba(255, 255, 255, 0.22);
-    background: rgba(255, 255, 255, 0.08);
-    color: var(--white);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all var(--transition-fast);
-}
-
-.home-carousel-nav:hover:not(:disabled) {
-    background: rgba(99, 102, 241, 0.25);
-    border-color: rgba(99, 102, 241, 0.6);
-    transform: translateY(-1px);
-}
-
-.home-carousel-nav:disabled {
-    opacity: 0.35;
-    cursor: default;
-}
 
 .section-cta {
     margin-top: 28px;
@@ -862,171 +786,8 @@ body:not(.product-portfolio-page) .impact-label {
 }
 
 /* ===================================
-   PRODUCT PORTFOLIO PAGE
+   PRODUCT CAROUSEL
    =================================== */
-.product-hero {
-    min-height: 70vh;
-    padding-top: 140px;
-    overflow: hidden;
-}
-
-.product-portfolio-page {
-    perspective: 1200px;
-}
-
-.hero-3d-shell {
-    position: relative;
-    transform-style: preserve-3d;
-    transition: transform var(--transition-fast);
-}
-
-.hero-depth-layer {
-    position: absolute;
-    border-radius: 999px;
-    filter: blur(1px);
-    pointer-events: none;
-    z-index: 1;
-    transition: transform 0.2s linear;
-}
-
-.hero-depth-layer-a {
-    width: 520px;
-    height: 520px;
-    top: 120px;
-    left: -120px;
-    background: radial-gradient(circle at 30% 30%, rgba(6, 182, 212, 0.35), rgba(6, 182, 212, 0.04));
-}
-
-.hero-depth-layer-b {
-    width: 460px;
-    height: 460px;
-    bottom: -110px;
-    right: -90px;
-    background: radial-gradient(circle at 40% 40%, rgba(99, 102, 241, 0.34), rgba(99, 102, 241, 0.04));
-}
-
-.depth-stats {
-    transform-style: preserve-3d;
-}
-
-.depth-panel {
-    transform: translateZ(18px);
-}
-
-.compact-stats .stat-item {
-    min-width: 180px;
-}
-
-.compact-stats .stat-number {
-    font-size: 1.5rem;
-}
-
-.domain-summary {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-    margin-bottom: 24px;
-}
-
-.domain-pill {
-    background: rgba(255, 255, 255, 0.06);
-    border: 1px solid rgba(255, 255, 255, 0.14);
-    border-radius: 999px;
-    color: var(--gray-300);
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    padding: 8px 14px;
-    cursor: pointer;
-    transition: all var(--transition-fast);
-}
-
-.domain-pill strong {
-    color: var(--white);
-    font-size: 0.85rem;
-}
-
-.domain-pill.active,
-.domain-pill:hover {
-    border-color: rgba(99, 102, 241, 0.6);
-    color: var(--white);
-    background: rgba(99, 102, 241, 0.18);
-}
-
-.product-map-table {
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 16px;
-    overflow: hidden;
-    background: rgba(10, 12, 24, 0.7);
-}
-
-.depth-surface {
-    transform-style: preserve-3d;
-    transition: transform var(--transition-fast), box-shadow var(--transition-fast);
-}
-
-.depth-surface:hover {
-    box-shadow: 0 18px 50px rgba(6, 182, 212, 0.18);
-}
-
-.product-map-head {
-    display: grid;
-    grid-template-columns: 1.2fr 1.4fr 1fr 0.9fr 1.4fr;
-    gap: 16px;
-    padding: 14px 18px;
-    align-items: start;
-    color: var(--gray-400);
-    text-transform: uppercase;
-    font-size: 0.75rem;
-    letter-spacing: 0.04em;
-    background: rgba(255, 255, 255, 0.04);
-}
-
-.product-map-grid {
-    display: grid;
-    gap: 0;
-}
-
-.product-map-row {
-    display: grid;
-    grid-template-columns: 1.2fr 1.4fr 1fr 0.9fr 1.4fr;
-    gap: 16px;
-    padding: 15px 18px;
-    align-items: start;
-    border-top: 1px solid rgba(255, 255, 255, 0.06);
-    color: var(--gray-200);
-    font-size: 0.9rem;
-}
-
-.depth-row {
-    transition: transform var(--transition-fast), background-color var(--transition-fast);
-    transform-style: preserve-3d;
-}
-
-.depth-row:hover {
-    background: rgba(99, 102, 241, 0.08);
-}
-
-.map-company {
-    color: var(--secondary);
-    font-weight: 600;
-}
-
-.map-product {
-    color: var(--white);
-    font-weight: 500;
-}
-
-.map-stage,
-.map-type,
-.map-role {
-    line-height: 1.45;
-}
-
-.map-role {
-    color: #c7d2fe;
-    font-weight: 600;
-}
 
 .portfolio-card .portfolio-role,
 .portfolio-card .portfolio-domain {
@@ -1035,14 +796,6 @@ body:not(.product-portfolio-page) .impact-label {
     font-size: 0.9rem;
 }
 
-.product-portfolio-page .portfolio-card {
-    transform-style: preserve-3d;
-    transition: transform var(--transition-fast), box-shadow var(--transition-fast);
-}
-
-.product-portfolio-page .portfolio-card:hover {
-    box-shadow: 0 22px 60px rgba(99, 102, 241, 0.25);
-}
 
 .portfolio-3d-carousel {
     display: grid;
@@ -1226,10 +979,6 @@ body:not(.product-portfolio-page) .impact-label {
 
 .portfolio-card .portfolio-block {
     margin-top: 12px;
-}
-
-.product-portfolio-page .portfolio-card {
-    padding: 24px;
 }
 
 .portfolio-card .product-name {
@@ -2146,11 +1895,6 @@ body:not(.product-portfolio-page) #products .portfolio-carousel-nav:hover {
     .expertise-grid {
         grid-template-columns: repeat(2, 1fr);
     }
-
-    .product-map-head,
-    .product-map-row {
-        grid-template-columns: 1.1fr 1.2fr 0.9fr 0.8fr 1.1fr;
-    }
     
     .globe-container {
         grid-template-columns: 1fr;
@@ -2257,56 +2001,6 @@ body:not(.product-portfolio-page) #products .portfolio-carousel-nav:hover {
         left: 24px;
     }
 
-    .home-products-carousel {
-        grid-template-columns: 1fr;
-        gap: 10px;
-    }
-
-    .home-carousel-nav {
-        display: none;
-    }
-
-    .home-products-track .home-product-card {
-        width: 100%;
-        left: 0;
-        top: 0;
-        transform-origin: center top;
-    }
-
-    .product-map-head {
-        display: none;
-    }
-
-    .product-map-row {
-        grid-template-columns: 1fr;
-        gap: 6px;
-        padding: 14px;
-    }
-
-    .product-map-row > div::before {
-        content: attr(class);
-        display: block;
-        font-size: 0.7rem;
-        text-transform: uppercase;
-        color: var(--gray-500);
-        margin-bottom: 2px;
-    }
-
-    .product-map-row .map-company::before { content: 'Company'; }
-    .product-map-row .map-product::before { content: 'Product'; }
-    .product-map-row .map-type::before { content: 'Type'; }
-    .product-map-row .map-stage::before { content: 'Stage'; }
-    .product-map-row .map-role::before { content: 'Role'; }
-
-    .domain-summary {
-        gap: 8px;
-    }
-
-    .domain-pill {
-        font-size: 0.8rem;
-        padding: 8px 12px;
-    }
-
     body:not(.product-portfolio-page) .product-impact {
         gap: 10px;
     }
@@ -2345,10 +2039,6 @@ body:not(.product-portfolio-page) #products .portfolio-carousel-nav:hover {
         display: none;
     }
 
-    .hero-depth-layer {
-        display: none;
-    }
-    
     .footer-content {
         gap: 16px;
     }

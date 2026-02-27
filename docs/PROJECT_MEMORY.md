@@ -19,3 +19,9 @@
 - Removed Myanmar and Cambodia from global experience locations.
 - Replaced Seattle with San Francisco in location references.
 - Removed inaccurate Power BI/Azure DevOps dashboard product entry.
+
+## 2026-02-26 — CSS Safety Prune
+
+- Removed unused selectors tied to retired standalone portfolio-page-only UI from `css/styles.css`.
+- Kept index carousel selectors and behavior unchanged.
+- Post-change visual sanity check result: `VISUAL_CHECK_OK`.
