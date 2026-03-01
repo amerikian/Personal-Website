@@ -39,7 +39,7 @@ const productPortfolioData = {
         },
         {
             id: "rsm-solution-center",
-            productName: "Solution Center (Enterprise Power Apps Deployment)",
+            productName: "AOD Solution Center Deployment",
             company: "RSM US LLP",
             period: "2023 - Present",
             role: "Program / Product Delivery Lead",
@@ -48,10 +48,10 @@ const productPortfolioData = {
             stage: "Scaling",
             users: "Audit, Tax, and Consulting practices",
             problem: "Internal solutions lacked a centralized, scalable distribution and adoption channel.",
-            delivery: "Proposed and deployed Solution Center using Power Apps and Smartsheet-driven rollout planning.",
+            delivery: "Partnered with the enterprise team to deploy and scale the AOD Solution Center for the Assurance LOB using Power Apps and Smartsheet-driven rollout planning.",
             outcomes: [
-                "50+ custom-built solutions deployed for Audit",
-                "Adoption recorded: Audit 31.1%, Tax 3.7%, Consulting 6.3%"
+                "56 live custom-built solutions deployed for Audit",
+                "LOB Adoption Rates: Audit 53.7%, Tax 13.9%, Consulting 28.6%"
             ],
             evidence: "Resume: Solution Center deployment and adoption rates are explicitly listed.",
             tags: ["Power Apps", "Adoption", "Internal Platform"],
