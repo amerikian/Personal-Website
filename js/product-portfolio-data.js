@@ -23,7 +23,7 @@ const productPortfolioData = {
             stage: "Pilot Launch",
             users: "Audit pilot teams + transformation stakeholders",
             problem: "Audit digital transformation required a validated pilot proving process and tooling viability.",
-            delivery: "Planned and launched a SEC workpaper pilot with hybrid waterfall/agile execution and tracked workstreams.",
+            delivery: "Planned and launched an SEC workpaper pilot with hybrid waterfall/agile execution and tracked workstreams.",
             outcomes: [
                 "Hit first key milestone for SEC workpaper pilot kickoff",
                 "Established working hybrid governance model across nine workstreams"

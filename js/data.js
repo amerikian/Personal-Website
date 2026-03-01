@@ -341,6 +341,27 @@ const careerData = {
                 years: "During BA Program",
                 institutionContext: "Undergrad transcript context supports Central/Eastern Europe immersion through Poland-based academic activity and related regional studies, with Russia included in the international studies abroad experience profile.",
                 careerRelevance: "Strengthened adaptability in multilingual environments and improved real-world readiness for international negotiations, market-entry collaboration, and globally distributed product teams."
+            },
+            {
+                institution: "CSM + SAFe 6.0 Practitioner",
+                degree: "Agile Delivery Certifications",
+                years: "Current",
+                institutionContext: "Combined certification foundation in Scrum facilitation and SAFe program execution across multi-team delivery environments.",
+                careerRelevance: "Improves sprint outcomes, release coordination, and cross-team predictability by applying disciplined ceremonies, dependency management, and continuous improvement practices."
+            },
+            {
+                institution: "Project Management Professional (PMP)",
+                degree: "Project Leadership Certification",
+                years: "Current",
+                institutionContext: "Globally recognized project leadership certification emphasizing planning rigor, risk control, stakeholder alignment, and measurable delivery governance.",
+                careerRelevance: "Strengthens product and delivery outcomes through clearer scope control, execution governance, and milestone reliability in complex cross-functional programs."
+            },
+            {
+                institution: "Product Management Professional Certificate",
+                degree: "Product Management Certification",
+                years: "Current",
+                institutionContext: "Structured product training focused on discovery, prioritization, roadmap decisions, and product-market execution.",
+                careerRelevance: "Supports stronger product outcomes by improving problem framing, value prioritization, and launch decision quality across product lifecycles."
             }
         ],
         employerResearch: [
