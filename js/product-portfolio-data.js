@@ -439,7 +439,7 @@ const productPortfolioData = {
         },
         {
             id: "pacific-easy-connect",
-            productName: "EASY-CONNECT Attachment Head",
+            productName: "EASY-CONNECT ATTACHMENT HEAD AND Related U.S. Application Data ADAPTER",
             company: "Pacific Cycle (Schwinn/Mongoose)",
             period: "2012 - 2014",
             role: "Product Manager",
@@ -450,10 +450,10 @@ const productPortfolioData = {
             problem: "Accessory attachment experience lacked usability and differentiation.",
             delivery: "Led concept-through-commercialization of patented attachment mechanism.",
             outcomes: [
-                "Contributed to 3-patent portfolio",
+                "Contributed to patent portfolio innovations",
                 "Drove differentiated retail product value"
             ],
-            evidence: "Profile OCR patents section explicitly lists EASY-CONNECT ATTACHMENT HEAD.",
+            evidence: "LinkedIn patents section lists EASY-CONNECT ATTACHMENT HEAD AND Related U.S. Application Data ADAPTER.",
             tags: ["Patent", "Accessories", "Retail"],
             icon: "link",
             visualIdeas: [
@@ -463,33 +463,8 @@ const productPortfolioData = {
             ]
         },
         {
-            id: "pacific-data-adapter",
-            productName: "Data ADAPTER",
-            company: "Pacific Cycle (Schwinn/Mongoose)",
-            period: "2012 - 2014",
-            role: "Product Manager",
-            domain: "Consumer Products",
-            productType: "Patented Product",
-            stage: "Commercialized",
-            users: "Retail bicycle accessory customers",
-            problem: "Need for improved compatibility and adaptability in accessory systems.",
-            delivery: "Co-developed patented adapter concept within parts and accessories portfolio.",
-            outcomes: [
-                "Expanded product portfolio differentiation",
-                "Strengthened IP-backed product strategy"
-            ],
-            evidence: "Profile OCR patents section explicitly lists Data ADAPTER.",
-            tags: ["Patent", "Product Architecture", "Retail"],
-            icon: "puzzle-piece",
-            visualIdeas: [
-                "Image: adapter technical diagram",
-                "Image: compatibility use-case board",
-                "Image: feature explainer panel"
-            ]
-        },
-        {
             id: "pacific-modular-connector",
-            productName: "Modular Accessory Connector",
+            productName: "Modular accessory connector",
             company: "Pacific Cycle (Schwinn/Mongoose)",
             period: "2012 - 2014",
             role: "Product Manager",
@@ -500,10 +475,10 @@ const productPortfolioData = {
             problem: "Needed modularity across accessory SKUs while reducing portfolio complexity.",
             delivery: "Developed patented modular connector supporting expanded accessory options.",
             outcomes: [
-                "Completed third patent in accessories innovation set",
+                "Contributed to patent portfolio innovations",
                 "Contributed to Walmart-exclusive patented product outcome"
             ],
-            evidence: "Profile OCR patents section explicitly lists Modular accessory connector; experience notes Walmart-exclusive patent outcome.",
+            evidence: "LinkedIn patents section lists Modular accessory connector; experience notes Walmart-exclusive patent outcome.",
             tags: ["Patent", "Modularity", "Walmart"],
             icon: "diagram-project",
             visualIdeas: [

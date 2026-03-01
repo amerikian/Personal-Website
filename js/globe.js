@@ -799,6 +799,8 @@ class GlobeVisualization {
     showTooltip(loc, mx, my) {
         var isPrimary = loc === this.locations[0];
         var accentColor = isPrimary ? '#f97316' : '#818cf8';
+        var yearsLabel = String(loc.years || '').trim();
+        if (yearsLabel && !/year/i.test(yearsLabel)) yearsLabel += ' years';
         this.tooltip.innerHTML =
             '<div style="font-size:24px;margin-bottom:8px;">' + loc.flag + '</div>' +
             '<div style="font-weight:700;color:' + accentColor + ';font-size:15px;margin-bottom:4px;">' + loc.country + '</div>' +
@@ -806,7 +808,7 @@ class GlobeVisualization {
             '<div style="color:#e2e8f0;font-size:13px;line-height:1.4;">' + loc.details + '</div>' +
             '<div style="display:flex;align-items:center;gap:6px;margin-top:8px;color:#f97316;font-size:11px;font-weight:600;">' +
             '<span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:#f97316;"></span>' +
-            loc.years + ' years</div>';
+            yearsLabel + '</div>';
 
         var ttW = 260;
         var left = mx;

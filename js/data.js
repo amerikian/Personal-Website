@@ -74,7 +74,7 @@ const careerData = {
             title: "Product Manager",
             company: "Pacific Cycle (Schwinn/Mongoose)",
             location: "Madison, Wisconsin",
-            description: "Led the Bicycle Parts & Accessories line for Schwinn and Mongoose brands. Worked directly with Target and Walmart buyers, earned 3 patents (including a Walmart-exclusive product), streamlined the SKU portfolio, and led packaging updates.",
+            description: "Led the Bicycle Parts & Accessories line for Schwinn and Mongoose brands. Worked directly with Target and Walmart buyers, earned 2 patents, streamlined the SKU portfolio, and led packaging updates.",
             tags: ["Consumer Products", "Retail", "Patents", "Target", "Walmart"],
             icon: "bicycle"
         },
@@ -135,9 +135,9 @@ const careerData = {
             id: 4,
             name: "Patented Bicycle Accessories",
             company: "Pacific Cycle",
-            description: "Developed patented bicycle accessories for Schwinn & Mongoose brands. Created EASY-CONNECT ATTACHMENT HEAD, Data ADAPTER, and Modular accessory connector. One patent became Walmart exclusive product.",
+            description: "Developed patented bicycle accessories for Schwinn & Mongoose brands. Patents include EASY-CONNECT ATTACHMENT HEAD AND Related U.S. Application Data ADAPTER, and Modular accessory connector.",
             impact: {
-                patents: "3",
+                patents: "2",
                 retailers: "Target, Walmart",
                 exclusive: "Walmart"
             },
@@ -190,7 +190,7 @@ const careerData = {
         { 
             country: "United States", 
             flag: "🇺🇸", 
-            cities: ["Madison, WI", "San Francisco", "Ironwood, MI"], 
+            cities: ["Madison, WI", "San Francisco, CA", "Ironwood, MI"], 
             years: "18+",
             lat: 43.0731,
             lng: -89.4012,
@@ -236,7 +236,7 @@ const careerData = {
             country: "Poland", 
             flag: "🇵🇱", 
             cities: ["Krakow", "Warsaw"], 
-            years: "<1",
+            years: "Frequent years",
             lat: 50.0647,
             lng: 19.9450,
             details: "Undergraduate studies abroad - International Studies"
@@ -272,9 +272,8 @@ const careerData = {
 
     // Patents
     patents: [
-        "EASY-CONNECT ATTACHMENT HEAD",
-        "Data ADAPTER",
-        "Modular Accessory Connector"
+        "EASY-CONNECT ATTACHMENT HEAD AND Related U.S. Application Data ADAPTER",
+        "Modular accessory connector"
     ],
 
     // Languages

@@ -17,7 +17,7 @@ About Ian:
 - Former VP Commercial Sales at Johnson Health Tech (SE Asia) - frequent factory visits to Taiwan & China
 - Innovation Project Manager at American Family Insurance (IoT/Smart Home)
 - Senior Product Manager at SportsArt, Product Manager at Pacific Cycle (Schwinn/Mongoose)
-- 3 Patents including a Walmart exclusive product
+- 2 Patents including a Walmart exclusive product
 - Global experience across 9 countries (USA, Thailand, Taiwan, China, Sweden, Myanmar, Cambodia, Poland, Russia)
 - Expertise: Product Management, Scrum/SAFe Agile, Azure DevOps, AI Tools (GitHub Copilot, Azure OpenAI), JavaScript, Python, Fintech, Blockchain, IoT
 

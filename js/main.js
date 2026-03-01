@@ -274,6 +274,13 @@ function summarizeText(text, maxLength) {
     return `${clipped.slice(0, lastSpace > 0 ? lastSpace : clipped.length)}…`;
 }
 
+function formatLocationYears(years) {
+    const value = `${years ?? ''}`.trim();
+    if (!value) return '';
+    if (/year/i.test(value)) return value;
+    return `${value} years`;
+}
+
 /**
  * Render Global Locations
  */
@@ -286,7 +293,7 @@ function renderLocations() {
             <span class="location-flag">${location.flag}</span>
             <div class="location-info">
                 <h4>${location.country}</h4>
-                <p>${location.cities.join(', ')} • ${location.years} years</p>
+                <p>${location.cities.join(' • ')} • ${formatLocationYears(location.years)}</p>
             </div>
         </div>
     `).join('');
