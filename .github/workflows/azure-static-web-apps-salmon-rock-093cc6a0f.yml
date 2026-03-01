@@ -1,11 +1,21 @@
 name: Azure Static Web Apps CI/CD
 
 on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'api/**'
+      - 'index.html'
+      - 'css/**'
+      - 'js/**'
+      - 'images/**'
+      - 'staticwebapp.config.json'
+      - '.github/workflows/azure-static-web-apps-salmon-rock-093cc6a0f.yml'
   workflow_dispatch:
 
 jobs:
   build_and_deploy_job:
-    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     name: Build and Deploy Job
     steps:
