@@ -681,6 +681,7 @@ body {
    =================================== */
 .products-section {
     background: var(--dark);
+    padding-bottom: 56px;
 }
 
 .products-showcase {
@@ -1250,6 +1251,7 @@ body:not(.product-portfolio-page) #products .portfolio-carousel-nav:hover {
    =================================== */
 .assessment-section {
     background: var(--dark);
+    padding-top: 72px;
 }
 
 .assessment-summary {
@@ -1523,6 +1525,12 @@ body:not(.product-portfolio-page) #products .portfolio-carousel-nav:hover {
    =================================== */
 .contact-section {
     background: linear-gradient(180deg, var(--dark-lighter) 0%, var(--dark) 100%);
+    padding-top: 88px;
+    padding-bottom: 40px;
+}
+
+.contact-section .section-header {
+    margin-bottom: 0;
 }
 
 .contact-grid {
@@ -1973,6 +1981,19 @@ body:not(.product-portfolio-page) #products .portfolio-carousel-nav:hover {
         grid-template-columns: 1fr;
     }
 
+    .products-section {
+        padding-bottom: 56px;
+    }
+
+    .assessment-section {
+        padding-top: 64px;
+    }
+
+    .contact-section {
+        padding-top: 72px;
+        padding-bottom: 28px;
+    }
+
     .assessment-layout {
         grid-template-columns: 1fr;
     }
@@ -2064,6 +2085,19 @@ body:not(.product-portfolio-page) #products .portfolio-carousel-nav:hover {
 
     .portfolio-card {
         padding: 20px;
+    }
+
+    .products-section {
+        padding-bottom: 48px;
+    }
+
+    .assessment-section {
+        padding-top: 56px;
+    }
+
+    .contact-section {
+        padding-top: 64px;
+        padding-bottom: 24px;
     }
 
     .assessment-summary-card {

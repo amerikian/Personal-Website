@@ -239,7 +239,7 @@ const careerData = {
             years: "Frequent years",
             lat: 50.0647,
             lng: 19.9450,
-            details: "Undergraduate studies abroad - International Studies"
+            details: "Undergraduate studies abroad - International Studies; project collaboration for Digital Motorsports World Cup 2021"
         },
         { 
             country: "Russia", 
