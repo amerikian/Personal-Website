@@ -430,8 +430,9 @@ body {
 
 .section-badge {
     display: inline-block;
-    background: rgba(99, 102, 241, 0.1);
-    color: var(--primary-light);
+    background: var(--dark-lighter);
+    color: var(--gray-200);
+    border: 1px solid rgba(99, 102, 241, 0.35);
     padding: 6px 16px;
     border-radius: 50px;
     font-size: 0.75rem;
@@ -1800,7 +1801,7 @@ body:not(.product-portfolio-page) #products .portfolio-carousel-nav:hover {
 }
 
 .footer p {
-    color: var(--gray-500);
+    color: var(--gray-300);
     font-size: 0.875rem;
     margin: 0;
 }
