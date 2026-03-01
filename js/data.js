@@ -306,10 +306,10 @@ const careerData = {
 
     // Employer-ready diligence assessment
     assessment: {
-        title: "Comprehensive Education & Career Assessment",
-        executiveSummary: "Ian Cassiman combines international business academics with multi-industry product leadership across consulting, insurance, fitness technology, and consumer products. Transcript-backed education includes an MBA (3.41 GPA, 39 graduate credits) and undergrad International/Global Studies (3.13 GPA) with Poland/Russia immersion.",
-        verificationNote: "Education metrics verified from official transcripts provided by candidate",
-        lastUpdated: "2026-02-23",
+        title: "Verified Education, Certification & Career Assessment",
+        executiveSummary: "Ian Cassiman combines transcript-verified academics with applied delivery certifications and cross-industry product leadership. The profile pairs MBA rigor (3.41 GPA, 39 graduate credits) and International/Global Studies foundation (3.13 GPA, Poland/Russia immersion) with execution credentials in Agile and project governance for enterprise and consumer product environments.",
+        verificationNote: "Education and certification claims aligned to transcript and credential evidence provided by candidate",
+        lastUpdated: "2026-03-01",
         employerFitSignals: [
             "Cross-Industry Product Leadership",
             "Global Commercialization Experience",

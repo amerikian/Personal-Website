@@ -23,11 +23,27 @@ About Ian:
 
 Your role: Answer questions about Ian's background, skills, and experience.
 Be helpful, professional, and encourage visitors to connect for opportunities.
-Keep responses concise (2-3 sentences) unless asked for detail.
+Keep responses concise (2-4 sentences) unless asked for detail.
+Reason at a basic level: give a direct answer, briefly explain why based on profile evidence, then suggest a next step when relevant.
+If information is missing, say so clearly and avoid guessing.
 `;
 
 const REQUEST_TIMEOUT_MS = 12000;
 const MAX_MESSAGE_LENGTH = 1200;
+const MAX_HISTORY_MESSAGES = 8;
+
+function normalizeHistory(history) {
+    if (!Array.isArray(history)) return [];
+
+    return history
+        .filter(item => item && typeof item.content === 'string' && (item.role === 'user' || item.role === 'assistant'))
+        .slice(-MAX_HISTORY_MESSAGES)
+        .map(item => ({
+            role: item.role,
+            content: item.content.trim().slice(0, MAX_MESSAGE_LENGTH)
+        }))
+        .filter(item => item.content.length > 0);
+}
 
 function withTimeout(url, options = {}, timeoutMs = REQUEST_TIMEOUT_MS) {
     const controller = new AbortController();
@@ -56,6 +72,7 @@ module.exports = async function (context, req) {
     }
 
     const message = (req.body?.message || '').trim();
+    const history = normalizeHistory(req.body?.history);
 
     if (!message) {
         context.res = {
@@ -79,7 +96,7 @@ module.exports = async function (context, req) {
         // Check for GitHub Models first (free)
         const githubToken = process.env.GITHUB_TOKEN;
         if (githubToken) {
-            const response = await callGitHubModels(githubToken, message);
+            const response = await callGitHubModels(githubToken, message, history);
             context.res = {
                 status: 200,
                 headers: corsHeaders,
@@ -94,7 +111,7 @@ module.exports = async function (context, req) {
         const deploymentName = process.env.AZURE_OPENAI_DEPLOYMENT_NAME;
 
         if (endpoint && apiKey && deploymentName) {
-            const response = await callAzureOpenAI(endpoint, apiKey, deploymentName, message);
+            const response = await callAzureOpenAI(endpoint, apiKey, deploymentName, message, history);
             context.res = {
                 status: 200,
                 headers: corsHeaders,
@@ -123,7 +140,7 @@ module.exports = async function (context, req) {
     }
 };
 
-async function callGitHubModels(token, userMessage) {
+async function callGitHubModels(token, userMessage, history = []) {
     const response = await withTimeout('https://models.inference.ai.azure.com/chat/completions', {
         method: 'POST',
         headers: {
@@ -134,6 +151,7 @@ async function callGitHubModels(token, userMessage) {
             model: 'gpt-4o-mini',
             messages: [
                 { role: 'system', content: careerContext },
+                ...history,
                 { role: 'user', content: userMessage }
             ],
             max_tokens: 350,
@@ -149,7 +167,7 @@ async function callGitHubModels(token, userMessage) {
     return data?.choices?.[0]?.message?.content || generateFallbackResponse(userMessage);
 }
 
-async function callAzureOpenAI(endpoint, apiKey, deploymentName, userMessage) {
+async function callAzureOpenAI(endpoint, apiKey, deploymentName, userMessage, history = []) {
     const url = `${endpoint}/openai/deployments/${deploymentName}/chat/completions?api-version=2024-02-15-preview`;
     
     const response = await withTimeout(url, {
@@ -161,6 +179,7 @@ async function callAzureOpenAI(endpoint, apiKey, deploymentName, userMessage) {
         body: JSON.stringify({
             messages: [
                 { role: 'system', content: careerContext },
+                ...history,
                 { role: 'user', content: userMessage }
             ],
             max_tokens: 350,
@@ -178,18 +197,31 @@ async function callAzureOpenAI(endpoint, apiKey, deploymentName, userMessage) {
 
 function generateFallbackResponse(question) {
     const lowerQ = question.toLowerCase();
+    const hasAny = (terms) => terms.some(term => lowerQ.includes(term));
 
-    if (lowerQ.includes('experience') || lowerQ.includes('years')) {
-        return "Ian brings 20+ years of experience across product management, Scrum leadership, and release delivery, with work spanning 9 countries. I can share details by role, industry, or capability if helpful.";
+    if (hasAny(['experience', 'years'])) {
+        return "Ian brings 20+ years across product management, Scrum leadership, and release delivery with global exposure. This is relevant for roles that need both strategy and execution discipline. If useful, share a role and I can map experience by company and outcomes.";
     }
     
-    if (lowerQ.includes('ai') || lowerQ.includes('copilot')) {
-        return "Recent AI work includes DevOps-focused tools such as dashboards, wiki automation, and bot workflows using platforms like Azure OpenAI and GitHub Copilot to improve visibility and delivery decisions.";
+    if (hasAny(['ai', 'copilot', 'bot'])) {
+        return "Recent AI work includes DevOps dashboards, wiki automation, and chat workflows. The value is practical: better visibility, faster decisions, and improved delivery alignment. I can break this down by tool and business outcome.";
     }
     
-    if (lowerQ.includes('contact') || lowerQ.includes('hire')) {
-        return "Great interest! Please use the contact form below or connect via LinkedIn to discuss opportunities. Include details about your role and team for the best response.";
+    if (hasAny(['fit', 'hire', 'role', 'opportunity'])) {
+        return "Basic fit reasoning: strong in product strategy, Agile execution, and release governance across multiple industries. This profile fits teams needing roadmap ownership plus delivery reliability. Share your role scope and I can provide a concise fit summary.";
     }
 
-    return "I can help you explore the career history, technical expertise, and potential fit for opportunities. What would you like to know more about?";
+    if (hasAny(['risk', 'gap', 'mitigate', 'mitigation'])) {
+        return "A likely risk in some searches is perception of broad versus single-domain depth. Mitigation is to anchor on role-relevant outcomes: $100M product-line leadership, enterprise release governance, and measurable cross-functional delivery execution.";
+    }
+
+    if (hasAny(['recruiter summary', '3-bullet', 'three bullet', 'summary'])) {
+        return "• 20+ years of product and delivery leadership across enterprise and consumer domains.\n• Evidence-backed profile: MBA 3.41 GPA (39 grad credits), BA 3.13 GPA, plus certification strength including PMP and Agile credentials.\n• Proven outcomes across RSM, Johnson Health Tech, and innovation programs with global commercialization and release governance impact.";
+    }
+
+    if (hasAny(['contact', 'connect', 'reach'])) {
+        return "Great interest. Please connect through the contact section or LinkedIn, and include role scope, team context, and timeline for a focused follow-up.";
+    }
+
+    return "I can help with career history, certifications, technical strengths, and role fit using basic evidence-based reasoning. Ask about a specific role or domain and I’ll provide a concise assessment.";
 }

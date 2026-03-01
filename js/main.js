@@ -155,6 +155,25 @@ function renderAssessment() {
     const educationResearch = careerData.assessment.educationResearch || [];
     const mbaProfile = educationResearch.find(item => (item.degree || '').toLowerCase().includes('mba'));
     const undergradProfile = educationResearch.find(item => (item.degree || '').toLowerCase().includes('international/global'));
+    const certificationKeywords = /certification|certificate|pmp|safe|scrum|csm|practitioner/i;
+    const assessedCertEntries = educationResearch.filter(item => {
+        const institution = item.institution || '';
+        const degree = item.degree || '';
+        return certificationKeywords.test(institution) || certificationKeywords.test(degree);
+    });
+    const listedCertEntries = (careerData?.certifications || []).filter(item => certificationKeywords.test(item));
+    const uniqueCredentialCount = new Set([
+        ...assessedCertEntries.map(item => `${item.institution}|${item.degree}`),
+        ...listedCertEntries
+    ]).size;
+    const certificationHighlights = Array.from(new Set([
+        ...assessedCertEntries.map(item => item.institution || item.degree || ''),
+        ...listedCertEntries
+    ]))
+        .map(item => item.trim())
+        .filter(Boolean)
+        .slice(0, 3)
+        .map(item => `Credential: ${item}`);
 
     const keyMetrics = [
         {
@@ -164,6 +183,14 @@ function renderAssessment() {
         {
             label: 'Undergrad GPA',
             value: typeof undergradProfile?.cumulativeGpa === 'number' ? undergradProfile.cumulativeGpa.toFixed(2) : '—'
+        },
+        {
+            label: 'Grad Credits',
+            value: typeof mbaProfile?.cumulativeCredits === 'number' ? `${Math.round(mbaProfile.cumulativeCredits)}` : '—'
+        },
+        {
+            label: 'Cert Credentials',
+            value: uniqueCredentialCount > 0 ? `${uniqueCredentialCount}+` : '—'
         },
         {
             label: 'Countries',
@@ -206,7 +233,10 @@ function renderAssessment() {
                     `).join('')}
                 </div>
                 <div class="assessment-highlights">
-                    ${summary.employerFitSignals.map(signal => `<span class="assessment-pill">${signal}</span>`).join('')}
+                    ${[
+                        ...(summary.employerFitSignals || []),
+                        ...certificationHighlights
+                    ].map(signal => `<span class="assessment-pill">${signal}</span>`).join('')}
                 </div>
                 <div class="assessment-actions">
                     <a class="btn btn-primary" href="#contact">Contact Ian</a>
@@ -397,6 +427,8 @@ function initChat() {
     let backendChecked = false;
     let backendAvailable = false;
     let backendUnavailableNotified = false;
+    const MAX_CLIENT_MESSAGE_LENGTH = 1200;
+    const conversationHistory = [];
 
     const SWA_API_BASE = 'https://salmon-rock-093cc6a0f.6.azurestaticapps.net';
     const host = window.location.hostname;
@@ -424,6 +456,14 @@ function initChat() {
         return backendAvailable;
     };
 
+    const recordHistory = (role, content) => {
+        if (!content) return;
+        conversationHistory.push({ role, content: String(content).trim() });
+        if (conversationHistory.length > 12) {
+            conversationHistory.splice(0, conversationHistory.length - 12);
+        }
+    };
+
     // Send message
     const sendMessage = async () => {
         if (isSending) return;
@@ -431,11 +471,17 @@ function initChat() {
         const message = chatInput?.value.trim();
         if (!message) return;
 
+        if (message.length > MAX_CLIENT_MESSAGE_LENGTH) {
+            addChatMessage(`Please keep messages under ${MAX_CLIENT_MESSAGE_LENGTH} characters so I can respond accurately.`, 'bot');
+            return;
+        }
+
         isSending = true;
         if (sendBtn) sendBtn.disabled = true;
 
         // Add user message
         addChatMessage(message, 'user');
+        recordHistory('user', message);
         chatInput.value = '';
 
         // Show typing indicator
@@ -457,7 +503,9 @@ function initChat() {
                     addChatMessage('Live AI service is temporarily unavailable, so I’m using local portfolio responses for now.', 'bot');
                 }
 
-                addChatMessage(generateAIResponse(message), 'bot');
+                const fallbackResponse = generateAIResponse(message);
+                addChatMessage(fallbackResponse, 'bot');
+                recordHistory('assistant', fallbackResponse);
                 return;
             }
 
@@ -469,7 +517,10 @@ function initChat() {
                 response = await fetch(`${API_BASE}/api/chat`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ message }),
+                    body: JSON.stringify({
+                        message,
+                        history: conversationHistory.slice(-8)
+                    }),
                     signal: controller.signal
                 });
             } finally {
@@ -480,15 +531,21 @@ function initChat() {
 
             if (response.ok) {
                 const data = await response.json();
-                addChatMessage(data.response || generateAIResponse(message), 'bot');
+                const botResponse = data.response || generateAIResponse(message);
+                addChatMessage(botResponse, 'bot');
+                recordHistory('assistant', botResponse);
             } else {
                 // Fallback to local response if API fails
-                addChatMessage(generateAIResponse(message), 'bot');
+                const fallbackResponse = generateAIResponse(message);
+                addChatMessage(fallbackResponse, 'bot');
+                recordHistory('assistant', fallbackResponse);
             }
         } catch (error) {
             typingDiv.remove();
             // Fallback to local response if API unavailable
-            addChatMessage(generateAIResponse(message), 'bot');
+            const fallbackResponse = generateAIResponse(message);
+            addChatMessage(fallbackResponse, 'bot');
+            recordHistory('assistant', fallbackResponse);
         } finally {
             isSending = false;
             if (sendBtn) sendBtn.disabled = false;
@@ -534,46 +591,58 @@ function addChatMessage(message, type) {
  */
 function generateAIResponse(question) {
     const lowerQ = question.toLowerCase();
+    const hasAny = (terms) => terms.some(term => lowerQ.includes(term));
 
-    // Simple keyword-based responses (placeholder for AI integration)
-    if (lowerQ.includes('experience') || lowerQ.includes('years')) {
-        return `Based on the portfolio, Ian has ${careerData.stats.years}+ years of experience across ${careerData.stats.countries} countries, with strengths in product management, Scrum leadership, release delivery, and DevOps-focused execution. What area would you like to explore?`;
+    if (hasAny(['experience', 'years'])) {
+        return `Ian brings ${careerData.stats.years}+ years across ${careerData.stats.countries} countries. The strongest throughline is product leadership + delivery execution + Agile governance, so teams usually place him where roadmap clarity and release reliability both matter. If helpful, I can break this down by company and outcomes.`;
     }
     
-    if (lowerQ.includes('ai') || lowerQ.includes('copilot') || lowerQ.includes('machine learning')) {
-        return "Recent AI work includes building DevOps-focused tools such as dashboards, wiki automation, and bot workflows using Azure OpenAI and GitHub Copilot to improve delivery visibility and decision-making.";
+    if (hasAny(['ai', 'copilot', 'machine learning', 'bot'])) {
+        return 'Recent AI work focuses on practical workflow impact: DevOps dashboards, wiki automation, and chat-style assistance for delivery teams. The reasoning pattern is simple—surface delivery signals, reduce reporting friction, and improve decision speed for Scrum and release leaders.';
     }
     
-    if (lowerQ.includes('devops') || lowerQ.includes('cicd') || lowerQ.includes('pipeline')) {
-        return "Experience includes Azure DevOps pipelines, release management, metrics dashboards, and workflow automation to support team delivery quality and release confidence.";
+    if (hasAny(['devops', 'cicd', 'ci/cd', 'pipeline', 'release'])) {
+        return 'Experience includes Azure DevOps pipelines, release management, and metrics dashboards. At a basic reasoning level: stronger visibility leads to earlier risk detection, which improves release predictability and team confidence.';
     }
     
-    if (lowerQ.includes('product') || lowerQ.includes('leadership') || lowerQ.includes('management')) {
-        return "Strong product management background across fitness technology, fintech, and IoT, including strategy, roadmap execution, and cross-functional delivery from concept through launch.";
-    }
-
-    if (lowerQ.includes('education') || lowerQ.includes('university') || lowerQ.includes('study abroad')) {
-        return "Education includes an MBA in International Business (UW-Whitewater) and a BA in International/Global Studies (UW-Stevens Point), with study abroad exposure in Poland and Russia. This combination directly supports global stakeholder alignment, cross-cultural communication, and market-entry work.";
+    if (hasAny(['product', 'leadership', 'management', 'roadmap'])) {
+        return 'The product leadership profile spans fitness technology, fintech, insurance innovation, and consulting. Core pattern: define clear value, align stakeholders, and execute launch plans with measurable outcomes across cross-functional teams.';
     }
 
-    if (lowerQ.includes('company') || lowerQ.includes('employer') || lowerQ.includes('worked at')) {
-        return "Experience spans RSM, Johnson Health Tech, American Family Insurance, SportsArt, and Pacific Cycle, with product-line impact across assurance-tech workflows, commercial/home fitness equipment, insurance IoT pilots, and retail bicycle accessories with patented innovations.";
+    if (hasAny(['education', 'university', 'study abroad', 'gpa', 'mba'])) {
+        return 'Education includes an MBA (3.41 GPA, 39 graduate credits) and BA International/Global Studies (3.13 GPA) with Poland/Russia study context. This supports basic hiring logic for globally-facing roles: business rigor + cross-cultural fluency + practical commercialization experience.';
+    }
+
+    if (hasAny(['certification', 'certifications', 'pmp', 'safe', 'scrum', 'csm'])) {
+        return 'Certification evidence includes PMP and Agile-oriented credentials (including Scrum/SAFe coverage in the assessment). Practical impact is governance + delivery discipline: better planning quality, clearer risk control, and more reliable multi-team execution.';
+    }
+
+    if (hasAny(['company', 'employer', 'worked at', 'background'])) {
+        return 'Experience spans RSM, Johnson Health Tech, American Family Insurance, SportsArt, Pacific Cycle, and entrepreneurial consulting. The range covers enterprise services, consumer products, and innovation programs, which is useful for roles needing both strategic and hands-on execution depth.';
     }
     
-    if (lowerQ.includes('location') || lowerQ.includes('global') || lowerQ.includes('remote')) {
+    if (hasAny(['location', 'global', 'remote', 'countries'])) {
         const locations = careerData.locations.map(l => l.country).join(', ');
-        return `Global experience across ${locations}. Comfortable with distributed teams and cross-cultural collaboration.`;
+        return `Global experience spans ${locations}. That background supports distributed-team collaboration, market adaptation, and communication across cultural and functional boundaries.`;
     }
     
-    if (lowerQ.includes('hire') || lowerQ.includes('fit') || lowerQ.includes('role') || lowerQ.includes('opportunity')) {
-        return "Great question. If you share the role scope and team needs, I can map relevant experience across product leadership, Scrum/release delivery, DevOps tooling, and global commercialization work.";
-    }
-    
-    if (lowerQ.includes('contact') || lowerQ.includes('reach') || lowerQ.includes('connect')) {
-        return "You can connect via LinkedIn (link in the contact section), or fill out the contact form below. For direct inquiries about opportunities, please include details about the role and team.";
+    if (hasAny(['hire', 'fit', 'role', 'opportunity'])) {
+        return 'Basic fit reasoning: (1) product strategy and portfolio ownership, (2) Agile + release execution, and (3) global commercialization exposure. Share your role scope and I can map strengths, potential gaps, and interview focus areas in a concise checklist.';
     }
 
-    return "That's a great question! I can help you explore the career history, technical expertise, products built, or discuss potential fit for opportunities. What would you like to know more about?";
+    if (hasAny(['risk', 'gap', 'mitigate', 'mitigation'])) {
+        return 'A likely gap for some roles is deep single-domain tenure if the team wants only one-industry specialists. Mitigation: frame transferability with concrete outcomes (e.g., $100M product-line ownership, release governance at RSM, and cross-market commercialization) and align examples to your domain priorities.';
+    }
+
+    if (hasAny(['recruiter summary', '3-bullet', 'three bullet', 'summary'])) {
+        return '• 20+ years spanning product leadership, Agile delivery, and release governance across enterprise and consumer contexts.\n• Evidence-backed profile: MBA 3.41 GPA (39 grad credits), BA International/Global Studies 3.13 GPA, plus certification strength (PMP + Agile coverage).\n• Demonstrated impact includes $100M product-line ownership, global commercialization exposure, and cross-functional execution in RSM, Johnson Health Tech, and other major organizations.';
+    }
+    
+    if (hasAny(['contact', 'reach', 'connect'])) {
+        return 'You can connect via LinkedIn or the contact section. For faster alignment, include role scope, team size, product stage, and timeline so the response can be tailored to your hiring goals.';
+    }
+
+    return 'I can help with career history, product impact, certifications, and role-fit reasoning at a basic level. If you share a specific role or question, I’ll return a concise strengths-and-risks assessment.';
 }
 
 /**

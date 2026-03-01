@@ -7,6 +7,7 @@ An interactive, visually stunning portfolio website showcasing a distinguished c
 ## ✨ Features
 
 ### Visual Experience
+
 - **Particle Animation Background** - Interactive particle network that responds to mouse movement
 - **GSAP Scroll Animations** - Smooth, performant scroll-triggered animations throughout
 - **3D Interactive Elements** - Globe visualization and card hover effects
@@ -14,6 +15,7 @@ An interactive, visually stunning portfolio website showcasing a distinguished c
 - **Dark Modern Theme** - Professional aesthetic with elegant gradient accents
 
 ### Content Sections
+
 - **Hero** - Dynamic intro with animated stats and call-to-action
 - **Career Timeline** - Interactive chronological journey through 25+ years
 - **Expertise** - Skill visualization with animated progress bars
@@ -23,6 +25,7 @@ An interactive, visually stunning portfolio website showcasing a distinguished c
 - **Contact** - Direct professional links and social channels
 
 ### AI Integration
+
 - **Career Assistant Chatbot** - AI-powered Q&A about experience and fit
 - **Ready for Azure OpenAI** - Prepared architecture for LLM integration
 - **Interactive Queries** - Users can ask about skills, experience, and opportunities
@@ -39,6 +42,7 @@ An interactive, visually stunning portfolio website showcasing a distinguished c
 ## 🚀 Getting Started
 
 ### Prerequisites
+
 - Node.js 18+ (for local development server)
 - VS Code with recommended extensions
 - Azure CLI (for deployment)
@@ -46,17 +50,20 @@ An interactive, visually stunning portfolio website showcasing a distinguished c
 ### Local Development
 
 1. **Clone the repository**
+
    ```bash
    git clone https://github.com/amerikian/Personal-Website.git
    cd Personal-Website
    ```
 
 2. **Install dependencies**
+
    ```bash
    npm install
    ```
 
 3. **Start development server**
+
    ```bash
    npm run dev
    ```
@@ -65,13 +72,14 @@ An interactive, visually stunning portfolio website showcasing a distinguished c
    Navigate to `http://localhost:3000`
 
 ### VS Code Development
+
 1. Open the folder in VS Code
 2. Right-click `index.html` and select "Open with Live Server"
 3. The page will auto-reload on changes
 
 ## 📁 Project Structure
 
-```
+```text
 Personal-Website/
 ├── index.html              # Main HTML file
 ├── css/
@@ -85,6 +93,7 @@ Personal-Website/
 │   └── main.js             # Core functionality & chat
 ├── scripts/
 │   ├── visual-check.js      # One-off screenshot capture/validation
+│   ├── chat-smoke.js        # Ask AI local smoke test runner
 │   └── visual-regression.js # Baseline + diff visual regression
 ├── images/                  # Static assets (to be added)
 ├── api/                     # Azure Functions for AI (future)
@@ -96,7 +105,9 @@ Personal-Website/
 ## 🔧 Customization
 
 ### Updating Career Data
+
 Edit `js/data.js` to update:
+
 - Personal profile information
 - Timeline entries
 - Products and projects
@@ -104,16 +115,19 @@ Edit `js/data.js` to update:
 - Skills and tech stack
 
 ### Styling
+
 All styles use CSS variables in `css/styles.css`:
+
 ```css
 :root {
-    --primary: #6366f1;
-    --secondary: #06b6d4;
-    /* ... more variables */
+  --primary: #6366f1;
+  --secondary: #06b6d4;
+  /* ... more variables */
 }
 ```
 
 ### Adding New Sections
+
 1. Add HTML section in `index.html`
 2. Add styles in `css/styles.css`
 3. Add animations in `js/animations.js`
@@ -124,21 +138,25 @@ All styles use CSS variables in `css/styles.css`:
 ### Azure Static Web Apps
 
 1. **Install SWA CLI**
+
    ```bash
    npm install -g @azure/static-web-apps-cli
    ```
 
 2. **Login to Azure**
+
    ```bash
    az login
    ```
 
 3. **Deploy**
+
    ```bash
    swa deploy . --env production
    ```
 
 ### GitHub Actions (Automated)
+
 Push to `main` branch triggers automatic deployment via the included workflow.
 
 ## 🤖 AI Assistant Integration
@@ -156,7 +174,7 @@ See [Azure OpenAI Docs](https://learn.microsoft.com/azure/ai-services/openai/) f
 
 Automated screenshot validation is available for desktop and mobile views.
 
-### Commands
+### Smoke Test Commands
 
 ```bash
 # Capture regular screenshots
@@ -181,6 +199,22 @@ npm run hooks:install
 On each commit, the hook starts a local static server and runs visual compare.
 Baselines are stored in `artifacts/visual-baseline/`.
 
+## 💬 Ask AI Smoke Test
+
+Use the local function-module smoke test to quickly validate Ask AI behavior and reasoning fallbacks.
+
+### Commands
+
+```bash
+# Default 3-question smoke test
+npm run chat:smoke
+
+# Custom questions (optional)
+node scripts/chat-smoke.js "What are Ian's strongest product leadership signals?" "What is one role-fit risk and mitigation?"
+```
+
+The script prints status, response source, and answer preview for each prompt, then returns `PASS`/`FAIL`.
+
 ## 📊 Research & Data Collection
 
 To populate with actual career data:
@@ -198,6 +232,7 @@ To populate with actual career data:
 ## 🎨 Recommended VS Code Extensions
 
 These extensions are already installed/configured:
+
 - Live Server - Local development preview
 - Tailwind CSS IntelliSense - CSS utilities (optional enhancement)
 - Prettier - Code formatting
@@ -220,6 +255,7 @@ MIT License - See [LICENSE](LICENSE) for details
 ## 🤝 Contributing
 
 This is a personal portfolio, but suggestions are welcome! Open an issue for:
+
 - Bug reports
 - Feature suggestions
 - Design improvements
