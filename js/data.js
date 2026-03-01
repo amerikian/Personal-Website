@@ -32,7 +32,7 @@ const careerData = {
             id: 2,
             year: "2017 - 2021",
             title: "Product Management Consultant (Owner)",
-            company: "SKY CONSULTING LLC",
+            company: "SKY CONSULTING",
             location: "Global",
             description: "Founded a consultancy delivering product and project management for fintech, blockchain, and cryptocurrency ventures. Experience includes Acting CEO for Sprinkle Group (Stockholm-listed fintech venture), Co-Founder of ProfitOps.com (bitcoin investment platform), and Project Manager for Digital Motorsports World Cup 2021.",
             tags: ["Fintech", "Blockchain", "Cryptocurrency", "CEO", "Startup"],
@@ -406,7 +406,7 @@ const careerData = {
                 roleImpact: "Optimized accessory portfolio strategy, partnered with top retailers, and delivered patented accessory innovations including a retailer-exclusive outcome."
             },
             {
-                company: "SKY CONSULTING LLC / Sprinkle Group",
+                company: "SKY CONSULTING",
                 period: "2017 - 2021",
                 role: "Consultant / CEO",
                 companyContext: "Entrepreneurial portfolio spanning fintech, blockchain, and digital asset initiatives focused on emerging market models and platform-led growth.",

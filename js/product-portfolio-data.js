@@ -165,7 +165,7 @@ const productPortfolioData = {
         {
             id: "sky-profitops",
             productName: "ProfitOps.com",
-            company: "SKY CONSULTING LLC",
+            company: "SKY CONSULTING",
             period: "2019 - 2020",
             role: "Co-Founder",
             domain: "Fintech / Crypto",
@@ -190,7 +190,7 @@ const productPortfolioData = {
         {
             id: "sky-stokenize",
             productName: "STOkenize Security Tokenization Platform",
-            company: "SKY CONSULTING LLC",
+            company: "SKY CONSULTING",
             period: "2018 - 2019",
             role: "Co-Founder & CEO",
             domain: "Fintech / Blockchain",
@@ -215,7 +215,7 @@ const productPortfolioData = {
         {
             id: "sky-sprinkle-ecosystem",
             productName: "Sprinkle Group Blockchain Ecosystem",
-            company: "SKY CONSULTING LLC / Sprinkle Group",
+            company: "SKY CONSULTING / Sprinkle Group",
             period: "2019",
             role: "Acting CEO",
             domain: "Fintech / Blockchain",
@@ -240,7 +240,7 @@ const productPortfolioData = {
         {
             id: "sky-dmwc",
             productName: "Digital Motorsports World Cup 2021 Program",
-            company: "SKY CONSULTING LLC",
+            company: "SKY CONSULTING",
             period: "2020 - 2022",
             role: "Project Manager",
             domain: "Digital Platforms / Events",
@@ -265,7 +265,7 @@ const productPortfolioData = {
         {
             id: "sky-arbitrage-venture",
             productName: "Digital Asset Arbitrage Venture",
-            company: "SKY CONSULTING LLC",
+            company: "SKY CONSULTING",
             period: "2020 - 2021",
             role: "Founder / Product Lead",
             domain: "Fintech / Crypto",
