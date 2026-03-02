@@ -8,29 +8,49 @@
  */
 
 const careerContext = `
-You are Ian Cassiman's AI assistant on his professional portfolio website.
+You are Ian Cassiman's Career Intelligence Assistant. Help recruiters and hiring managers quickly assess fit and surface evidence.
 
-About Ian:
-- 20+ years of product leadership and innovation experience
-- Currently Scrum Master & Release Manager at RSM US LLP - building DevOps AI tools
-- Founded SKY CONSULTING - product management consultancy
-- Former VP Commercial Sales at Johnson Health Tech (SE Asia) - frequent factory visits to Taiwan & China
-- Innovation Project Manager at American Family Insurance (IoT/Smart Home)
-- Senior Product Manager at SportsArt, Product Manager at Pacific Cycle (Schwinn/Mongoose)
-- 2 Patents including a Walmart exclusive product
-- Global experience across 9 countries (USA, Thailand, Taiwan, China, Sweden, Myanmar, Cambodia, Poland, Russia)
-- Expertise: Product Management, Scrum/SAFe Agile, Azure DevOps, AI Tools (GitHub Copilot, Azure OpenAI), JavaScript, Python, Fintech, Blockchain, IoT
+PROFILE:
+- Name: Ian Cassiman | Current: Scrum Master & Release Manager, RSM US LLP (2022-Present)
+- Experience: 20+ years product leadership, delivery management, innovation
+- Education: MBA UW-Whitewater (3.41 GPA), BA International Studies UW-Stevens Point (3.13 GPA)
+- Certifications: PMP, CSM, SAFe 6.0, Product Management Professional, Google Data Analytics
 
-Your role: Answer questions about Ian's background, skills, and experience.
-Be helpful, professional, and encourage visitors to connect for opportunities.
-Keep responses concise (2-4 sentences) unless asked for detail.
-Reason at a basic level: give a direct answer, briefly explain why based on profile evidence, then suggest a next step when relevant.
-If information is missing, say so clearly and avoid guessing.
+KEY ACHIEVEMENTS:
+• $100M Product Line — Johnson Health Tech, Vision/Matrix Fitness cardiovascular (2006-2012)
+• 2 U.S. Patents — Pacific Cycle (Schwinn/Mongoose), one Walmart-exclusive
+• 3 Product Innovation Awards — Johnson Health Tech, including industry-first iPod dock
+• 153 Auto-Generated Wiki Pages — RSM, DevOps AI documentation system
+• VP Commercial Sales SE Asia — Johnson Health Tech Thailand, first Marriott deal, expanded to Myanmar/Cambodia
+• CEO Stockholm-Listed Fintech — Sprinkle Group via SKY Consulting
+
+EMPLOYER HISTORY:
+• RSM US LLP (2022-Present): Scrum Master/Release Manager, 2 teams, AI tools, DevOps dashboards
+• SKY CONSULTING (2017-2021): Owner/CEO, fintech, blockchain, CEO Sprinkle Group
+• Johnson Health Tech Thailand (2015-2017): VP Commercial Sales, SE Asia expansion
+• American Family Insurance (2014-2015): Innovation PM, IoT/Smart Home, Lean Startup
+• SportsArt (2014): Senior PM, global commercial fitness, rebranding
+• Pacific Cycle (2012-2014): PM, 2 patents, Target/Walmart
+• Johnson Health Tech NA (2006-2012): Global PM, $100M line, 3 awards
+
+SKILLS: Product Strategy, SAFe/Scrum, Azure DevOps, JavaScript, Python, GitHub Copilot, RAG patterns
+INDUSTRIES: Fintech, blockchain, fitness, insurance, IoT, consumer products
+GLOBAL: USA (18+ yrs), Thailand (7 yrs), Taiwan, China, Sweden, Poland, Russia
+
+RESPONSE STYLE:
+1. Lead with a direct answer
+2. Cite specific evidence (companies, metrics, outcomes)
+3. For role questions, map requirements to profile evidence
+4. Flag gaps honestly if info is missing
+5. Keep to 2-5 sentences unless detail requested
+6. Encourage connecting via LinkedIn or contact form when appropriate
+
+Be helpful, accurate, and professional. You represent Ian.
 `;
 
-const REQUEST_TIMEOUT_MS = 12000;
-const MAX_MESSAGE_LENGTH = 1200;
-const MAX_HISTORY_MESSAGES = 8;
+const REQUEST_TIMEOUT_MS = 15000;
+const MAX_MESSAGE_LENGTH = 1500;
+const MAX_HISTORY_MESSAGES = 10;
 
 function normalizeHistory(history) {
     if (!Array.isArray(history)) return [];
@@ -154,8 +174,8 @@ async function callGitHubModels(token, userMessage, history = []) {
                 ...history,
                 { role: 'user', content: userMessage }
             ],
-            max_tokens: 350,
-            temperature: 0.4
+            max_tokens: 500,
+            temperature: 0.3
         })
     });
 
@@ -182,8 +202,8 @@ async function callAzureOpenAI(endpoint, apiKey, deploymentName, userMessage, hi
                 ...history,
                 { role: 'user', content: userMessage }
             ],
-            max_tokens: 350,
-            temperature: 0.4
+            max_tokens: 500,
+            temperature: 0.3
         })
     });
 
@@ -196,32 +216,44 @@ async function callAzureOpenAI(endpoint, apiKey, deploymentName, userMessage, hi
 }
 
 function generateFallbackResponse(question) {
-    const lowerQ = question.toLowerCase();
-    const hasAny = (terms) => terms.some(term => lowerQ.includes(term));
+    const lowerMessage = question.toLowerCase();
+    const hasAny = (keywords) => keywords.some(kw => lowerMessage.includes(kw));
 
-    if (hasAny(['experience', 'years'])) {
-        return "Ian brings 20+ years across product management, Scrum leadership, and release delivery with global exposure. This is relevant for roles that need both strategy and execution discipline. If useful, share a role and I can map experience by company and outcomes.";
+    if (hasAny(['experience', 'years', 'background'])) {
+        return "Ian brings 20+ years across product management, Scrum leadership, and release delivery. Key evidence: $100M product line at Johnson Health Tech, VP Commercial Sales in SE Asia, and current AI/DevOps innovation at RSM.";
     }
     
-    if (hasAny(['ai', 'copilot', 'bot'])) {
-        return "Recent AI work includes DevOps dashboards, wiki automation, and chat workflows. The value is practical: better visibility, faster decisions, and improved delivery alignment. I can break this down by tool and business outcome.";
+    if (hasAny(['ai', 'copilot', 'bot', 'automation'])) {
+        return "At RSM, Ian built: (1) a DevOps dashboard with 12+ visualizations, (2) an automated wiki system generating 153 documentation pages, and (3) a Teams bot using RAG patterns. These tools improved visibility and decision speed for 2 scrum teams.";
     }
     
+    if (hasAny(['strength', 'best', 'top'])) {
+        return "Top 3 strengths:\n1. Product-Line Ownership - $100M global line, 3 innovation awards, 2 patents\n2. Delivery Leadership - SAFe execution across 2 teams, release governance\n3. Global Business Acumen - VP in SE Asia, CEO of Stockholm-listed fintech, 7+ countries";
+    }
+
     if (hasAny(['fit', 'hire', 'role', 'opportunity'])) {
-        return "Basic fit reasoning: strong in product strategy, Agile execution, and release governance across multiple industries. This profile fits teams needing roadmap ownership plus delivery reliability. Share your role scope and I can provide a concise fit summary.";
+        return "Profile fits roles requiring: product strategy + execution, Agile/SAFe delivery leadership, or technical product ownership. Strongest evidence: $100M product line, PMP/CSM/SAFe certifications, current AI tool development. Share a specific role for targeted analysis.";
     }
 
-    if (hasAny(['risk', 'gap', 'mitigate', 'mitigation'])) {
-        return "A likely risk in some searches is perception of broad versus single-domain depth. Mitigation is to anchor on role-relevant outcomes: $100M product-line leadership, enterprise release governance, and measurable cross-functional delivery execution.";
+    if (hasAny(['risk', 'gap', 'weak', 'concern', 'mitigate', 'mitigation'])) {
+        return "A reasonable concern is breadth vs. single-domain depth. Mitigation: anchor on outcomes ($100M product line, 2 patents, VP leadership). Profile shows repeated pattern of entering new domains and delivering measurable results.";
     }
 
-    if (hasAny(['recruiter summary', '3-bullet', 'three bullet', 'summary'])) {
-        return "• 20+ years of product and delivery leadership across enterprise and consumer domains.\n• Evidence-backed profile: MBA 3.41 GPA (39 grad credits), BA 3.13 GPA, plus certification strength including PMP and Agile credentials.\n• Proven outcomes across RSM, Johnson Health Tech, and innovation programs with global commercialization and release governance impact.";
+    if (hasAny(['recruiter', 'summary', 'bullet', 'tldr'])) {
+        return "Recruiter Summary:\n- 20+ years product/delivery leadership with $100M P&L experience\n- Credentials: MBA (3.41 GPA), PMP, CSM, SAFe 6.0, 2 patents, 3 awards\n- Current: AI/DevOps tools at RSM; Prior: VP SE Asia, CEO Stockholm fintech";
     }
 
-    if (hasAny(['contact', 'connect', 'reach'])) {
-        return "Great interest. Please connect through the contact section or LinkedIn, and include role scope, team context, and timeline for a focused follow-up.";
+    if (hasAny(['patent', 'invention'])) {
+        return "2 U.S. patents from Pacific Cycle (Schwinn/Mongoose):\n1. EASY-CONNECT ATTACHMENT HEAD AND ADAPTER\n2. Modular accessory connector\nOne became a Walmart-exclusive product.";
     }
 
-    return "I can help with career history, certifications, technical strengths, and role fit using basic evidence-based reasoning. Ask about a specific role or domain and I’ll provide a concise assessment.";
+    if (hasAny(['education', 'degree', 'mba', 'school', 'certif'])) {
+        return "Education: MBA International Business - UW-Whitewater (3.41 GPA); BA International Studies - UW-Stevens Point (3.13 GPA) with study abroad in Poland/Russia.\nCertifications: PMP, CSM, SAFe 6.0, Product Management Professional, Google Data Analytics.";
+    }
+
+    if (hasAny(['contact', 'connect', 'reach', 'email'])) {
+        return "Best ways to connect: LinkedIn (linkedin.com/in/iancassiman) or the contact form on this site. Include role context and timeline for a focused response.";
+    }
+
+    return "I can help with: career history, achievements, education, role fit assessment, strengths/gaps, or recruiter summaries. Try asking about a specific role or capability.";
 }

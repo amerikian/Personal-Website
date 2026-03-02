@@ -557,6 +557,17 @@ function initChat() {
     chatInput?.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') sendMessage();
     });
+
+    // Handle suggestion chip clicks
+    document.querySelectorAll('.suggestion-chip').forEach(chip => {
+        chip.addEventListener('click', () => {
+            const question = chip.dataset.question;
+            if (question && chatInput) {
+                chatInput.value = question;
+                sendMessage();
+            }
+        });
+    });
 }
 
 /**
