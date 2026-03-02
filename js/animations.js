@@ -201,18 +201,24 @@ function initScrollAnimations() {
         });
     });
 
-    // Expertise cards
-    gsap.from('.expertise-card', {
-        scrollTrigger: {
-            trigger: '.expertise-grid',
-            start: 'top 80%',
-            toggleActions: 'play none none reverse'
-        },
-        opacity: 0,
-        y: 50,
-        stagger: 0.1,
-        duration: 0.6,
-        ease: 'power3.out'
+    // Expertise cards (animate per grid and keep visible after first reveal)
+    gsap.utils.toArray('.expertise-grid').forEach((grid) => {
+        const cards = grid.querySelectorAll('.expertise-card');
+        if (!cards.length) return;
+
+        gsap.from(cards, {
+            scrollTrigger: {
+                trigger: grid,
+                start: 'top 80%',
+                toggleActions: 'play none none none',
+                once: true
+            },
+            opacity: 0,
+            y: 50,
+            stagger: 0.1,
+            duration: 0.6,
+            ease: 'power3.out'
+        });
     });
 
     // Note: Product cards, location cards, and tech icons are animated by

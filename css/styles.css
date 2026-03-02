@@ -74,6 +74,7 @@ body {
     color: var(--gray-300);
     line-height: 1.6;
     overflow-x: hidden;
+    overflow-y: scroll;
     max-width: 100%;
     width: 100%;
 }
