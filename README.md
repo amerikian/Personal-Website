@@ -1,6 +1,6 @@
-# 🚀 Professional Portfolio - 25+ Years of Global Tech Leadership
+# 🚀 Professional Portfolio - 20+ Years of Global Product & Delivery Leadership
 
-An interactive, visually stunning portfolio website showcasing a distinguished career spanning over two decades in technology leadership, AI/ML innovation, and enterprise architecture.
+An interactive portfolio website showcasing a career spanning product management, Scrum leadership, and global delivery across fitness technology, fintech, blockchain, IoT, and professional services.
 
 ![Portfolio Preview](./images/preview.png)
 
@@ -17,7 +17,7 @@ An interactive, visually stunning portfolio website showcasing a distinguished c
 ### Content Sections
 
 - **Hero** - Dynamic intro with animated stats and call-to-action
-- **Career Timeline** - Interactive chronological journey through 25+ years
+- **Career Timeline** - Interactive chronological journey through 20+ years
 - **Expertise** - Skill visualization with animated progress bars
 - **Products** - Index-primary 3D portfolio carousel with measurable impact evidence
 - **Global Map** - Visual representation of worldwide experience
@@ -26,9 +26,10 @@ An interactive, visually stunning portfolio website showcasing a distinguished c
 
 ### AI Integration
 
-- **Career Assistant Chatbot** - AI-powered Q&A about experience and fit
-- **Ready for Azure OpenAI** - Prepared architecture for LLM integration
-- **Interactive Queries** - Users can ask about skills, experience, and opportunities
+- **Career Assistant Chatbot** - Live AI-powered Q&A about experience and fit
+- **Azure OpenAI + GitHub Models** - Dual-provider support with intelligent fallback
+- **Suggested Questions** - Clickable chips for common recruiter queries
+- **Evidence-Based Responses** - Answers with metrics, achievements, and specific examples
 
 ## 🛠 Tech Stack
 
@@ -240,7 +241,7 @@ These extensions are already installed/configured:
 
 ## 📈 Future Enhancements
 
-- [ ] Connect AI chatbot to Azure OpenAI
+- [x] Connect AI chatbot to Azure OpenAI
 - [ ] Add blog/articles section
 - [ ] Implement recommendations engine
 - [ ] Add analytics dashboard
