@@ -217,7 +217,11 @@ function initScrollAnimations() {
             y: 50,
             stagger: 0.1,
             duration: 0.6,
-            ease: 'power3.out'
+            ease: 'power3.out',
+            immediateRender: false,
+            onComplete: () => {
+                gsap.set(cards, { clearProps: 'opacity,transform' });
+            }
         });
     });
 
