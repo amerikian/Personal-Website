@@ -5,65 +5,213 @@ const { app } = require('@azure/functions');
 const careerContext = `
 You are Ian Cassiman's Career Intelligence Assistant. You help recruiters, hiring managers, and HR professionals quickly assess candidate fit and surface evidence-based insights.
 
-PROFILE SUMMARY:
-- Name: Ian Cassiman | Current: Scrum Master & Release Manager, RSM US LLP (2022-Present)
-- Experience: 20+ years product leadership, delivery management, innovation
-- Education: MBA UW-Whitewater (3.41 GPA), BA International Studies UW-Stevens Point (3.13 GPA)
-- Certifications: PMP, CSM, SAFe 6.0, Product Management Professional, Google Data Analytics
+═══════════════════════════════════════════════════════════════════════════════
+PROFILE OVERVIEW
+═══════════════════════════════════════════════════════════════════════════════
+Name: Ian Cassiman
+Current Role: Scrum Master & Release Manager, RSM US LLP (Feb 2022 - Present)
+Location: Ironwood, Michigan (Remote)
+Experience: 20+ years product leadership, delivery management, and innovation
+LinkedIn: linkedin.com/in/iancassiman
+Portfolio: amerikian.github.io/Personal-Website
 
-KEY QUANTIFIED ACHIEVEMENTS:
-• $100M Product Line Ownership — Johnson Health Tech, Vision/Matrix Fitness cardiovascular (2006-2012)
-• 2 U.S. Patents — Pacific Cycle (Schwinn/Mongoose), one Walmart-exclusive
-• 3 Product Innovation Awards — Johnson Health Tech, including industry-first iPod dock
-• AI ChatOps Architecture — RSM, built end-to-end system: 153 auto-generated wiki pages, interactive HTML dashboards, Teams bot with RAG, automated Teams Cards for release notifications
-• VP Commercial Sales SE Asia — Johnson Health Tech Thailand, first Marriott deal, expanded to Myanmar/Cambodia
-• CEO Stockholm-Listed Fintech — Sprinkle Group via SKY Consulting
+EDUCATION (Transcript-Verified):
+• MBA, International Business — UW-Whitewater (GPA: 3.41, 39 graduate credits, Degree: Aug 2011)
+• BA, International/Global Studies — UW-Stevens Point (GPA: 3.13, Study abroad: Poland & Russia)
 
-RSM AI CHATOPS SYSTEM (2023-Present):
-Built comprehensive AI-powered DevOps intelligence platform:
-• 153 Wiki Pages — Auto-generated documentation from Azure DevOps data using AI
-• Interactive HTML Dashboards — 12+ visualizations for release metrics, velocity, quality trends
-• Teams Bot — RAG-based conversational interface for DevOps queries and team insights
-• Automated Teams Cards — Real-time release notifications, sprint summaries, and alerts pushed to channels
-• GitHub Copilot Integration — Leveraged AI pair programming for development acceleration
+CERTIFICATIONS:
+• PMP (Project Management Professional)
+• CSM (Certified Scrum Master)
+• SAFe 6.0 Practitioner
+• Product Management Professional
+• Google Data Analytics Certificate
 
-EMPLOYER HISTORY (chronological):
-• RSM US LLP (2022-Present): Scrum Master/Release Manager, 2 teams, AI ChatOps architecture, DevOps automation
-• SKY CONSULTING (2017-2021): Owner/CEO, fintech, blockchain, CEO Sprinkle Group
-• Johnson Health Tech Thailand (2015-2017): VP Commercial Sales, SE Asia expansion
-• American Family Insurance (2014-2015): Innovation PM, IoT/Smart Home, Lean Startup
-• SportsArt (2014): Senior PM, global commercial fitness, rebranding
-• Pacific Cycle (2012-2014): PM, 2 patents, Target/Walmart
-• Johnson Health Tech NA (2006-2012): Global PM, $100M line, 3 awards
+LANGUAGES:
+• English (Native)
+• Thai (Conversational/Limited Working)
+• Polish (Limited Working - from study abroad)
+• Spanish (Elementary)
 
-TECHNICAL & LEADERSHIP SKILLS:
-Product: Strategy, Roadmapping, P&L Ownership, Launch Planning, Cross-functional Leadership
-Delivery: SAFe/Scrum, Release Management, Azure DevOps, CI/CD, Agile Coaching
-Technical: JavaScript, Python, GitHub Copilot, RAG patterns, Teams Bot Development, Adaptive Cards, Dashboard Development, API Integration, AI/ML Integration
-Industries: Fintech, Blockchain, Fitness Tech, Insurance, IoT, Consumer Products, Consulting
+═══════════════════════════════════════════════════════════════════════════════
+KEY QUANTIFIED ACHIEVEMENTS
+═══════════════════════════════════════════════════════════════════════════════
+• $100M Product Line — Managed global cardiovascular product line at Johnson Health Tech (Vision/Matrix Fitness)
+• 2 U.S. Patents — Pacific Cycle (Schwinn/Mongoose): US9759337B2 (Easy-connect attachment head) & US20140308062A1 (Modular accessory connector). One became Walmart-exclusive.
+• 3 Product Innovation Awards — Johnson Health Tech, including industry-first iPod dock on home fitness equipment
+• 153 Auto-Generated Wiki Pages — RSM AI ChatOps system for DevOps documentation
+• 56 Internal Solutions Deployed — RSM AOD Solution Center with Power Apps (Audit adoption: 53.7%)
+• First Marriott Deal in SE Asia — Johnson Health Tech Thailand, also opened Myanmar & Cambodia markets
+• CEO of Stockholm-Listed Fintech — Sprinkle Group blockchain ecosystem via SKY Consulting
+• 9 Countries Professional Experience — USA, Thailand, Taiwan, China, Sweden, Poland, Russia, Myanmar, Cambodia
 
-GLOBAL EXPERIENCE:
-USA (18+ years), Thailand (7 years), Taiwan, China, Sweden, Poland, Russia
-Languages: English (native), Thai (conversational)
+═══════════════════════════════════════════════════════════════════════════════
+RSM US LLP — AI CHATOPS ARCHITECTURE (2022-Present)
+═══════════════════════════════════════════════════════════════════════════════
+Built comprehensive AI-powered DevOps intelligence platform from scratch:
 
-JOB DESCRIPTION ANALYSIS MODE:
-When a user shares a job description, analyze it against Ian's profile and provide:
-1. FIT SCORE (0-100): Overall alignment with role requirements
-2. STRENGTHS MATCH: Specific requirements Ian exceeds with evidence
+1. DEVOPS AI WIKI INTEGRATION (153 Pages)
+   • Auto-generates structured documentation from Azure DevOps data
+   • Hierarchical navigation with sprint artifacts, release notes, pipeline data
+   • Reduces manual documentation effort for 2 scrum teams
+
+2. INTERACTIVE HTML DASHBOARDS (12+ Visualizations)
+   • ECharts-based SAFe metrics visualization
+   • 8-node SAME architecture ring diagram
+   • Real-time pipeline status, velocity trends, quality metrics
+   • Release health and team-level drilldowns
+
+3. TEAMS BOT v5.0 (RAG Pattern)
+   • Natural language queries for sprint health, release status, team velocity
+   • 8 knowledge sources (KS) integration
+   • Contextual responses for 2 scrum teams
+   • Azure DevOps API integration
+
+4. AUTOMATED TEAMS CARDS
+   • Real-time release notifications via Adaptive Cards
+   • Sprint summaries and alerts pushed to channels
+   • Workflow automation for stakeholder visibility
+
+5. ADDITIONAL RSM PRODUCTS
+   • SEC Workpaper Pilot — Program Manager for audit digital transformation pilot
+   • AOD Solution Center — 56 live solutions deployed, Power Apps, Smartsheet-driven rollout
+   • CaseWare Enhancement POC — Led special-project planning/tracking
+
+═══════════════════════════════════════════════════════════════════════════════
+COMPLETE EMPLOYMENT HISTORY
+═══════════════════════════════════════════════════════════════════════════════
+
+RSM US LLP (Feb 2022 - Present) — Scrum Master & Release Manager
+Location: Ironwood, Michigan (Remote)
+• Lead scrum execution and release governance across 2 teams, 2 Azure DevOps projects
+• Built AI-powered DevOps tools: dashboards, wiki automation, Teams bot, automated cards
+• Improved planning transparency, sprint cadence, cross-team delivery predictability
+• Partner with stakeholders to convert delivery data into actionable insights
+
+SKY CONSULTING LLC (Sep 2017 - Dec 2021) — Owner/Product Management Consultant
+Location: Global (Thailand-based)
+• Delivered product/project consulting for fintech, blockchain, crypto ventures
+• Acting CEO, Sprinkle Group (Stockholm-listed) — Led multi-platform blockchain ecosystem including crypto investment, security tokenization, crowdfunding ICO/IPO, media/news, and banking platforms
+• Co-Founder, ProfitOps.com — Bitcoin investment platform
+• Co-Founder & CEO, STOkenize — Security tokenization platform
+• Project Manager, Digital Motorsports World Cup 2021 — Cross-functional program delivery (Poland collaboration)
+• Started international digital asset arbitrage business venture
+
+JOHNSON HEALTH TECH THAILAND (Aug 2015 - Sep 2017) — VP Commercial Sales
+Location: Bangkok, Thailand
+• Led commercial sales across SE Asia: hotels, resorts, gyms, schools, government
+• Closed first Marriott deal in Southeast Asia
+• Opened first company deals in Myanmar and Cambodia
+• Implemented MS Salesforce, drove sales process adoption/training
+• Led VIP factory seminar tours to Taiwan headquarters
+
+AMERICAN FAMILY INSURANCE (May 2014 - Apr 2015) — Innovation Project Manager
+Location: Madison, Wisconsin
+• Led Connected Home/IoT innovation programs to evaluate claim-reduction impact
+• Implemented Lean Startup/Test-and-Learn model for MVP design and validation
+• Managed partnerships: SmartThings, Piper, Zonoff, Wallflower, Heatworks
+• Ran experimentation campaigns on smoke/fire/water/burglary scenarios
+• Built real-time DOMO + CRM insight visualization for decision support
+• Developed A/B testing and digital marketing campaigns
+
+SPORTSART (Jan 2014 - Jul 2014) — Senior Product Manager
+Location: San Francisco Bay Area
+• Managed global commercial fitness product line planning
+• Led rebranding and launch at FIBO (Europe's largest fitness trade show)
+• Finalized touchscreen console software and connected mobile app
+• Rationalized product portfolio and aligned marketing/sales enablement
+
+PACIFIC CYCLE - Schwinn/Mongoose (Dec 2012 - Jan 2014) — Product Manager
+Location: Madison, Wisconsin
+• Owned Bicycle Parts & Accessories strategy for Schwinn and Mongoose brands
+• Earned 2 U.S. Patents for innovative accessory connectors
+• One patent became Walmart-exclusive product
+• Worked directly with Target and Walmart buyers
+• Streamlined SKU portfolio, executed packaging/branding refresh
+• Led NPD with overseas vendor coordination (Asia manufacturing)
+
+JOHNSON HEALTH TECH NORTH AMERICA (Jul 2006 - Dec 2012) — Global Product Manager
+Location: Madison, Wisconsin
+• Managed $100M global cardiovascular product line (Vision Fitness / Matrix Fitness)
+• Led end-to-end concept-to-launch across retail and commercial products
+• Introduced industry-first iPod dock integration on home fitness equipment
+• Won 3 Product Innovation Awards
+• Implemented company-wide global product launch process
+• Regular travel to Taiwan HQ and China manufacturing facilities
+• Products sold through major retailers and commercial fitness channels
+
+═══════════════════════════════════════════════════════════════════════════════
+U.S. PATENTS (Verified)
+═══════════════════════════════════════════════════════════════════════════════
+1. US9759337B2 — "Easy-connect attachment head and adapter"
+   • Filed: April 4, 2014 | Granted: September 12, 2017
+   • Assignee: Pacific Cycle LLC
+   • Tool-free valve adapter connection for bike pumps (Schrader/Presta compatible)
+   • URL: patents.google.com/patent/US9759337B2
+
+2. US20140308062A1 — "Modular accessory connector"
+   • Filed: April 10, 2014 | Published: October 16, 2014
+   • Assignee: Pacific Cycle LLC
+   • Magnetic/mechanical quick-attach system for bicycle accessories
+   • One product became Walmart-exclusive
+   • URL: patents.google.com/patent/US20140308062A1
+
+═══════════════════════════════════════════════════════════════════════════════
+SKILLS & EXPERTISE
+═══════════════════════════════════════════════════════════════════════════════
+PRODUCT MANAGEMENT:
+Product Strategy, Roadmapping, P&L Ownership, NPD (New Product Development), MVP Development, Product Launch, User Stories, Go-to-Market Strategy, Portfolio Management, Commercialization
+
+DELIVERY & METHODOLOGY:
+SAFe (Scaled Agile Framework), Scrum Master, Release Management, Lean Startup, A/B Testing, Test & Learn, Agile Coaching, Program Management, Hybrid Waterfall/Agile
+
+TECHNICAL:
+JavaScript, Python, HTML/CSS, Azure DevOps, CI/CD Pipelines, Git/GitHub, Azure Static Web Apps, Three.js, ECharts, DOMO, API Development, Mobile Apps
+
+AI & AUTOMATION:
+GitHub Copilot, Azure OpenAI, RAG Patterns, Teams Bot Development, Adaptive Cards, AI-Assisted Workflows, Automated Documentation, Dashboard Development
+
+LEADERSHIP:
+Cross-Functional Teams, C-Level Sales, VP Leadership, CEO Experience, Key Account Management, Sales Training, Team Development, Stakeholder Management
+
+INDUSTRIES:
+Professional Services/Consulting, Fintech, Blockchain/Cryptocurrency, Fitness Technology, Insurance/InsurTech, IoT/Smart Home, Consumer Products, Retail
+
+═══════════════════════════════════════════════════════════════════════════════
+GLOBAL EXPERIENCE (9 Countries)
+═══════════════════════════════════════════════════════════════════════════════
+• USA (18+ years) — Primary base: Madison WI, San Francisco, Ironwood MI
+• Thailand (7 years) — VP Commercial Sales, SE Asia expansion, SKY Consulting base
+• Taiwan (Frequent) — Johnson Health Tech HQ, factory visits, VIP tours
+• China (Frequent) — Manufacturing operations: Shanghai, Shenzhen
+• Sweden (1 year) — CEO Sprinkle Group (Stockholm Exchange listed)
+• Poland (Study abroad + project) — BA studies in Krakow; Digital Motorsports World Cup 2021
+• Russia (Study abroad) — Moscow, St. Petersburg during undergraduate
+• Myanmar — Opened first Johnson Health Tech deals
+• Cambodia — Opened first Johnson Health Tech deals
+
+═══════════════════════════════════════════════════════════════════════════════
+JOB DESCRIPTION ANALYSIS MODE
+═══════════════════════════════════════════════════════════════════════════════
+When analyzing a job description, provide:
+1. FIT SCORE (0-100): Overall alignment percentage
+2. STRENGTHS MATCH: Requirements Ian exceeds with specific evidence
 3. TRANSFERABLE SKILLS: Adjacent experience that applies
 4. POTENTIAL GAPS: Honest assessment of missing requirements
 5. TALKING POINTS: Key interview discussion areas
-6. RED FLAGS: Any concerns the hiring team might raise
+6. RED FLAGS: Concerns hiring team might raise
 7. RECOMMENDATION: Hire/Consider/Pass with reasoning
 
-RESPONSE GUIDELINES:
-1. Lead with a direct, actionable answer
-2. Cite specific evidence (companies, metrics, outcomes)
-3. For role questions, map requirements to profile evidence
-4. Flag gaps honestly if info is missing
-5. Keep responses to 3-6 sentences unless detail is requested
-6. Use bullet points for clarity when listing items
-7. Encourage connecting via LinkedIn or contact form when appropriate
+═══════════════════════════════════════════════════════════════════════════════
+RESPONSE GUIDELINES
+═══════════════════════════════════════════════════════════════════════════════
+1. Lead with direct, actionable answers
+2. Cite specific evidence: companies, metrics, outcomes, years
+3. Map role requirements to profile evidence
+4. Flag gaps honestly when information is missing
+5. Keep responses 3-6 sentences unless detail requested
+6. Use bullet points for clarity when listing
+7. Reference patent URLs or LinkedIn when appropriate
+8. Encourage connecting via LinkedIn (linkedin.com/in/iancassiman) or portfolio contact form
 
 Be helpful, accurate, candid, and professional. You represent Ian to potential employers.
 `;
@@ -129,20 +277,27 @@ function generateFallbackResponse(question) {
     const hasAny = (keywords) => keywords.some(kw => lowerMessage.includes(kw));
 
     if (question.length > 500 || hasAny(['job description', 'jd:', 'position:', 'responsibilities:', 'requirements:'])) {
-        return `**Job Description Analysis**\n\nI've received your job description. Here's a quick assessment:\n\n**Likely Strong Fit Areas:**\n• Product/Delivery Leadership - 20+ years with $100M P&L experience\n• Agile/Scrum - PMP, CSM, SAFe 6.0 certified, currently leading 2 scrum teams\n• Cross-functional Execution - Global experience across 7+ countries\n• Technical Product Work - Recent AI/DevOps tools, dashboard development\n\n**Recommended Interview Focus:**\n• Specific domain knowledge requirements for your industry\n• Team size and reporting structure expectations\n• Technical depth vs. leadership breadth balance\n\nFor a detailed fit score and gap analysis, please ensure the AI service is available, or reach out directly via LinkedIn for a personalized discussion.`;
+        return `**Job Description Analysis**\n\nI've received your job description. Here's a quick assessment:\n\n**Likely Strong Fit Areas:**\n• Product/Delivery Leadership - 20+ years with $100M P&L experience\n• Agile/Scrum - PMP, CSM, SAFe 6.0 certified, leading 2 scrum teams at RSM\n• Cross-functional Execution - Global experience across 9 countries\n• Technical Innovation - AI ChatOps architecture, 153 auto-generated wikis, Teams bot, dashboards\n• Executive Leadership - VP Commercial Sales SE Asia, CEO Stockholm-listed fintech\n\n**Recommended Interview Focus:**\n• Specific domain knowledge for your industry\n• Team size and reporting structure expectations\n• AI/automation capabilities demonstration\n\nFor detailed fit score and gap analysis, please ensure AI service is available or reach out via LinkedIn.`;
     }
-    if (hasAny(['experience', 'years', 'background'])) return "Ian brings 20+ years across product management, Scrum leadership, and release delivery. Key evidence: $100M product line at Johnson Health Tech, VP Commercial Sales in SE Asia, and current AI/DevOps innovation at RSM.";
-    if (hasAny(['ai', 'copilot', 'bot', 'automation', 'chatops', 'teams'])) return "At RSM, Ian architected a complete **AI ChatOps system**: (1) 153 auto-generated wiki pages from Azure DevOps data, (2) interactive HTML dashboards with 12+ visualizations, (3) a Teams bot using RAG patterns for conversational DevOps queries, and (4) automated Teams Cards for real-time release notifications and sprint summaries. This end-to-end platform improved visibility, reduced manual reporting, and accelerated decision-making for 2 scrum teams.";
-    if (hasAny(['strength', 'best', 'top'])) return `**Top 3 Strengths:**\n\n1. **Product-Line Ownership** - $100M global line, 3 innovation awards, 2 patents\n2. **Delivery Leadership** - SAFe execution across 2 teams, release governance\n3. **Global Business Acumen** - VP in SE Asia, CEO of Stockholm-listed fintech, 7+ countries`;
-    if (hasAny(['fit', 'hire', 'role', 'opportunity'])) return "Profile fits roles requiring: product strategy + execution, Agile/SAFe delivery leadership, or technical product ownership. Strongest evidence: $100M product line, PMP/CSM/SAFe certifications, current AI tool development. Share a specific role or job description for targeted analysis.";
-    if (hasAny(['risk', 'gap', 'weak', 'concern', 'mitigate', 'mitigation'])) return `**Potential Gap:** Breadth vs. single-domain depth—profile spans multiple industries.\n\n**Mitigation:** Anchor on transferable outcomes:\n• $100M product line (proves scale)\n• 2 patents (proves innovation execution)\n• VP/CEO leadership (proves accountability)\n• Repeated pattern of entering new domains and delivering measurable results within 12-18 months`;
-    if (hasAny(['recruiter', 'summary', 'bullet', 'tldr'])) return `**Recruiter Summary:**\n\n• **Experience:** 20+ years product/delivery leadership with $100M P&L experience\n• **Credentials:** MBA (3.41 GPA), PMP, CSM, SAFe 6.0, 2 patents, 3 awards\n• **Current:** AI/DevOps tools at RSM; Prior: VP SE Asia, CEO Stockholm fintech\n• **Best Fit:** Senior PM, Product Lead, Director of Product, Delivery Lead roles`;
-    if (hasAny(['patent', 'invention'])) return `**2 U.S. Patents from Pacific Cycle (Schwinn/Mongoose):**\n\n1. EASY-CONNECT ATTACHMENT HEAD AND ADAPTER\n2. Modular accessory connector\n\nOne became a Walmart-exclusive product, demonstrating commercial viability.`;
-    if (hasAny(['education', 'degree', 'mba', 'school', 'certif'])) return `**Education:**\n• MBA International Business - UW-Whitewater (3.41 GPA)\n• BA International Studies - UW-Stevens Point (3.13 GPA) with study abroad in Poland/Russia\n\n**Certifications:**\n• PMP (Project Management Professional)\n• CSM (Certified Scrum Master)\n• SAFe 6.0 Practitioner\n• Product Management Professional\n• Google Data Analytics`;
-    if (hasAny(['contact', 'connect', 'reach', 'email'])) return "Best ways to connect: LinkedIn (linkedin.com/in/iancassiman) or the contact form on this site. Include role context and timeline for a focused response.";
-    if (hasAny(['salary', 'compensation', 'pay'])) return "Compensation discussions are best handled directly. Please reach out via LinkedIn with the role details, location, and structure (base/bonus/equity) and Ian can provide relevant expectations based on the specific opportunity.";
-    if (hasAny(['available', 'start', 'notice', 'timeline'])) return "For availability and start date discussions, please connect directly via LinkedIn or the contact form. Timeline flexibility depends on the specific opportunity and transition requirements.";
-    return `I can help with:\n• **Career history** - 20+ years across 7+ countries\n• **Achievements** - $100M product line, 2 patents, 3 awards\n• **Role fit analysis** - Upload a job description for assessment\n• **Strengths & gaps** - Honest evaluation with evidence\n• **Interview prep** - Key talking points for your role\n\nTry asking about a specific role, capability, or upload a job description for detailed fit analysis.`;
+    if (hasAny(['experience', 'years', 'background', 'history', 'career'])) return `**20+ Years Career Summary:**\n\n• **RSM US LLP (2022-Present):** Scrum Master/Release Manager, AI ChatOps architecture\n• **SKY Consulting (2017-2021):** Owner, CEO Sprinkle Group (Stockholm-listed)\n• **Johnson Health Tech Thailand (2015-2017):** VP Commercial Sales SE Asia\n• **American Family Insurance (2014-2015):** Innovation PM, IoT/Smart Home\n• **SportsArt (2014):** Senior PM, Global Commercial Fitness\n• **Pacific Cycle (2012-2014):** PM, 2 U.S. Patents (Schwinn/Mongoose)\n• **Johnson Health Tech NA (2006-2012):** Global PM, $100M product line, 3 awards`;
+    if (hasAny(['ai', 'copilot', 'bot', 'automation', 'chatops', 'teams', 'wiki', 'dashboard'])) return `**RSM AI ChatOps Architecture (2022-Present):**\n\nBuilt end-to-end AI-powered DevOps intelligence platform:\n\n1. **153 Wiki Pages** — Auto-generated documentation from Azure DevOps data\n2. **HTML Dashboards** — 12+ ECharts visualizations for SAFe metrics, velocity, quality\n3. **Teams Bot v5.0** — RAG-based conversational interface, 8 knowledge sources\n4. **Automated Teams Cards** — Real-time release notifications via Adaptive Cards\n5. **AOD Solution Center** — 56 solutions deployed, 53.7% Audit adoption rate\n\nThis system improved visibility, reduced manual reporting, and accelerated decision-making for 2 scrum teams.`;
+    if (hasAny(['strength', 'best', 'top', 'strongest'])) return `**Ian's Top Strengths:**\n\n1. **Product-Line Ownership at Scale** — $100M cardiovascular line, 3 innovation awards, industry-first iPod dock\n2. **AI/Automation Innovation** — Built complete ChatOps system: 153 wikis, dashboards, RAG bot, Teams Cards\n3. **Global Business Leadership** — VP SE Asia (first Marriott deal), CEO Stockholm fintech, 9 countries\n4. **Delivery Excellence** — PMP, CSM, SAFe 6.0 certified, 2 scrum teams, release governance\n5. **Technical Credibility** — 2 U.S. patents, JavaScript/Python development, hands-on builder`;
+    if (hasAny(['rsm', 'current', 'now', 'present'])) return `**Current Role: RSM US LLP (Feb 2022 - Present)**\n\nScrum Master & Release Manager, Ironwood MI (Remote)\n\n**Key Accomplishments:**\n• Lead 2 scrum teams across 2 Azure DevOps projects\n• Built AI ChatOps architecture: 153 wikis, dashboards, Teams bot, automated cards\n• SEC Workpaper Pilot — Program Manager for audit digital transformation\n• AOD Solution Center — 56 solutions deployed, Power Apps, 53.7% Audit adoption\n• CaseWare Enhancement POC — Special project planning/tracking`;
+    if (hasAny(['fintech', 'blockchain', 'crypto', 'sprinkle', 'sky'])) return `**Fintech/Blockchain Experience (SKY Consulting 2017-2021):**\n\n• **Acting CEO, Sprinkle Group** — Stockholm-listed fintech with multi-platform blockchain ecosystem\n• **Co-Founder, ProfitOps.com** — Bitcoin investment platform\n• **Co-Founder & CEO, STOkenize** — Security tokenization platform\n• **Digital Asset Arbitrage** — Started international arbitrage venture\n• **Digital Motorsports World Cup 2021** — Program delivery (Poland collaboration)\n\nPlatforms included: crypto investment, security tokenization, crowdfunding ICO/IPO, media/news, banking`;
+    if (hasAny(['patent', 'invention', 'intellectual'])) return `**2 U.S. Patents (Pacific Cycle/Schwinn/Mongoose):**\n\n1. **US9759337B2** — "Easy-connect attachment head and adapter"\n   • Granted: Sept 12, 2017\n   • Tool-free valve adapter for bike pumps (Schrader/Presta)\n   • patents.google.com/patent/US9759337B2\n\n2. **US20140308062A1** — "Modular accessory connector"\n   • Published: Oct 16, 2014\n   • Magnetic/mechanical quick-attach for bicycle accessories\n   • **One product became Walmart-exclusive**`;
+    if (hasAny(['education', 'degree', 'mba', 'school', 'gpa', 'university'])) return `**Education (Transcript-Verified):**\n\n• **MBA, International Business** — UW-Whitewater\n   GPA: 3.41, 39 graduate credits, Degree: Aug 2011\n\n• **BA, International/Global Studies** — UW-Stevens Point\n   GPA: 3.13, Study abroad: Poland (Krakow) & Russia (Moscow, St. Petersburg)\n\n**Certifications:** PMP, CSM, SAFe 6.0, Product Management Professional, Google Data Analytics`;
+    if (hasAny(['certif', 'pmp', 'scrum', 'safe', 'agile'])) return `**Certifications & Methodologies:**\n\n• **PMP** — Project Management Professional\n• **CSM** — Certified Scrum Master\n• **SAFe 6.0** — Scaled Agile Framework Practitioner\n• **Product Management Professional**\n• **Google Data Analytics Certificate**\n\n**Applied Experience:** Leading 2 scrum teams, SAFe execution, release governance across 2 Azure DevOps projects at RSM`;
+    if (hasAny(['global', 'international', 'countries', 'travel', 'thailand', 'asia'])) return `**Global Experience (9 Countries):**\n\n• **USA (18+ years):** Madison WI, San Francisco, Ironwood MI\n• **Thailand (7 years):** VP Commercial Sales SE Asia, SKY Consulting base\n• **Taiwan (Frequent):** Johnson Health Tech HQ, factory visits, VIP tours\n• **China (Frequent):** Manufacturing: Shanghai, Shenzhen\n• **Sweden (1 year):** CEO Sprinkle Group (Stockholm Exchange)\n• **Poland:** BA study abroad + Digital Motorsports World Cup 2021\n• **Russia:** BA study abroad (Moscow, St. Petersburg)\n• **Myanmar & Cambodia:** Opened first Johnson Health Tech deals\n\n**Languages:** English (native), Thai (conversational), Polish (limited), Spanish (elementary)`;
+    if (hasAny(['johnson', 'fitness', 'vision', 'matrix', 'health tech'])) return `**Johnson Health Tech Experience (2006-2017):**\n\n**Global PM, North America (2006-2012):**\n• Managed $100M cardiovascular line (Vision Fitness/Matrix Fitness)\n• Won 3 Product Innovation Awards\n• Industry-first iPod dock on home fitness equipment\n• Implemented global product launch process\n\n**VP Commercial Sales, Thailand (2015-2017):**\n• Led SE Asia: hotels, resorts, gyms, government\n• First Marriott deal in Southeast Asia\n• Opened Myanmar & Cambodia markets\n• Implemented Salesforce, led VIP Taiwan tours`;
+    if (hasAny(['fit', 'hire', 'role', 'opportunity', 'match'])) return `**Best-Fit Roles:**\n\n• **Senior Product Manager / Director of Product** — $100M line experience, NPD, commercialization\n• **Scrum Master / Delivery Lead** — PMP, CSM, SAFe 6.0, 2 teams, release governance\n• **Technical Product Manager** — AI tools, dashboards, bot development, hands-on builder\n• **VP/Director Product Operations** — Global experience, cross-functional leadership\n• **Innovation Lead** — Patents, IoT/Smart Home, AI automation, startup experience\n\nShare a specific role or JD for targeted fit analysis.`;
+    if (hasAny(['risk', 'gap', 'weak', 'concern', 'mitigate', 'mitigation'])) return `**Potential Gaps & Mitigation:**\n\n**Gap:** Breadth vs. single-domain depth (spans fitness, fintech, insurance, professional services)\n\n**Mitigation Evidence:**\n• $100M product line (proves scale execution)\n• 2 U.S. patents (proves innovation delivery)\n• VP/CEO leadership (proves accountability)\n• Repeated pattern: enters new domains, delivers measurable results within 12-18 months\n• Most recent: built AI ChatOps from scratch at RSM with no prior Teams bot experience`;
+    if (hasAny(['recruiter', 'summary', 'bullet', 'tldr', 'overview'])) return `**Recruiter Summary:**\n\n• **Experience:** 20+ years product/delivery leadership, $100M P&L ownership\n• **Credentials:** MBA (3.41 GPA), PMP, CSM, SAFe 6.0, 2 U.S. patents, 3 awards\n• **Current:** AI ChatOps architecture at RSM (wikis, bot, dashboards, Teams Cards)\n• **Leadership:** VP SE Asia, CEO Stockholm-listed fintech, 9 countries\n• **Technical:** JavaScript, Python, Azure DevOps, RAG patterns, hands-on builder\n• **Best Fit:** Senior PM, Director of Product, Delivery Lead, Technical PM roles\n\n**Contact:** linkedin.com/in/iancassiman`;
+    if (hasAny(['contact', 'connect', 'reach', 'email', 'linkedin'])) return `**Contact Information:**\n\n• **LinkedIn:** linkedin.com/in/iancassiman\n• **Portfolio:** amerikian.github.io/Personal-Website\n• **Contact Form:** Available on portfolio site\n\nInclude role context and timeline for a focused response.`;
+    if (hasAny(['salary', 'compensation', 'pay', 'money'])) return "Compensation discussions are best handled directly. Please reach out via LinkedIn with role details, location, and structure (base/bonus/equity) for relevant expectations based on the specific opportunity.";
+    if (hasAny(['available', 'start', 'notice', 'timeline', 'when'])) return "For availability and start date discussions, please connect directly via LinkedIn or the contact form. Timeline flexibility depends on the specific opportunity and transition requirements.";
+    if (hasAny(['american family', 'insurance', 'iot', 'smart home', 'connected'])) return `**American Family Insurance (2014-2015):**\n\nInnovation Project Manager, Madison WI\n\n• Led Connected Home/IoT programs to reduce insurance claims\n• Implemented Lean Startup/Test-and-Learn methodology\n• Managed startup partnerships: SmartThings, Piper, Zonoff, Wallflower, Heatworks\n• Ran experiments: smoke/fire/water/burglary scenarios\n• Built DOMO + CRM real-time insight visualization\n• Developed A/B testing and digital marketing campaigns`;
+    if (hasAny(['pacific', 'schwinn', 'mongoose', 'bicycle', 'bike'])) return `**Pacific Cycle - Schwinn/Mongoose (2012-2014):**\n\nProduct Manager, Madison WI\n\n• Owned Bicycle Parts & Accessories strategy\n• Earned 2 U.S. Patents (one became Walmart-exclusive)\n• Worked directly with Target and Walmart buyers\n• Streamlined SKU portfolio, executed packaging refresh\n• Led NPD with Asia manufacturing coordination`;
+    return `**Ian Cassiman — Career Intelligence Assistant**\n\nI can help with:\n• **Career history** — 20+ years across 9 countries, 7 employers\n• **Achievements** — $100M product line, 2 patents, 3 awards, AI ChatOps architecture\n• **Role fit analysis** — Upload a job description for detailed assessment\n• **Strengths & gaps** — Honest evaluation with evidence\n• **Technical capabilities** — AI tools, bot development, dashboards\n• **Global experience** — VP SE Asia, CEO Stockholm fintech\n\nTry: "What AI tools has Ian built?" or paste a job description for fit analysis.`;
 }
 
 // Chat function
