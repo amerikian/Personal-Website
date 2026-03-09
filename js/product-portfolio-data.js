@@ -98,8 +98,9 @@ const productPortfolioData = {
             stage: "Scaling",
             users: "Engineering + delivery teams",
             problem: "Knowledge was fragmented across work items, pipelines, and sprint artifacts.",
-            delivery: "Designed automation that transforms DevOps data into structured wiki documentation.",
+            delivery: "Designed automation that transforms DevOps data into structured wiki documentation. Part of SAME Architecture generating 4 surfaces from 1 YAML.",
             outcomes: [
+                "160+ wiki pages auto-generated from YAML + Azure DevOps data",
                 "Centralized delivery knowledge for easier decision making",
                 "Reduced manual effort in sprint/release documentation"
             ],
@@ -135,6 +136,34 @@ const productPortfolioData = {
                 "Screenshot: bot Q&A interaction in Teams",
                 "Screenshot: sprint health response example",
                 "Screenshot: release status summary response"
+            ]
+        },
+        {
+            id: "rsm-chatops-teams-cards",
+            productName: "ChatOps Teams Cards",
+            company: "RSM US LLP",
+            period: "2024 - Present",
+            role: "Scrum Master & Release Manager",
+            domain: "Professional Services / DevOps",
+            productType: "Internal Product",
+            stage: "POC / Active Build",
+            users: "Scrum teams, release managers, stakeholders",
+            problem: "Wikis, dashboards, and bot are passive—require user initiative. Critical items like approval requests, release gates, and blockers needed proactive push notifications to the right teams at the right time.",
+            delivery: "Built 25 Teams Card templates generated from YAML + fresh Azure DevOps data. Cards feature interactive/collapsible sections, rich text formatting, and Adaptive Card fallback. Part of SAME Architecture delivering 4 surfaces (160+ wiki pages, 3+ HTMLs, Teams bot, Teams Cards) from 1 YAML source refreshed multiple times daily.",
+            outcomes: [
+                "25 Teams Card templates for approvals, releases, blockers, sprint summaries",
+                "4 surfaces from 1 YAML: wiki, HTML, bot instructions/KS/topics, Teams Cards",
+                "160+ wiki pages auto-generated",
+                "Push notifications fill gap left by passive pull-based tools",
+                "POC Teams Channel available for demo"
+            ],
+            evidence: "Newest capability in SAME Architecture (DevOps AI). Active build with working POC.",
+            tags: ["Teams Cards", "Adaptive Cards", "Push Notifications", "YAML-Driven", "ChatOps"],
+            icon: "bell",
+            visualIdeas: [
+                "Screenshot: Teams Card with collapsible sections",
+                "Screenshot: Approval request card in channel",
+                "Diagram: SAME Architecture 4-surface generation flow"
             ]
         },
         {

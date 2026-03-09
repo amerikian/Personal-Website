@@ -25,8 +25,9 @@ RSM Products:
 • rsm-sec-workpaper-pilot — SEC Workpaper Pilot (Audit Digital Transformation)
 • rsm-solution-center — AOD Solution Center Deployment (56 solutions, 53.7% adoption)
 • rsm-devops-dashboard — DevOps AI Dashboard (12+ ECharts visualizations)
-• rsm-devops-wiki — DevOps AI Wiki Integration (153 auto-generated pages)
+• rsm-devops-wiki — DevOps AI Wiki Integration (160+ auto-generated pages)
 • rsm-devops-bot — DevOps AI Bot (RAG pattern, Teams integration)
+• rsm-chatops-teams-cards — ChatOps Teams Cards (25 templates, push notifications, NEWEST)
 • rsm-caseware-poc — CaseWare Enhancement POC
 
 SKY Consulting Products:
@@ -90,23 +91,25 @@ KEY QUANTIFIED ACHIEVEMENTS
 • $100M Product Line — Managed global cardiovascular product line at Johnson Health Tech (Vision/Matrix Fitness)
 • 2 U.S. Patents — Pacific Cycle (Schwinn/Mongoose): US9759337B2 (Easy-connect attachment head) & US20140308062A1 (Modular accessory connector). One became Walmart-exclusive.
 • 3 Product Innovation Awards — Johnson Health Tech, including industry-first iPod dock on home fitness equipment
-• 153 Auto-Generated Wiki Pages — RSM AI ChatOps system for DevOps documentation
+• 160+ Auto-Generated Wiki Pages — RSM SAME Architecture for DevOps documentation
+• 25 ChatOps Teams Card Templates — Push notifications for approvals, releases, blockers (NEWEST)
 • 56 Internal Solutions Deployed — RSM AOD Solution Center with Power Apps (Audit adoption: 53.7%)
 • First Marriott Deal in SE Asia — Johnson Health Tech Thailand, also opened Myanmar & Cambodia markets
 • CEO of Stockholm-Listed Fintech — Sprinkle Group blockchain ecosystem via SKY Consulting
 • 9 Countries Professional Experience — USA, Thailand, Taiwan, China, Sweden, Poland, Russia, Myanmar, Cambodia
 
 ═══════════════════════════════════════════════════════════════════════════════
-RSM US LLP — AI CHATOPS ARCHITECTURE (2022-Present)
+RSM US LLP — SAME ARCHITECTURE / AI CHATOPS (2022-Present)
 ═══════════════════════════════════════════════════════════════════════════════
-Built comprehensive AI-powered DevOps intelligence platform from scratch:
+Built comprehensive AI-powered DevOps intelligence platform from scratch.
+SAME Architecture = 4 surfaces generated from 1 YAML + fresh Azure DevOps data, refreshed multiple times daily:
 
-1. DEVOPS AI WIKI INTEGRATION (153 Pages)
-   • Auto-generates structured documentation from Azure DevOps data
+1. DEVOPS AI WIKI INTEGRATION (160+ Pages)
+   • Auto-generates structured documentation from YAML + Azure DevOps data
    • Hierarchical navigation with sprint artifacts, release notes, pipeline data
    • Reduces manual documentation effort for 2 scrum teams
 
-2. INTERACTIVE HTML DASHBOARDS (12+ Visualizations)
+2. INTERACTIVE HTML DASHBOARDS (3+ HTMLs, 12+ Visualizations)
    • ECharts-based SAFe metrics visualization
    • 8-node SAME architecture ring diagram
    • Real-time pipeline status, velocity trends, quality metrics
@@ -114,14 +117,18 @@ Built comprehensive AI-powered DevOps intelligence platform from scratch:
 
 3. TEAMS BOT v5.0 (RAG Pattern)
    • Natural language queries for sprint health, release status, team velocity
-   • 8 knowledge sources (KS) integration
+   • Agent instructions, knowledge sources (KS), and topics all generated from YAML
    • Contextual responses for 2 scrum teams
    • Azure DevOps API integration
 
-4. AUTOMATED TEAMS CARDS
-   • Real-time release notifications via Adaptive Cards
-   • Sprint summaries and alerts pushed to channels
-   • Workflow automation for stakeholder visibility
+4. CHATOPS TEAMS CARDS (25 Templates) — NEWEST CAPABILITY
+   • 25 Teams Card templates generated from YAML + fresh ADO data
+   • Interactive/collapsible sections with rich text formatting
+   • Adaptive Card fallback for compatibility
+   • PUSH notifications fill gap left by passive pull-based tools (wikis, dashboards, bot)
+   • Use cases: approval requests, release gates, blockers, sprint summaries
+   • POC Teams Channel available for demo — invite upon request
+   • Active build, newest discovery in SAME Architecture
 
 5. ADDITIONAL RSM PRODUCTS
    • SEC Workpaper Pilot — Program Manager for audit digital transformation pilot
@@ -356,18 +363,18 @@ function generateFallbackResponse(question) {
     const hasAny = (keywords) => keywords.some(kw => lowerMessage.includes(kw));
 
     if (question.length > 500 || hasAny(['job description', 'jd:', 'position:', 'responsibilities:', 'requirements:'])) {
-        return `**Job Description Analysis**\n\nI've received your job description. Here's a quick assessment:\n\n**Likely Strong Fit Areas:**\n• Product/Delivery Leadership - 20+ years with $100M P&L experience\n• Agile/Scrum - PMP, CSM, SAFe 6.0 certified, leading 2 scrum teams at RSM\n• Cross-functional Execution - Global experience across 9 countries\n• Technical Innovation - AI ChatOps architecture, 153 auto-generated wikis, Teams bot, dashboards\n• Executive Leadership - VP Commercial Sales SE Asia, CEO Stockholm-listed fintech\n\n**Recommended Interview Focus:**\n• Specific domain knowledge for your industry\n• Team size and reporting structure expectations\n• AI/automation capabilities demonstration\n\nFor detailed fit score and gap analysis, please ensure AI service is available or reach out via LinkedIn.`;
+        return `**Job Description Analysis**\n\nI've received your job description. Here's a quick assessment:\n\n**Likely Strong Fit Areas:**\n• Product/Delivery Leadership - 20+ years with $100M P&L experience\n• Agile/Scrum - PMP, CSM, SAFe 6.0 certified, leading 2 scrum teams at RSM\n• Cross-functional Execution - Global experience across 9 countries\n• Technical Innovation - SAME Architecture: 160+ wikis, dashboards, Teams bot, 25 ChatOps Teams Cards\n• Executive Leadership - VP Commercial Sales SE Asia, CEO Stockholm-listed fintech\n\n**Recommended Interview Focus:**\n• Specific domain knowledge for your industry\n• Team size and reporting structure expectations\n• AI/automation capabilities demonstration (POC Teams Channel available)\n\nFor detailed fit score and gap analysis, please ensure AI service is available or reach out via LinkedIn.`;
     }
     if (hasAny(['experience', 'years', 'background', 'history', 'career'])) return `**20+ Years Career Summary:**\n\n• **RSM US LLP (2022-Present):** Scrum Master/Release Manager, AI ChatOps architecture\n• **SKY Consulting (2017-2021):** Owner, CEO Sprinkle Group (Stockholm-listed)\n• **Johnson Health Tech Thailand (2015-2017):** VP Commercial Sales SE Asia\n• **American Family Insurance (2014-2015):** Innovation PM, IoT/Smart Home\n• **SportsArt (2014):** Senior PM, Global Commercial Fitness\n• **Pacific Cycle (2012-2014):** PM, 2 U.S. Patents (Schwinn/Mongoose)\n• **Johnson Health Tech NA (2006-2012):** Global PM, $100M product line, 3 awards`;
-    if (hasAny(['ai', 'copilot', 'bot', 'automation', 'chatops', 'teams', 'wiki', 'dashboard'])) return `**RSM AI ChatOps Architecture (2022-Present):**\n\nBuilt end-to-end AI-powered DevOps intelligence platform:\n\n1. **153 Wiki Pages** — Auto-generated documentation from Azure DevOps data\n2. **HTML Dashboards** — 12+ ECharts visualizations for SAFe metrics, velocity, quality\n3. **Teams Bot v5.0** — RAG-based conversational interface, 8 knowledge sources\n4. **Automated Teams Cards** — Real-time release notifications via Adaptive Cards\n5. **AOD Solution Center** — 56 solutions deployed, 53.7% Audit adoption rate\n\nThis system improved visibility, reduced manual reporting, and accelerated decision-making for 2 scrum teams.`;
-    if (hasAny(['strength', 'best', 'top', 'strongest'])) return `**Ian's Top Strengths:**\n\n1. **Product-Line Ownership at Scale** — $100M cardiovascular line, 3 innovation awards, industry-first iPod dock\n2. **AI/Automation Innovation** — Built complete ChatOps system: 153 wikis, dashboards, RAG bot, Teams Cards\n3. **Global Business Leadership** — VP SE Asia (first Marriott deal), CEO Stockholm fintech, 9 countries\n4. **Delivery Excellence** — PMP, CSM, SAFe 6.0 certified, 2 scrum teams, release governance\n5. **Technical Credibility** — 2 U.S. patents, JavaScript/Python development, hands-on builder`;
-    if (hasAny(['rsm', 'current', 'now', 'present'])) return `**Current Role: RSM US LLP (Feb 2022 - Present)**\n\nScrum Master & Release Manager, Ironwood MI (Remote)\n\n**Key Accomplishments:**\n• Lead 2 scrum teams across 2 Azure DevOps projects\n• Built AI ChatOps architecture: 153 wikis, dashboards, Teams bot, automated cards\n• SEC Workpaper Pilot — Program Manager for audit digital transformation\n• AOD Solution Center — 56 solutions deployed, Power Apps, 53.7% Audit adoption\n• CaseWare Enhancement POC — Special project planning/tracking`;
+    if (hasAny(['ai', 'copilot', 'bot', 'automation', 'chatops', 'teams', 'wiki', 'dashboard'])) return `**RSM SAME Architecture / AI ChatOps (2022-Present):**\n\nBuilt end-to-end AI-powered DevOps intelligence platform with 4 surfaces from 1 YAML:\n\n1. **160+ Wiki Pages** — Auto-generated documentation from YAML + Azure DevOps data\n2. **3+ HTML Dashboards** — 12+ ECharts visualizations for SAFe metrics, velocity, quality\n3. **Teams Bot v5.0** — RAG-based conversational interface, instructions/KS/topics from YAML\n4. **ChatOps Teams Cards (25 templates)** — NEWEST: Push notifications for approvals, releases, blockers\n   • Interactive/collapsible sections with rich text formatting\n   • Fills gap left by passive pull-based tools (wikis, dashboards, bot)\n   • POC Teams Channel available for demo\n\nAll 4 surfaces refreshed multiple times daily from same YAML source.`;
+    if (hasAny(['strength', 'best', 'top', 'strongest'])) return `**Ian's Top Strengths:**\n\n1. **Product-Line Ownership at Scale** — $100M cardiovascular line, 3 innovation awards, industry-first iPod dock\n2. **AI/Automation Innovation** — Built complete SAME Architecture: 160+ wikis, dashboards, RAG bot, 25 Teams Card templates\n3. **Global Business Leadership** — VP SE Asia (first Marriott deal), CEO Stockholm fintech, 9 countries\n4. **Delivery Excellence** — PMP, CSM, SAFe 6.0 certified, 2 scrum teams, release governance\n5. **Technical Credibility** — 2 U.S. patents, JavaScript/Python development, hands-on builder`;
+    if (hasAny(['rsm', 'current', 'now', 'present'])) return `**Current Role: RSM US LLP (Feb 2022 - Present)**\n\nScrum Master & Release Manager, Ironwood MI (Remote)\n\n**Key Accomplishments:**\n• Lead 2 scrum teams across 2 Azure DevOps projects\n• Built SAME Architecture (AI ChatOps): 160+ wikis, dashboards, Teams bot, 25 Teams Card templates\n• ChatOps Teams Cards (NEWEST) — Push notifications for approvals, releases, blockers\n• SEC Workpaper Pilot — Program Manager for audit digital transformation\n• AOD Solution Center — 56 solutions deployed, Power Apps, 53.7% Audit adoption\n\n**POC Teams Channel available for demo** — invite upon request.`;
     if (hasAny(['fintech', 'blockchain', 'crypto', 'sprinkle', 'sky'])) return `**Fintech/Blockchain Experience (SKY Consulting 2017-2021):**\n\n• **Acting CEO, Sprinkle Group** — Stockholm-listed fintech with multi-platform blockchain ecosystem\n• **Co-Founder, ProfitOps.com** — Bitcoin investment platform\n• **Co-Founder & CEO, STOkenize** — Security tokenization platform\n• **Digital Asset Arbitrage** — Started international arbitrage venture\n• **Digital Motorsports World Cup 2021** — Program delivery (Poland collaboration)\n\nPlatforms included: crypto investment, security tokenization, crowdfunding ICO/IPO, media/news, banking\n\nSee the #products carousel for individual SKY venture cards.`;
     if (hasAny(['stokenize', 'tokenization', 'token', 'sto', 'security token'])) return `**STOkenize Security Tokenization Platform (2018-2019):**\n\nCo-Founder & CEO\n\n• Built security tokenization infrastructure for emerging ventures\n• Led product strategy, startup execution, compliance workflows\n• Part of SKY Consulting fintech portfolio\n\nView the sky-stokenize card in the Products section for more details.`;
     if (hasAny(['profitops', 'bitcoin', 'investment platform'])) return `**ProfitOps.com (2019-2020):**\n\nCo-Founder\n\n• Bitcoin investment platform\n• Shaped product direction and positioning\n• Validated demand in volatile crypto market\n• Part of SKY Consulting ventures\n\nView the sky-profitops card in the Products section.`;
     if (hasAny(['motorsport', 'dmwc', 'esport', 'racing', 'world cup', 'poland'])) return `**Digital Motorsports World Cup 2021:**\n\nProject Manager (SKY Consulting, 2020-2022)\n\n• Poland-based esports/motorsports collaboration\n• Cross-functional program execution under high visibility\n• Delivered milestones across international timeline constraints\n• Leveraged global network and Polish language skills from study abroad\n\nView the sky-dmwc card in the Products section.`;
     if (hasAny(['arbitrage', 'trading', 'exchange'])) return `**Digital Asset Arbitrage Venture (2020-2021):**\n\nFounder/Product Lead (SKY Consulting)\n\n• International crypto arbitrage business\n• Built operational workflows for fragmented exchange pricing\n• Expanded fintech venture-building experience`;
-    if (hasAny(['product', 'card', 'carousel', 'portfolio', 'impact'])) return `**Product Portfolio (25+ Products):**\n\nThe #products carousel shows Ian's key products grouped by company:\n\n• **RSM (6 cards):** AI Dashboard, Wiki, Bot, Teams Cards, Solution Center, SEC Pilot\n• **SKY Consulting (5 cards):** Sprinkle, STOkenize, ProfitOps, DMWC, Arbitrage\n• **American Family (3 cards):** Connected Home IoT, Partner Ecosystem, DOMO\n• **SportsArt (3 cards):** Console Software, Mobile App, Cologne Launch\n• **Pacific Cycle (3 cards):** 2 Patents, Line Overhaul\n• **Johnson HT (4 cards):** $100M Line, iPod Dock, Award Products\n\nClick any card for problem/delivery/outcomes breakdown.`;
+    if (hasAny(['product', 'card', 'carousel', 'portfolio', 'impact'])) return `**Product Portfolio (25+ Products):**\n\nThe #products carousel shows Ian's key products grouped by company:\n\n• **RSM (7 cards):** AI Dashboard, Wiki, Bot, **ChatOps Teams Cards (NEW)**, Solution Center, SEC Pilot, CaseWare POC\n• **SKY Consulting (5 cards):** Sprinkle, STOkenize, ProfitOps, DMWC, Arbitrage\n• **American Family (3 cards):** Connected Home IoT, Partner Ecosystem, DOMO\n• **SportsArt (3 cards):** Console Software, Mobile App, Cologne Launch\n• **Pacific Cycle (3 cards):** 2 Patents, Line Overhaul\n• **Johnson HT (4 cards):** $100M Line, iPod Dock, Award Products\n\nClick any card for problem/delivery/outcomes breakdown.`;
     if (hasAny(['section', 'this page', 'website', 'portfolio site', 'looking at'])) return `**Portfolio Website Navigation:**\n\n• **#hero** — Key stats: 20+ years, 9 countries, 2 patents, 200+ products\n• **#journey** — Interactive career timeline with 7 employers\n• **#expertise** — 9 skill cards (DevOps, AI, Product Leadership, etc.)\n• **#products** — 3D carousel of 25+ Product Impact Cards\n• **#assessment** — This AI chat interface\n• **#global** — Interactive 3D globe showing 9-country experience\n• **#contact** — Contact form and LinkedIn connection\n\nWhat section would you like to explore?`;
     if (hasAny(['patent', 'invention', 'intellectual'])) return `**2 U.S. Patents (Pacific Cycle/Schwinn/Mongoose):**\n\n1. **US9759337B2** — "Easy-connect attachment head and adapter"\n   • Granted: Sept 12, 2017\n   • Tool-free valve adapter for bike pumps (Schrader/Presta)\n   • patents.google.com/patent/US9759337B2\n\n2. **US20140308062A1** — "Modular accessory connector"\n   • Published: Oct 16, 2014\n   • Magnetic/mechanical quick-attach for bicycle accessories\n   • **One product became Walmart-exclusive**`;
     if (hasAny(['education', 'degree', 'mba', 'school', 'gpa', 'university'])) return `**Education (Transcript-Verified):**\n\n• **MBA, International Business** — UW-Whitewater\n   GPA: 3.41, 39 graduate credits, Degree: Aug 2011\n\n• **BA, International/Global Studies** — UW-Stevens Point\n   GPA: 3.13, Study abroad: Poland (Krakow) & Russia (Moscow, St. Petersburg)\n\n**Certifications:** PMP, CSM, SAFe 6.0, Product Management Professional, Google Data Analytics`;
