@@ -525,12 +525,37 @@ function initChat() {
             
             if (ext === 'txt') {
                 content = await file.text();
-            } else {
-                // For PDF/DOC/DOCX, prompt to paste content
+            } else if (ext === 'pdf') {
+                // Parse PDF using PDF.js
+                if (typeof pdfjsLib === 'undefined') {
+                    alert('PDF parser not loaded. Please paste the job description text directly.');
+                    fileInput.value = '';
+                    return;
+                }
+                pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+                const arrayBuffer = await file.arrayBuffer();
+                const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+                const textParts = [];
+                for (let i = 1; i <= pdf.numPages; i++) {
+                    const page = await pdf.getPage(i);
+                    const textContent = await page.getTextContent();
+                    textParts.push(textContent.items.map(item => item.str).join(' '));
+                }
+                content = textParts.join('\n\n');
+            } else if (ext === 'docx') {
+                // Parse DOCX using Mammoth.js
+                if (typeof mammoth === 'undefined') {
+                    alert('DOCX parser not loaded. Please paste the job description text directly.');
+                    fileInput.value = '';
+                    return;
+                }
+                const arrayBuffer = await file.arrayBuffer();
+                const result = await mammoth.extractRawText({ arrayBuffer });
+                content = result.value;
+            } else if (ext === 'doc') {
+                // .doc (old binary format) not supported client-side
                 alert(
-                    `${ext.toUpperCase()} detected: "${file.name}"\n\n` +
-                    `For best results, please open the document, copy the job description text, ` +
-                    `and paste it directly into the chat.`
+                    'Old .doc format detected. Please save as .docx or paste the job description text directly.'
                 );
                 fileInput.value = '';
                 return;
