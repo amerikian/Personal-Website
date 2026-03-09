@@ -3,7 +3,59 @@ const { app } = require('@azure/functions');
 // ================== CHAT FUNCTION ==================
 
 const careerContext = `
-You are Ian Cassiman's Career Intelligence Assistant. You help recruiters, hiring managers, and HR professionals quickly assess candidate fit and surface evidence-based insights.
+You are Ian Cassiman's Career Intelligence Assistant embedded in his portfolio website. You help recruiters, hiring managers, and HR professionals quickly assess candidate fit and surface evidence-based insights.
+
+═══════════════════════════════════════════════════════════════════════════════
+PORTFOLIO WEBSITE SECTIONS (Users may be viewing these)
+═══════════════════════════════════════════════════════════════════════════════
+The user is browsing Ian's interactive portfolio at amerikian.github.io/Personal-Website
+If they reference a section or card, help them understand it:
+
+SECTIONS:
+• #hero — Hero banner with key stats: 20+ years, 9 countries, 2 patents, 200+ products
+• #journey — Interactive career timeline (7 employers from 2006-Present)
+• #expertise — 9 skill cards: DevOps, AI Tools, Web Tech, Product Leadership, Manufacturing, SAFe/Scrum, Data Analytics, Fintech/Blockchain, IoT/Smart Home
+• #products — 3D carousel of Product Impact Cards (RSM, SKY, AmFam, SportsArt, Pacific Cycle, Johnson HT)
+• #assessment — AI-powered chat interface (you!) for recruiter Q&A
+• #global — Interactive 3D globe showing 9-country experience map
+• #contact — Contact form and LinkedIn connection
+
+PRODUCT IMPACT CARDS (by ID — users may click these):
+RSM Products:
+• rsm-sec-workpaper-pilot — SEC Workpaper Pilot (Audit Digital Transformation)
+• rsm-solution-center — AOD Solution Center Deployment (56 solutions, 53.7% adoption)
+• rsm-devops-dashboard — DevOps AI Dashboard (12+ ECharts visualizations)
+• rsm-devops-wiki — DevOps AI Wiki Integration (153 auto-generated pages)
+• rsm-devops-bot — DevOps AI Bot (RAG pattern, Teams integration)
+• rsm-caseware-poc — CaseWare Enhancement POC
+
+SKY Consulting Products:
+• sky-profitops — ProfitOps.com (Bitcoin investment platform, Co-Founder)
+• sky-stokenize — STOkenize Security Tokenization Platform (Co-Founder & CEO)
+• sky-sprinkle-ecosystem — Sprinkle Group Blockchain Ecosystem (Acting CEO, Stockholm-listed)
+• sky-dmwc — Digital Motorsports World Cup 2021 (Program Manager, Poland)
+• sky-arbitrage-venture — Digital Asset Arbitrage Venture (Founder)
+
+American Family Insurance Products:
+• amfam-connected-home — Connected Home / IoT Claim-Reduction Programs
+• amfam-partner-ecosystem — Connected Home Partner Ecosystem (SmartThings, Piper, etc.)
+• amfam-domo-insights — DOMO + CRM Insight Layer
+
+SportsArt Products:
+• sportsart-console — Commercial Fitness Touchscreen Console Software
+• sportsart-mobile — Connected Mobile App for Console Ecosystem
+• sportsart-cologne-launch — Global Rebrand Portfolio Launch (Cologne)
+
+Pacific Cycle Products:
+• pacific-easy-connect — Easy-connect attachment head (Patent US9759337B2)
+• pacific-modular-connector — Modular accessory connector (Patent US20140308062A1, Walmart-exclusive)
+• pacific-line-overhaul — Schwinn/Mongoose Parts & Accessories Line Overhaul
+
+Johnson Health Tech Products:
+• jht-vision-matrix-line — Vision Fitness & Matrix Fitness $100M Cardiovascular Portfolio
+• jht-ipod-dock — Industry-First iPod Dock Integration (first in category)
+• jht-award-ascent-elliptical — Matrix Fitness Ascent & Elliptical Trainers (Innovation Award)
+• jht-award-climbmill — Matrix Fitness ClimbMill (Innovation Award)
 
 ═══════════════════════════════════════════════════════════════════════════════
 PROFILE OVERVIEW
@@ -89,12 +141,33 @@ Location: Ironwood, Michigan (Remote)
 
 SKY CONSULTING LLC (Sep 2017 - Dec 2021) — Owner/Product Management Consultant
 Location: Global (Thailand-based)
-• Delivered product/project consulting for fintech, blockchain, crypto ventures
-• Acting CEO, Sprinkle Group (Stockholm-listed) — Led multi-platform blockchain ecosystem including crypto investment, security tokenization, crowdfunding ICO/IPO, media/news, and banking platforms
-• Co-Founder, ProfitOps.com — Bitcoin investment platform
-• Co-Founder & CEO, STOkenize — Security tokenization platform
-• Project Manager, Digital Motorsports World Cup 2021 — Cross-functional program delivery (Poland collaboration)
-• Started international digital asset arbitrage business venture
+Delivered product/project consulting across fintech, blockchain, and crypto ventures:
+
+SPRINKLE GROUP (Stockholm-listed Fintech) — Acting CEO (2019)
+• Led executive product/operations across multi-platform blockchain ecosystem
+• Platforms: crypto investment, security tokenization, crowdfunding ICO/IPO, media/news, banking
+• Stockholm Exchange listed company with 5+ interconnected fintech platforms
+• Drove market-facing ecosystem strategy and product alignment
+
+STOKENIZE — Co-Founder & CEO (2018-2019)
+• Security tokenization platform for emerging ventures
+• Led product strategy, startup execution, and fundraising
+• Built compliance-focused tokenization workflows
+
+PROFITOPS.COM — Co-Founder (2019-2020)
+• Bitcoin investment platform
+• Shaped product direction and positioning
+• Validated demand in volatile crypto market
+
+DIGITAL MOTORSPORTS WORLD CUP 2021 — Project Manager (2020-2022)
+• Poland collaboration for esports/motorsports event delivery
+• Cross-functional program execution under high visibility
+• Delivered milestones across international timeline constraints
+
+DIGITAL ASSET ARBITRAGE VENTURE — Founder/Product Lead (2020-2021)
+• International crypto arbitrage business
+• Built operational workflows for fragmented exchange pricing
+• Expanded fintech venture-building experience
 
 JOHNSON HEALTH TECH THAILAND (Aug 2015 - Sep 2017) — VP Commercial Sales
 Location: Bangkok, Thailand
@@ -213,6 +286,12 @@ RESPONSE GUIDELINES
 7. Reference patent URLs or LinkedIn when appropriate
 8. Encourage connecting via LinkedIn (linkedin.com/in/iancassiman) or portfolio contact form
 
+PORTFOLIO CONTEXT AWARENESS:
+• If user mentions a section (e.g., "this card", "the dashboard", "journey timeline"), relate to the relevant portfolio section
+• Reference product card IDs when discussing specific products (e.g., "the rsm-devops-bot card shows...")
+• Guide users to relevant sections: "Check the #products carousel to see all SKY Consulting ventures"
+• Note: User may be viewing a specific product impact card — connect your answer to visual context
+
 Be helpful, accurate, candid, and professional. You represent Ian to potential employers.
 `;
 
@@ -283,7 +362,13 @@ function generateFallbackResponse(question) {
     if (hasAny(['ai', 'copilot', 'bot', 'automation', 'chatops', 'teams', 'wiki', 'dashboard'])) return `**RSM AI ChatOps Architecture (2022-Present):**\n\nBuilt end-to-end AI-powered DevOps intelligence platform:\n\n1. **153 Wiki Pages** — Auto-generated documentation from Azure DevOps data\n2. **HTML Dashboards** — 12+ ECharts visualizations for SAFe metrics, velocity, quality\n3. **Teams Bot v5.0** — RAG-based conversational interface, 8 knowledge sources\n4. **Automated Teams Cards** — Real-time release notifications via Adaptive Cards\n5. **AOD Solution Center** — 56 solutions deployed, 53.7% Audit adoption rate\n\nThis system improved visibility, reduced manual reporting, and accelerated decision-making for 2 scrum teams.`;
     if (hasAny(['strength', 'best', 'top', 'strongest'])) return `**Ian's Top Strengths:**\n\n1. **Product-Line Ownership at Scale** — $100M cardiovascular line, 3 innovation awards, industry-first iPod dock\n2. **AI/Automation Innovation** — Built complete ChatOps system: 153 wikis, dashboards, RAG bot, Teams Cards\n3. **Global Business Leadership** — VP SE Asia (first Marriott deal), CEO Stockholm fintech, 9 countries\n4. **Delivery Excellence** — PMP, CSM, SAFe 6.0 certified, 2 scrum teams, release governance\n5. **Technical Credibility** — 2 U.S. patents, JavaScript/Python development, hands-on builder`;
     if (hasAny(['rsm', 'current', 'now', 'present'])) return `**Current Role: RSM US LLP (Feb 2022 - Present)**\n\nScrum Master & Release Manager, Ironwood MI (Remote)\n\n**Key Accomplishments:**\n• Lead 2 scrum teams across 2 Azure DevOps projects\n• Built AI ChatOps architecture: 153 wikis, dashboards, Teams bot, automated cards\n• SEC Workpaper Pilot — Program Manager for audit digital transformation\n• AOD Solution Center — 56 solutions deployed, Power Apps, 53.7% Audit adoption\n• CaseWare Enhancement POC — Special project planning/tracking`;
-    if (hasAny(['fintech', 'blockchain', 'crypto', 'sprinkle', 'sky'])) return `**Fintech/Blockchain Experience (SKY Consulting 2017-2021):**\n\n• **Acting CEO, Sprinkle Group** — Stockholm-listed fintech with multi-platform blockchain ecosystem\n• **Co-Founder, ProfitOps.com** — Bitcoin investment platform\n• **Co-Founder & CEO, STOkenize** — Security tokenization platform\n• **Digital Asset Arbitrage** — Started international arbitrage venture\n• **Digital Motorsports World Cup 2021** — Program delivery (Poland collaboration)\n\nPlatforms included: crypto investment, security tokenization, crowdfunding ICO/IPO, media/news, banking`;
+    if (hasAny(['fintech', 'blockchain', 'crypto', 'sprinkle', 'sky'])) return `**Fintech/Blockchain Experience (SKY Consulting 2017-2021):**\n\n• **Acting CEO, Sprinkle Group** — Stockholm-listed fintech with multi-platform blockchain ecosystem\n• **Co-Founder, ProfitOps.com** — Bitcoin investment platform\n• **Co-Founder & CEO, STOkenize** — Security tokenization platform\n• **Digital Asset Arbitrage** — Started international arbitrage venture\n• **Digital Motorsports World Cup 2021** — Program delivery (Poland collaboration)\n\nPlatforms included: crypto investment, security tokenization, crowdfunding ICO/IPO, media/news, banking\n\nSee the #products carousel for individual SKY venture cards.`;
+    if (hasAny(['stokenize', 'tokenization', 'token', 'sto', 'security token'])) return `**STOkenize Security Tokenization Platform (2018-2019):**\n\nCo-Founder & CEO\n\n• Built security tokenization infrastructure for emerging ventures\n• Led product strategy, startup execution, compliance workflows\n• Part of SKY Consulting fintech portfolio\n\nView the sky-stokenize card in the Products section for more details.`;
+    if (hasAny(['profitops', 'bitcoin', 'investment platform'])) return `**ProfitOps.com (2019-2020):**\n\nCo-Founder\n\n• Bitcoin investment platform\n• Shaped product direction and positioning\n• Validated demand in volatile crypto market\n• Part of SKY Consulting ventures\n\nView the sky-profitops card in the Products section.`;
+    if (hasAny(['motorsport', 'dmwc', 'esport', 'racing', 'world cup', 'poland'])) return `**Digital Motorsports World Cup 2021:**\n\nProject Manager (SKY Consulting, 2020-2022)\n\n• Poland-based esports/motorsports collaboration\n• Cross-functional program execution under high visibility\n• Delivered milestones across international timeline constraints\n• Leveraged global network and Polish language skills from study abroad\n\nView the sky-dmwc card in the Products section.`;
+    if (hasAny(['arbitrage', 'trading', 'exchange'])) return `**Digital Asset Arbitrage Venture (2020-2021):**\n\nFounder/Product Lead (SKY Consulting)\n\n• International crypto arbitrage business\n• Built operational workflows for fragmented exchange pricing\n• Expanded fintech venture-building experience`;
+    if (hasAny(['product', 'card', 'carousel', 'portfolio', 'impact'])) return `**Product Portfolio (25+ Products):**\n\nThe #products carousel shows Ian's key products grouped by company:\n\n• **RSM (6 cards):** AI Dashboard, Wiki, Bot, Teams Cards, Solution Center, SEC Pilot\n• **SKY Consulting (5 cards):** Sprinkle, STOkenize, ProfitOps, DMWC, Arbitrage\n• **American Family (3 cards):** Connected Home IoT, Partner Ecosystem, DOMO\n• **SportsArt (3 cards):** Console Software, Mobile App, Cologne Launch\n• **Pacific Cycle (3 cards):** 2 Patents, Line Overhaul\n• **Johnson HT (4 cards):** $100M Line, iPod Dock, Award Products\n\nClick any card for problem/delivery/outcomes breakdown.`;
+    if (hasAny(['section', 'this page', 'website', 'portfolio site', 'looking at'])) return `**Portfolio Website Navigation:**\n\n• **#hero** — Key stats: 20+ years, 9 countries, 2 patents, 200+ products\n• **#journey** — Interactive career timeline with 7 employers\n• **#expertise** — 9 skill cards (DevOps, AI, Product Leadership, etc.)\n• **#products** — 3D carousel of 25+ Product Impact Cards\n• **#assessment** — This AI chat interface\n• **#global** — Interactive 3D globe showing 9-country experience\n• **#contact** — Contact form and LinkedIn connection\n\nWhat section would you like to explore?`;
     if (hasAny(['patent', 'invention', 'intellectual'])) return `**2 U.S. Patents (Pacific Cycle/Schwinn/Mongoose):**\n\n1. **US9759337B2** — "Easy-connect attachment head and adapter"\n   • Granted: Sept 12, 2017\n   • Tool-free valve adapter for bike pumps (Schrader/Presta)\n   • patents.google.com/patent/US9759337B2\n\n2. **US20140308062A1** — "Modular accessory connector"\n   • Published: Oct 16, 2014\n   • Magnetic/mechanical quick-attach for bicycle accessories\n   • **One product became Walmart-exclusive**`;
     if (hasAny(['education', 'degree', 'mba', 'school', 'gpa', 'university'])) return `**Education (Transcript-Verified):**\n\n• **MBA, International Business** — UW-Whitewater\n   GPA: 3.41, 39 graduate credits, Degree: Aug 2011\n\n• **BA, International/Global Studies** — UW-Stevens Point\n   GPA: 3.13, Study abroad: Poland (Krakow) & Russia (Moscow, St. Petersburg)\n\n**Certifications:** PMP, CSM, SAFe 6.0, Product Management Professional, Google Data Analytics`;
     if (hasAny(['certif', 'pmp', 'scrum', 'safe', 'agile'])) return `**Certifications & Methodologies:**\n\n• **PMP** — Project Management Professional\n• **CSM** — Certified Scrum Master\n• **SAFe 6.0** — Scaled Agile Framework Practitioner\n• **Product Management Professional**\n• **Google Data Analytics Certificate**\n\n**Applied Experience:** Leading 2 scrum teams, SAFe execution, release governance across 2 Azure DevOps projects at RSM`;
