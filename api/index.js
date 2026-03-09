@@ -15,12 +15,20 @@ KEY QUANTIFIED ACHIEVEMENTS:
 • $100M Product Line Ownership — Johnson Health Tech, Vision/Matrix Fitness cardiovascular (2006-2012)
 • 2 U.S. Patents — Pacific Cycle (Schwinn/Mongoose), one Walmart-exclusive
 • 3 Product Innovation Awards — Johnson Health Tech, including industry-first iPod dock
-• 153 Auto-Generated Wiki Pages — RSM, DevOps AI documentation system
+• AI ChatOps Architecture — RSM, built end-to-end system: 153 auto-generated wiki pages, interactive HTML dashboards, Teams bot with RAG, automated Teams Cards for release notifications
 • VP Commercial Sales SE Asia — Johnson Health Tech Thailand, first Marriott deal, expanded to Myanmar/Cambodia
 • CEO Stockholm-Listed Fintech — Sprinkle Group via SKY Consulting
 
+RSM AI CHATOPS SYSTEM (2023-Present):
+Built comprehensive AI-powered DevOps intelligence platform:
+• 153 Wiki Pages — Auto-generated documentation from Azure DevOps data using AI
+• Interactive HTML Dashboards — 12+ visualizations for release metrics, velocity, quality trends
+• Teams Bot — RAG-based conversational interface for DevOps queries and team insights
+• Automated Teams Cards — Real-time release notifications, sprint summaries, and alerts pushed to channels
+• GitHub Copilot Integration — Leveraged AI pair programming for development acceleration
+
 EMPLOYER HISTORY (chronological):
-• RSM US LLP (2022-Present): Scrum Master/Release Manager, 2 teams, AI tools, DevOps dashboards
+• RSM US LLP (2022-Present): Scrum Master/Release Manager, 2 teams, AI ChatOps architecture, DevOps automation
 • SKY CONSULTING (2017-2021): Owner/CEO, fintech, blockchain, CEO Sprinkle Group
 • Johnson Health Tech Thailand (2015-2017): VP Commercial Sales, SE Asia expansion
 • American Family Insurance (2014-2015): Innovation PM, IoT/Smart Home, Lean Startup
@@ -31,7 +39,7 @@ EMPLOYER HISTORY (chronological):
 TECHNICAL & LEADERSHIP SKILLS:
 Product: Strategy, Roadmapping, P&L Ownership, Launch Planning, Cross-functional Leadership
 Delivery: SAFe/Scrum, Release Management, Azure DevOps, CI/CD, Agile Coaching
-Technical: JavaScript, Python, GitHub Copilot, RAG patterns, Dashboard Development, API Integration
+Technical: JavaScript, Python, GitHub Copilot, RAG patterns, Teams Bot Development, Adaptive Cards, Dashboard Development, API Integration, AI/ML Integration
 Industries: Fintech, Blockchain, Fitness Tech, Insurance, IoT, Consumer Products, Consulting
 
 GLOBAL EXPERIENCE:
@@ -124,7 +132,7 @@ function generateFallbackResponse(question) {
         return `**Job Description Analysis**\n\nI've received your job description. Here's a quick assessment:\n\n**Likely Strong Fit Areas:**\n• Product/Delivery Leadership - 20+ years with $100M P&L experience\n• Agile/Scrum - PMP, CSM, SAFe 6.0 certified, currently leading 2 scrum teams\n• Cross-functional Execution - Global experience across 7+ countries\n• Technical Product Work - Recent AI/DevOps tools, dashboard development\n\n**Recommended Interview Focus:**\n• Specific domain knowledge requirements for your industry\n• Team size and reporting structure expectations\n• Technical depth vs. leadership breadth balance\n\nFor a detailed fit score and gap analysis, please ensure the AI service is available, or reach out directly via LinkedIn for a personalized discussion.`;
     }
     if (hasAny(['experience', 'years', 'background'])) return "Ian brings 20+ years across product management, Scrum leadership, and release delivery. Key evidence: $100M product line at Johnson Health Tech, VP Commercial Sales in SE Asia, and current AI/DevOps innovation at RSM.";
-    if (hasAny(['ai', 'copilot', 'bot', 'automation'])) return "At RSM, Ian built: (1) a DevOps dashboard with 12+ visualizations, (2) an automated wiki system generating 153 documentation pages, and (3) a Teams bot using RAG patterns. These tools improved visibility and decision speed for 2 scrum teams.";
+    if (hasAny(['ai', 'copilot', 'bot', 'automation', 'chatops', 'teams'])) return "At RSM, Ian architected a complete **AI ChatOps system**: (1) 153 auto-generated wiki pages from Azure DevOps data, (2) interactive HTML dashboards with 12+ visualizations, (3) a Teams bot using RAG patterns for conversational DevOps queries, and (4) automated Teams Cards for real-time release notifications and sprint summaries. This end-to-end platform improved visibility, reduced manual reporting, and accelerated decision-making for 2 scrum teams.";
     if (hasAny(['strength', 'best', 'top'])) return `**Top 3 Strengths:**\n\n1. **Product-Line Ownership** - $100M global line, 3 innovation awards, 2 patents\n2. **Delivery Leadership** - SAFe execution across 2 teams, release governance\n3. **Global Business Acumen** - VP in SE Asia, CEO of Stockholm-listed fintech, 7+ countries`;
     if (hasAny(['fit', 'hire', 'role', 'opportunity'])) return "Profile fits roles requiring: product strategy + execution, Agile/SAFe delivery leadership, or technical product ownership. Strongest evidence: $100M product line, PMP/CSM/SAFe certifications, current AI tool development. Share a specific role or job description for targeted analysis.";
     if (hasAny(['risk', 'gap', 'weak', 'concern', 'mitigate', 'mitigation'])) return `**Potential Gap:** Breadth vs. single-domain depth—profile spans multiple industries.\n\n**Mitigation:** Anchor on transferable outcomes:\n• $100M product line (proves scale)\n• 2 patents (proves innovation execution)\n• VP/CEO leadership (proves accountability)\n• Repeated pattern of entering new domains and delivering measurable results within 12-18 months`;
