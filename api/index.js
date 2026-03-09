@@ -91,7 +91,10 @@ async function callGitHubModels(token, userMessage, history = []) {
             temperature: 0.3
         })
     });
-    if (!response.ok) throw new Error(`GitHub Models API error: ${response.status}`);
+    if (!response.ok) {
+        const errorText = await response.text().catch(() => 'unknown');
+        throw new Error(`GitHub Models API error: ${response.status} - ${errorText}`);
+    }
     const data = await response.json();
     return data?.choices?.[0]?.message?.content || generateFallbackResponse(userMessage);
 }
@@ -168,7 +171,8 @@ app.http('chat', {
                     const response = await callGitHubModels(githubToken, message, history);
                     return { status: 200, headers: corsHeaders, jsonBody: { response, source: 'github-models' } };
                 } catch (err) {
-                    context.warn('GitHub Models failed, trying fallback:', err.message);
+                    context.warn('GitHub Models failed:', err.message);
+                    // Continue to try Azure OpenAI or fallback
                 }
             }
 
@@ -181,12 +185,16 @@ app.http('chat', {
                     const response = await callAzureOpenAI(endpoint, apiKey, deploymentName, message, history);
                     return { status: 200, headers: corsHeaders, jsonBody: { response, source: 'azure-openai' } };
                 } catch (err) {
-                    context.warn('Azure OpenAI failed, trying fallback:', err.message);
+                    context.warn('Azure OpenAI failed:', err.message);
                 }
             }
 
-            // Fallback response
-            return { status: 200, headers: corsHeaders, jsonBody: { response: generateFallbackResponse(message), source: 'fallback' } };
+            // Fallback response - include debug info about which AI backends were attempted
+            const debugInfo = {
+                hasGitHubToken: !!githubToken,
+                hasAzureOpenAI: !!(endpoint && apiKey && deploymentName)
+            };
+            return { status: 200, headers: corsHeaders, jsonBody: { response: generateFallbackResponse(message), source: 'fallback', debug: debugInfo } };
 
         } catch (error) {
             context.error('Chat API error:', error);
