@@ -63,23 +63,24 @@ const productPortfolioData = {
             ]
         },
         {
-            id: "rsm-devops-dashboard",
-            productName: "DevOps AI Dashboard",
+            id: "rsm-chatops-dashboards",
+            productName: "ChatOps Dashboards",
             company: "RSM US LLP",
             period: "2022 - Present",
             role: "Scrum Master & Release Manager",
             domain: "Professional Services / DevOps",
             productType: "Internal Product",
-            stage: "Scaling",
+            stage: "POC / Active Build",
             users: "2 scrum teams + delivery stakeholders",
             problem: "Low visibility into SAFe sprint and release health across multiple teams.",
-            delivery: "Built an interactive HTML metrics dashboard to surface sprint and release signals for leadership and teams.",
+            delivery: "Built YAML-driven interactive HTML dashboards (3+ HTML surfaces) to surface sprint and release signals. Part of SAME Architecture generating 4 surfaces from 1 YAML.",
             outcomes: [
                 "Improved planning transparency and release governance visibility",
-                "Converted delivery data into actionable team-health signals"
+                "Converted delivery data into actionable team-health signals",
+                "Working POC available for demo"
             ],
             evidence: "Profile OCR: RSM section references AI-powered DevOps dashboard and improved delivery predictability.",
-            tags: ["Azure DevOps", "SAFe", "Metrics", "Visualization"],
+            tags: ["YAML-Driven", "ChatOps", "Azure DevOps", "SAFe", "Metrics", "Visualization"],
             icon: "chart-line",
             visualIdeas: [
                 "Screenshot: SAFe metrics dashboard overview",
@@ -88,24 +89,25 @@ const productPortfolioData = {
             ]
         },
         {
-            id: "rsm-devops-wiki",
-            productName: "DevOps AI Wiki Integration",
+            id: "rsm-chatops-wiki",
+            productName: "ChatOps Wiki Integration",
             company: "RSM US LLP",
             period: "2022 - Present",
             role: "Scrum Master & Release Manager",
             domain: "Professional Services / DevOps",
             productType: "Internal Product",
-            stage: "Scaling",
+            stage: "POC / Active Build",
             users: "Engineering + delivery teams",
             problem: "Knowledge was fragmented across work items, pipelines, and sprint artifacts.",
-            delivery: "Designed automation that transforms DevOps data into structured wiki documentation. Part of SAME Architecture generating 4 surfaces from 1 YAML.",
+            delivery: "YAML-driven automation transforms DevOps data into 160+ structured wiki pages. Part of SAME Architecture generating 4 surfaces from 1 YAML.",
             outcomes: [
                 "160+ wiki pages auto-generated from YAML + Azure DevOps data",
                 "Centralized delivery knowledge for easier decision making",
-                "Reduced manual effort in sprint/release documentation"
+                "Reduced manual effort in sprint/release documentation",
+                "Working POC available for demo"
             ],
             evidence: "Profile OCR + prior portfolio content references wiki integration workflows.",
-            tags: ["Documentation", "Automation", "Knowledge Ops"],
+            tags: ["YAML-Driven", "ChatOps", "Documentation", "Automation", "Knowledge Ops"],
             icon: "book",
             visualIdeas: [
                 "Screenshot: wiki index and hierarchy",
@@ -114,23 +116,24 @@ const productPortfolioData = {
             ]
         },
         {
-            id: "rsm-devops-bot",
-            productName: "DevOps AI Bot",
+            id: "rsm-chatops-bot",
+            productName: "ChatOps Bot",
             company: "RSM US LLP",
             period: "2022 - Present",
             role: "Scrum Master & Release Manager",
             domain: "Professional Services / DevOps",
             productType: "Internal Product",
-            stage: "Scaling",
+            stage: "POC / Active Build",
             users: "Scrum teams + stakeholders",
             problem: "Stakeholders needed fast, contextual answers on sprint/release status.",
-            delivery: "Built bot workflows to answer delivery questions and summarize operational signals.",
+            delivery: "YAML-driven bot with auto-refreshed instructions, knowledge sources, and conversation topics from Azure DevOps data. Part of SAME Architecture.",
             outcomes: [
                 "Faster access to release status context",
-                "Higher consistency in sprint-health reporting"
+                "Higher consistency in sprint-health reporting",
+                "Working POC available for demo"
             ],
             evidence: "Profile OCR: RSM section references AI bot workflows for SAFe metrics visibility.",
-            tags: ["Bot", "AI Workflow", "Delivery Intelligence"],
+            tags: ["YAML-Driven", "ChatOps", "Bot", "AI Workflow", "Delivery Intelligence"],
             icon: "robot",
             visualIdeas: [
                 "Screenshot: bot Q&A interaction in Teams",

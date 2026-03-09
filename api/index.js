@@ -24,9 +24,9 @@ PRODUCT IMPACT CARDS (by ID — users may click these):
 RSM Products:
 • rsm-sec-workpaper-pilot — SEC Workpaper Pilot (Audit Digital Transformation)
 • rsm-solution-center — AOD Solution Center Deployment (56 solutions, 53.7% adoption)
-• rsm-devops-dashboard — DevOps AI Dashboard (12+ ECharts visualizations)
-• rsm-devops-wiki — DevOps AI Wiki Integration (160+ auto-generated pages)
-• rsm-devops-bot — DevOps AI Bot (RAG pattern, Teams integration)
+• rsm-chatops-dashboards — ChatOps Dashboards (YAML-driven, 12+ ECharts visualizations)
+• rsm-chatops-wiki — ChatOps Wiki Integration (YAML-driven, 160+ auto-generated pages)
+• rsm-chatops-bot — ChatOps Bot (YAML-driven RAG pattern, Teams integration)
 • rsm-chatops-teams-cards — ChatOps Teams Cards (25 templates, push notifications, NEWEST)
 • rsm-caseware-poc — CaseWare Enhancement POC
 
@@ -99,24 +99,24 @@ KEY QUANTIFIED ACHIEVEMENTS
 • 9 Countries Professional Experience — USA, Thailand, Taiwan, China, Sweden, Poland, Russia, Myanmar, Cambodia
 
 ═══════════════════════════════════════════════════════════════════════════════
-RSM US LLP — SAME ARCHITECTURE / AI CHATOPS (2022-Present)
+RSM US LLP — SAME ARCHITECTURE / CHATOPS PLATFORM (2022-Present)
 ═══════════════════════════════════════════════════════════════════════════════
-Built comprehensive AI-powered DevOps intelligence platform from scratch.
+Built comprehensive YAML-driven ChatOps platform from scratch.
 SAME Architecture = 4 surfaces generated from 1 YAML + fresh Azure DevOps data, refreshed multiple times daily:
 
-1. DEVOPS AI WIKI INTEGRATION (160+ Pages)
+1. CHATOPS WIKI INTEGRATION (160+ Pages)
    • Auto-generates structured documentation from YAML + Azure DevOps data
    • Hierarchical navigation with sprint artifacts, release notes, pipeline data
    • Reduces manual documentation effort for 2 scrum teams
 
-2. INTERACTIVE HTML DASHBOARDS (3+ HTMLs, 12+ Visualizations)
-   • ECharts-based SAFe metrics visualization
+2. CHATOPS DASHBOARDS (3+ HTMLs, 12+ Visualizations)
+   • YAML-driven ECharts-based SAFe metrics visualization
    • 8-node SAME architecture ring diagram
    • Real-time pipeline status, velocity trends, quality metrics
    • Release health and team-level drilldowns
 
-3. TEAMS BOT v5.0 (RAG Pattern)
-   • Natural language queries for sprint health, release status, team velocity
+3. CHATOPS BOT v5.0 (RAG Pattern)
+   • YAML-driven natural language queries for sprint health, release status, team velocity
    • Agent instructions, knowledge sources (KS), and topics all generated from YAML
    • Contextual responses for 2 scrum teams
    • Azure DevOps API integration
@@ -295,7 +295,7 @@ RESPONSE GUIDELINES
 
 PORTFOLIO CONTEXT AWARENESS:
 • If user mentions a section (e.g., "this card", "the dashboard", "journey timeline"), relate to the relevant portfolio section
-• Reference product card IDs when discussing specific products (e.g., "the rsm-devops-bot card shows...")
+• Reference product card IDs when discussing specific products (e.g., "the rsm-chatops-bot card shows...")
 • Guide users to relevant sections: "Check the #products carousel to see all SKY Consulting ventures"
 • Note: User may be viewing a specific product impact card — connect your answer to visual context
 
