@@ -12,56 +12,7 @@ const productPortfolioData = {
     },
 
     mappedProducts: [
-        {
-            id: "rsm-sec-workpaper-pilot",
-            productName: "SEC Workpaper Pilot (Audit Digital Transformation)",
-            company: "RSM US LLP",
-            period: "2022 - 2023",
-            role: "Program Manager",
-            domain: "Professional Services / Audit Transformation",
-            productType: "Program Product",
-            stage: "Pilot Launch",
-            users: "Audit pilot teams + transformation stakeholders",
-            problem: "Audit digital transformation required a validated pilot proving process and tooling viability.",
-            delivery: "Planned and launched an SEC workpaper pilot with hybrid waterfall/agile execution and tracked workstreams.",
-            outcomes: [
-                "Hit first key milestone for SEC workpaper pilot kickoff",
-                "Established working hybrid governance model across nine workstreams"
-            ],
-            evidence: "Resume: Program kickoff and first key milestone for SEC workpaper pilot are explicitly listed.",
-            tags: ["Pilot", "Audit", "Hybrid Delivery", "Program Governance"],
-            icon: "file-shield",
-            visualIdeas: [
-                "Screenshot: pilot timeline and milestone chart",
-                "Screenshot: RAID log snapshot",
-                "Screenshot: UAT plan structure"
-            ]
-        },
-        {
-            id: "rsm-solution-center",
-            productName: "AOD Solution Center Deployment",
-            company: "RSM US LLP",
-            period: "2023 - Present",
-            role: "Program / Product Delivery Lead",
-            domain: "Professional Services / Internal Platforms",
-            productType: "Internal Product",
-            stage: "Scaling",
-            users: "Audit, Tax, and Consulting practices",
-            problem: "Internal solutions lacked a centralized, scalable distribution and adoption channel.",
-            delivery: "Partnered with the enterprise team to deploy and scale the AOD Solution Center for the Assurance LOB using Power Apps and Smartsheet-driven rollout planning.",
-            outcomes: [
-                "56 live custom-built solutions deployed for Audit",
-                "LOB Adoption Rates: Audit 53.7%, Tax 13.9%, Consulting 28.6%"
-            ],
-            evidence: "Resume: Solution Center deployment and adoption rates are explicitly listed.",
-            tags: ["Power Apps", "Adoption", "Internal Platform"],
-            icon: "layer-group",
-            visualIdeas: [
-                "Screenshot: Solution Center landing page",
-                "Screenshot: adoption trend by LOB",
-                "Screenshot: catalog of deployed solutions"
-            ]
-        },
+        // ChatOps Suite (SAME Architecture) - Default View
         {
             id: "rsm-chatops-dashboards",
             productName: "ChatOps Dashboards",
@@ -167,6 +118,57 @@ const productPortfolioData = {
                 "Screenshot: Teams Card with collapsible sections",
                 "Screenshot: Approval request card in channel",
                 "Diagram: SAME Architecture 4-surface generation flow"
+            ]
+        },
+        // Other RSM Products (to the right)
+        {
+            id: "rsm-sec-workpaper-pilot",
+            productName: "SEC Workpaper Pilot (Audit Digital Transformation)",
+            company: "RSM US LLP",
+            period: "2022 - 2023",
+            role: "Program Manager",
+            domain: "Professional Services / Audit Transformation",
+            productType: "Program Product",
+            stage: "Pilot Launch",
+            users: "Audit pilot teams + transformation stakeholders",
+            problem: "Audit digital transformation required a validated pilot proving process and tooling viability.",
+            delivery: "Planned and launched an SEC workpaper pilot with hybrid waterfall/agile execution and tracked workstreams.",
+            outcomes: [
+                "Hit first key milestone for SEC workpaper pilot kickoff",
+                "Established working hybrid governance model across nine workstreams"
+            ],
+            evidence: "Resume: Program kickoff and first key milestone for SEC workpaper pilot are explicitly listed.",
+            tags: ["Pilot", "Audit", "Hybrid Delivery", "Program Governance"],
+            icon: "file-shield",
+            visualIdeas: [
+                "Screenshot: pilot timeline and milestone chart",
+                "Screenshot: RAID log snapshot",
+                "Screenshot: UAT plan structure"
+            ]
+        },
+        {
+            id: "rsm-solution-center",
+            productName: "AOD Solution Center Deployment",
+            company: "RSM US LLP",
+            period: "2023 - Present",
+            role: "Program / Product Delivery Lead",
+            domain: "Professional Services / Internal Platforms",
+            productType: "Internal Product",
+            stage: "Scaling",
+            users: "Audit, Tax, and Consulting practices",
+            problem: "Internal solutions lacked a centralized, scalable distribution and adoption channel.",
+            delivery: "Partnered with the enterprise team to deploy and scale the AOD Solution Center for the Assurance LOB using Power Apps and Smartsheet-driven rollout planning.",
+            outcomes: [
+                "56 live custom-built solutions deployed for Audit",
+                "LOB Adoption Rates: Audit 53.7%, Tax 13.9%, Consulting 28.6%"
+            ],
+            evidence: "Resume: Solution Center deployment and adoption rates are explicitly listed.",
+            tags: ["Power Apps", "Adoption", "Internal Platform"],
+            icon: "layer-group",
+            visualIdeas: [
+                "Screenshot: Solution Center landing page",
+                "Screenshot: adoption trend by LOB",
+                "Screenshot: catalog of deployed solutions"
             ]
         },
         {
