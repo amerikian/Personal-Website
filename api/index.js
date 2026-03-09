@@ -274,11 +274,22 @@ app.http('contact', {
 
 // Health check function
 app.http('health', {
-    methods: ['GET', 'POST'],
+    methods: ['GET', 'POST', 'OPTIONS'],
     authLevel: 'anonymous',
     handler: async (request, context) => {
+        const corsHeaders = {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type'
+        };
+
+        if (request.method === 'OPTIONS') {
+            return { status: 204, headers: corsHeaders };
+        }
+
         return { 
             status: 200,
+            headers: corsHeaders,
             jsonBody: { status: 'ok', message: 'API is reachable' }
         };
     }
