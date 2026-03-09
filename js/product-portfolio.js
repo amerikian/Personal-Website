@@ -44,6 +44,7 @@ function renderProductCards() {
                     ${item.tags.map((tag) => `<span class="timeline-tag">${tag}</span>`).join('')}
                 </div>
                 <p class="portfolio-evidence"><strong>Evidence:</strong> ${item.evidence}</p>
+                ${item.patentUrl ? `<a href="${item.patentUrl}" target="_blank" rel="noopener noreferrer" class="patent-link"><i class="fas fa-external-link-alt"></i> View Patent</a>` : ''}
             </article>
         `;
         })

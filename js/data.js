@@ -135,14 +135,18 @@ const careerData = {
             id: 4,
             name: "Patented Bicycle Accessories",
             company: "Pacific Cycle",
-            description: "Developed patented bicycle accessories for Schwinn & Mongoose brands. Patents include EASY-CONNECT ATTACHMENT HEAD AND Related U.S. Application Data ADAPTER, and Modular accessory connector.",
+            description: "Co-invented 2 patented bicycle accessories for Schwinn & Mongoose brands: Easy-connect attachment head (US9759337B2) enables tool-free valve adapter connection for bike pumps; Modular accessory connector (US20140308062A1) provides magnetic/mechanical quick-attach system for bicycle accessories.",
             impact: {
                 patents: "2",
                 retailers: "Target, Walmart",
                 exclusive: "Walmart"
             },
             icon: "bicycle",
-            tags: ["Patents", "Consumer Products", "Retail"]
+            tags: ["Patents", "Consumer Products", "Retail"],
+            patentLinks: [
+                { number: "US9759337B2", url: "https://patents.google.com/patent/US9759337B2" },
+                { number: "US20140308062A1", url: "https://patents.google.com/patent/US20140308062A1" }
+            ]
         },
         {
             id: 5,
@@ -272,8 +276,26 @@ const careerData = {
 
     // Patents
     patents: [
-        "EASY-CONNECT ATTACHMENT HEAD AND Related U.S. Application Data ADAPTER",
-        "Modular accessory connector"
+        {
+            number: "US9759337B2",
+            title: "Easy-connect attachment head and adapter",
+            status: "Granted",
+            filingDate: "April 4, 2014",
+            grantDate: "September 12, 2017",
+            assignee: "Pacific Cycle LLC",
+            summary: "An adapter connects to a valve to convert the valve to a uniform configuration for connection to a pump. Works with conventional Schrader or Presta valves. Features an attachment head that engages and creates a seal with the adapter and includes a release mechanism for easy disengagement.",
+            url: "https://patents.google.com/patent/US9759337B2"
+        },
+        {
+            number: "US20140308062A1",
+            title: "Modular accessory connector",
+            status: "Application",
+            filingDate: "April 10, 2014",
+            publishDate: "October 16, 2014",
+            assignee: "Pacific Cycle LLC",
+            summary: "A connector system for attaching accessories to a bicycle or other sporting good. Includes a base attached to a bicycle and a platform attached to the accessory, held together by mechanical or magnetic forces for tool-free attachment and removal.",
+            url: "https://patents.google.com/patent/US20140308062A1"
+        }
     ],
 
     // Languages
