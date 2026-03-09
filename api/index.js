@@ -193,14 +193,8 @@ app.http('chat', {
                 }
             }
 
-            // Fallback response - include debug info about which AI backends were attempted
-            const debugInfo = {
-                hasGitHubToken: !!githubToken,
-                githubModelsError,
-                hasAzureOpenAI: !!(endpoint && apiKey && deploymentName),
-                azureOpenAIError
-            };
-            return { status: 200, headers: corsHeaders, jsonBody: { response: generateFallbackResponse(message), source: 'fallback', debug: debugInfo } };
+            // Fallback response
+            return { status: 200, headers: corsHeaders, jsonBody: { response: generateFallbackResponse(message), source: 'fallback' } };
 
         } catch (error) {
             context.error('Chat API error:', error);
