@@ -166,11 +166,13 @@ app.http('chat', {
 
             // Check for GitHub Models first (free)
             const githubToken = process.env.GITHUB_TOKEN;
+            let githubModelsError = null;
             if (githubToken) {
                 try {
                     const response = await callGitHubModels(githubToken, message, history);
                     return { status: 200, headers: corsHeaders, jsonBody: { response, source: 'github-models' } };
                 } catch (err) {
+                    githubModelsError = err.message;
                     context.warn('GitHub Models failed:', err.message);
                     // Continue to try Azure OpenAI or fallback
                 }
@@ -180,11 +182,13 @@ app.http('chat', {
             const endpoint = process.env.AZURE_OPENAI_ENDPOINT;
             const apiKey = process.env.AZURE_OPENAI_KEY;
             const deploymentName = process.env.AZURE_OPENAI_DEPLOYMENT_NAME;
+            let azureOpenAIError = null;
             if (endpoint && apiKey && deploymentName) {
                 try {
                     const response = await callAzureOpenAI(endpoint, apiKey, deploymentName, message, history);
                     return { status: 200, headers: corsHeaders, jsonBody: { response, source: 'azure-openai' } };
                 } catch (err) {
+                    azureOpenAIError = err.message;
                     context.warn('Azure OpenAI failed:', err.message);
                 }
             }
@@ -192,7 +196,9 @@ app.http('chat', {
             // Fallback response - include debug info about which AI backends were attempted
             const debugInfo = {
                 hasGitHubToken: !!githubToken,
-                hasAzureOpenAI: !!(endpoint && apiKey && deploymentName)
+                githubModelsError,
+                hasAzureOpenAI: !!(endpoint && apiKey && deploymentName),
+                azureOpenAIError
             };
             return { status: 200, headers: corsHeaders, jsonBody: { response: generateFallbackResponse(message), source: 'fallback', debug: debugInfo } };
 
