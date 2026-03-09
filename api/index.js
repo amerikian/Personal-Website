@@ -164,8 +164,12 @@ app.http('chat', {
             // Check for GitHub Models first (free)
             const githubToken = process.env.GITHUB_TOKEN;
             if (githubToken) {
-                const response = await callGitHubModels(githubToken, message, history);
-                return { status: 200, headers: corsHeaders, jsonBody: { response, source: 'github-models' } };
+                try {
+                    const response = await callGitHubModels(githubToken, message, history);
+                    return { status: 200, headers: corsHeaders, jsonBody: { response, source: 'github-models' } };
+                } catch (err) {
+                    context.warn('GitHub Models failed, trying fallback:', err.message);
+                }
             }
 
             // Check for Azure OpenAI
@@ -173,8 +177,12 @@ app.http('chat', {
             const apiKey = process.env.AZURE_OPENAI_KEY;
             const deploymentName = process.env.AZURE_OPENAI_DEPLOYMENT_NAME;
             if (endpoint && apiKey && deploymentName) {
-                const response = await callAzureOpenAI(endpoint, apiKey, deploymentName, message, history);
-                return { status: 200, headers: corsHeaders, jsonBody: { response, source: 'azure-openai' } };
+                try {
+                    const response = await callAzureOpenAI(endpoint, apiKey, deploymentName, message, history);
+                    return { status: 200, headers: corsHeaders, jsonBody: { response, source: 'azure-openai' } };
+                } catch (err) {
+                    context.warn('Azure OpenAI failed, trying fallback:', err.message);
+                }
             }
 
             // Fallback response
