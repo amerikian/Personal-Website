@@ -401,7 +401,7 @@ function getIconForTech(tech) {
 }
 
 /**
- * AI Chat Widget Functionality
+ * AI Chat Widget Functionality - Enhanced for Recruiters & Hiring Managers
  */
 function initChat() {
     const chatWidget = document.getElementById('chat-widget');
@@ -410,24 +410,25 @@ function initChat() {
     const chatInput = document.getElementById('chat-input');
     const sendBtn = document.getElementById('send-message');
     const chatMessages = document.getElementById('chat-messages');
+    const clearChatBtn = document.getElementById('clear-chat');
+    const exportChatBtn = document.getElementById('export-chat');
+    const uploadBtn = document.getElementById('upload-jd-btn');
+    const fileInput = document.getElementById('jd-file-input');
+    const filePreview = document.getElementById('file-preview');
+    const fileName = document.getElementById('file-name');
+    const removeFileBtn = document.getElementById('remove-file');
+    const charCount = document.getElementById('char-count');
 
     if (!chatWidget || !openChatBtn) return;
-
-    // Open chat
-    openChatBtn.addEventListener('click', () => {
-        chatWidget.classList.add('active');
-    });
-
-    // Close chat
-    closeChatBtn?.addEventListener('click', () => {
-        chatWidget.classList.remove('active');
-    });
 
     let isSending = false;
     let backendChecked = false;
     let backendAvailable = false;
     let backendUnavailableNotified = false;
-    const MAX_CLIENT_MESSAGE_LENGTH = 1200;
+    let uploadedFileContent = null;
+    let uploadedFileName = null;
+    const MAX_CLIENT_MESSAGE_LENGTH = 3500;
+    const MAX_FILE_SIZE = 100 * 1024; // 100KB max file size
     const conversationHistory = [];
 
     const SWA_API_BASE = 'https://salmon-rock-093cc6a0f.6.azurestaticapps.net';
@@ -435,6 +436,143 @@ function initChat() {
     const isLocal = host === 'localhost' || host === '127.0.0.1';
     const isGitHubPages = host.endsWith('github.io');
     const API_BASE = (isLocal || isGitHubPages) ? SWA_API_BASE : '';
+
+    // Open chat
+    openChatBtn.addEventListener('click', () => {
+        chatWidget.classList.add('active');
+        chatInput?.focus();
+    });
+
+    // Close chat
+    closeChatBtn?.addEventListener('click', () => {
+        chatWidget.classList.remove('active');
+    });
+
+    // Character count
+    chatInput?.addEventListener('input', () => {
+        const len = chatInput.value.length;
+        if (charCount) {
+            charCount.textContent = `${len}/3500`;
+            charCount.classList.toggle('warning', len > 3000);
+            charCount.classList.toggle('error', len > 3500);
+        }
+    });
+
+    // Clear chat functionality
+    clearChatBtn?.addEventListener('click', () => {
+        if (confirm('Clear conversation history?')) {
+            const welcomeMsg = chatMessages?.querySelector('.chat-message.bot');
+            if (chatMessages) {
+                chatMessages.innerHTML = '';
+                if (welcomeMsg) chatMessages.appendChild(welcomeMsg.cloneNode(true));
+                attachSuggestionListeners();
+            }
+            conversationHistory.length = 0;
+            clearUploadedFile();
+        }
+    });
+
+    // Export chat functionality
+    exportChatBtn?.addEventListener('click', () => {
+        if (conversationHistory.length === 0) {
+            alert('No conversation to export yet.');
+            return;
+        }
+        
+        const timestamp = new Date().toISOString().split('T')[0];
+        let exportText = `Ian Cassiman - Career Assistant Conversation\nExported: ${timestamp}\n${'='.repeat(50)}\n\n`;
+        
+        conversationHistory.forEach((msg) => {
+            const role = msg.role === 'user' ? 'You' : 'Career Assistant';
+            exportText += `[${role}]\n${msg.content}\n\n`;
+        });
+        
+        exportText += `${'='.repeat(50)}\nConnect: linkedin.com/in/iancassiman\n`;
+        
+        const blob = new Blob([exportText], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `ian-cassiman-chat-${timestamp}.txt`;
+        a.click();
+        URL.revokeObjectURL(url);
+    });
+
+    // File upload functionality
+    uploadBtn?.addEventListener('click', () => {
+        fileInput?.click();
+    });
+
+    fileInput?.addEventListener('change', async (e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        if (file.size > MAX_FILE_SIZE) {
+            alert('File too large. Please use a file under 100KB.');
+            fileInput.value = '';
+            return;
+        }
+
+        const ext = file.name.split('.').pop()?.toLowerCase();
+        if (!['txt', 'pdf', 'doc', 'docx'].includes(ext)) {
+            alert('Please upload a TXT, PDF, DOC, or DOCX file.');
+            fileInput.value = '';
+            return;
+        }
+
+        try {
+            let content = '';
+            
+            if (ext === 'txt') {
+                content = await file.text();
+            } else {
+                // For PDF/DOC/DOCX, prompt to paste content
+                alert(
+                    `${ext.toUpperCase()} detected: "${file.name}"\n\n` +
+                    `For best results, please open the document, copy the job description text, ` +
+                    `and paste it directly into the chat.`
+                );
+                fileInput.value = '';
+                return;
+            }
+
+            if (content && content.trim().length > 50) {
+                uploadedFileContent = content.trim();
+                uploadedFileName = file.name;
+                
+                if (filePreview && fileName) {
+                    fileName.textContent = file.name;
+                    filePreview.style.display = 'flex';
+                }
+                
+                // Auto-populate analysis prompt
+                if (chatInput) {
+                    chatInput.value = `Please analyze this job description for fit:\n\n${uploadedFileContent.substring(0, 2800)}`;
+                    chatInput.dispatchEvent(new Event('input'));
+                }
+            } else {
+                alert('Could not extract text. Please paste the job description directly.');
+            }
+        } catch (err) {
+            console.error('File read error:', err);
+            alert('Error reading file. Please paste the job description text directly.');
+        }
+        
+        fileInput.value = '';
+    });
+
+    // Remove uploaded file
+    removeFileBtn?.addEventListener('click', clearUploadedFile);
+
+    function clearUploadedFile() {
+        uploadedFileContent = null;
+        uploadedFileName = null;
+        if (filePreview) filePreview.style.display = 'none';
+        if (chatInput) {
+            chatInput.value = '';
+            chatInput.dispatchEvent(new Event('input'));
+        }
+    }
 
     const checkBackendAvailability = async () => {
         if (backendChecked) return backendAvailable;
@@ -472,7 +610,7 @@ function initChat() {
         if (!message) return;
 
         if (message.length > MAX_CLIENT_MESSAGE_LENGTH) {
-            addChatMessage(`Please keep messages under ${MAX_CLIENT_MESSAGE_LENGTH} characters so I can respond accurately.`, 'bot');
+            addChatMessage(`Please keep messages under ${MAX_CLIENT_MESSAGE_LENGTH} characters. Consider summarizing key requirements.`, 'bot');
             return;
         }
 
@@ -500,17 +638,17 @@ function initChat() {
 
                 if (!backendUnavailableNotified) {
                     backendUnavailableNotified = true;
-                    addChatMessage('Live AI service is temporarily unavailable, so I’m using local portfolio responses for now.', 'bot');
+                    addChatMessage('Live AI service is temporarily unavailable. Using local responses.', 'bot');
                 }
 
                 const fallbackResponse = generateAIResponse(message);
-                addChatMessage(fallbackResponse, 'bot');
+                addChatMessage(fallbackResponse, 'bot', true);
                 recordHistory('assistant', fallbackResponse);
                 return;
             }
 
             const controller = new AbortController();
-            const timeout = setTimeout(() => controller.abort(), 12000);
+            const timeout = setTimeout(() => controller.abort(), 20000); // Longer for JD analysis
 
             let response;
             try {
@@ -532,19 +670,17 @@ function initChat() {
             if (response.ok) {
                 const data = await response.json();
                 const botResponse = data.response || generateAIResponse(message);
-                addChatMessage(botResponse, 'bot');
+                addChatMessage(botResponse, 'bot', true);
                 recordHistory('assistant', botResponse);
             } else {
-                // Fallback to local response if API fails
                 const fallbackResponse = generateAIResponse(message);
-                addChatMessage(fallbackResponse, 'bot');
+                addChatMessage(fallbackResponse, 'bot', true);
                 recordHistory('assistant', fallbackResponse);
             }
         } catch (error) {
             typingDiv.remove();
-            // Fallback to local response if API unavailable
             const fallbackResponse = generateAIResponse(message);
-            addChatMessage(fallbackResponse, 'bot');
+            addChatMessage(fallbackResponse, 'bot', true);
             recordHistory('assistant', fallbackResponse);
         } finally {
             isSending = false;
@@ -555,42 +691,89 @@ function initChat() {
 
     sendBtn?.addEventListener('click', sendMessage);
     chatInput?.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') sendMessage();
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            sendMessage();
+        }
     });
 
-    // Handle suggestion chip clicks
-    document.querySelectorAll('.suggestion-chip').forEach(chip => {
-        chip.addEventListener('click', () => {
-            const question = chip.dataset.question;
-            if (question && chatInput) {
-                chatInput.value = question;
-                sendMessage();
-            }
+    // Suggestion chip handler
+    function attachSuggestionListeners() {
+        document.querySelectorAll('.suggestion-chip').forEach(chip => {
+            chip.addEventListener('click', () => {
+                const question = chip.dataset.question;
+                if (question && chatInput) {
+                    chatInput.value = question;
+                    sendMessage();
+                }
+            });
         });
-    });
+
+        // Upload prompt click handler
+        document.querySelectorAll('.upload-prompt').forEach(prompt => {
+            prompt.addEventListener('click', () => {
+                uploadBtn?.click();
+            });
+        });
+    }
+
+    attachSuggestionListeners();
 }
 
 /**
- * Add message to chat
+ * Add message to chat with optional copy button and simple markdown
  */
-function addChatMessage(message, type) {
+function addChatMessage(message, type, showCopy = false) {
     const chatMessages = document.getElementById('chat-messages');
     if (!chatMessages) return;
 
     const messageDiv = document.createElement('div');
     messageDiv.className = `chat-message ${type}`;
+    
+    // Simple markdown-like rendering for bot messages
+    let formattedMessage = message;
+    if (type === 'bot') {
+        formattedMessage = formatBotMessage(message);
+    }
+
     messageDiv.innerHTML = `
         <div class="message-avatar">
             <i class="fas fa-${type === 'bot' ? 'robot' : 'user'}"></i>
         </div>
         <div class="message-content">
-            <p></p>
+            ${type === 'bot' ? formattedMessage : '<p></p>'}
+            ${showCopy && type === 'bot' ? `
+                <button class="copy-response-btn" title="Copy response">
+                    <i class="fas fa-copy"></i>
+                </button>
+            ` : ''}
         </div>
     `;
 
-    const textNode = messageDiv.querySelector('.message-content p');
-    if (textNode) {
-        textNode.textContent = message;
+    // For user messages, set text content safely
+    if (type === 'user') {
+        const textNode = messageDiv.querySelector('.message-content p');
+        if (textNode) {
+            textNode.textContent = message;
+        }
+    }
+
+    // Add copy functionality
+    if (showCopy && type === 'bot') {
+        const copyBtn = messageDiv.querySelector('.copy-response-btn');
+        copyBtn?.addEventListener('click', async () => {
+            try {
+                await navigator.clipboard.writeText(message);
+                copyBtn.innerHTML = '<i class="fas fa-check"></i>';
+                copyBtn.classList.add('copied');
+                setTimeout(() => {
+                    copyBtn.innerHTML = '<i class="fas fa-copy"></i>';
+                    copyBtn.classList.remove('copied');
+                }, 2000);
+            } catch (err) {
+                console.error('Copy failed:', err);
+            }
+        });
     }
 
     chatMessages.appendChild(messageDiv);
@@ -598,38 +781,125 @@ function addChatMessage(message, type) {
 }
 
 /**
- * Generate AI Response (Placeholder - to be replaced with real AI backend)
+ * Format bot message with simple markdown-like rendering
+ */
+function formatBotMessage(text) {
+    // Escape HTML first
+    let html = text
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+    
+    // Headers (**text** -> bold)
+    html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+    
+    // Bullet points
+    html = html.replace(/^[•\-]\s+(.+)$/gm, '<li>$1</li>');
+    html = html.replace(/(<li>.*<\/li>\n?)+/gs, '<ul>$&</ul>');
+    
+    // Numbered lists
+    html = html.replace(/^\d+\.\s+(.+)$/gm, '<li>$1</li>');
+    
+    // Line breaks for paragraphs
+    html = html.replace(/\n\n/g, '</p><p>');
+    html = html.replace(/\n/g, '<br>');
+    
+    // Wrap in paragraph if not already structured
+    if (!html.startsWith('<')) {
+        html = `<p>${html}</p>`;
+    }
+    
+    return html;
+}
+
+/**
+ * Generate AI Response (Client-side fallback when backend is unavailable)
  */
 function generateAIResponse(question) {
     const lowerQ = question.toLowerCase();
     const hasAny = (terms) => terms.some(term => lowerQ.includes(term));
 
+    // Job description analysis (if message is long, assume it's a JD)
+    if (question.length > 500 || hasAny(['job description', 'jd:', 'responsibilities:', 'requirements:', 'qualifications:'])) {
+        return `**Job Description Analysis**
+
+I've received your job description. Here's a quick assessment:
+
+**Likely Strong Fit Areas:**
+• Product/Delivery Leadership - 20+ years with $100M P&L experience
+• Agile/Scrum - PMP, CSM, SAFe 6.0 certified, currently leading 2 scrum teams
+• Cross-functional Execution - Global experience across 7+ countries
+• Technical Product Work - Recent AI/DevOps tools, dashboard development
+
+**Recommended Interview Focus:**
+• Specific domain knowledge requirements for your industry
+• Team size and reporting structure expectations
+• Technical depth vs. leadership breadth balance
+
+For a detailed fit score and gap analysis, please ensure the AI service is available, or connect directly via LinkedIn.`;
+    }
+
     if (hasAny(['experience', 'years'])) {
-        return `Ian brings ${careerData.stats.years}+ years across ${careerData.stats.countries} countries. The strongest throughline is product leadership + delivery execution + Agile governance, so teams usually place him where roadmap clarity and release reliability both matter. If helpful, I can break this down by company and outcomes.`;
+        return `Ian brings ${careerData.stats.years}+ years across ${careerData.stats.countries} countries. The strongest throughline is product leadership + delivery execution + Agile governance, so teams usually place him where roadmap clarity and release reliability both matter.`;
     }
     
     if (hasAny(['ai', 'copilot', 'machine learning', 'bot'])) {
-        return 'Recent AI work focuses on practical workflow impact: DevOps dashboards, wiki automation, and chat-style assistance for delivery teams. The reasoning pattern is simple—surface delivery signals, reduce reporting friction, and improve decision speed for Scrum and release leaders.';
+        return `**Recent AI Work:**
+• DevOps dashboards with 12+ visualizations
+• Wiki automation system generating 153 documentation pages
+• Teams bot using RAG patterns for delivery teams
+
+The focus is practical workflow impact—surface delivery signals, reduce reporting friction, and improve decision speed for Scrum and release leaders.`;
     }
     
     if (hasAny(['devops', 'cicd', 'ci/cd', 'pipeline', 'release'])) {
-        return 'Experience includes Azure DevOps pipelines, release management, and metrics dashboards. At a basic reasoning level: stronger visibility leads to earlier risk detection, which improves release predictability and team confidence.';
+        return 'Experience includes Azure DevOps pipelines, release management, and metrics dashboards. Stronger visibility leads to earlier risk detection, which improves release predictability and team confidence.';
     }
     
     if (hasAny(['product', 'leadership', 'management', 'roadmap'])) {
         return 'The product leadership profile spans fitness technology, fintech, insurance innovation, and consulting. Core pattern: define clear value, align stakeholders, and execute launch plans with measurable outcomes across cross-functional teams.';
     }
 
+    if (hasAny(['strength', 'best', 'top'])) {
+        return `**Top 3 Strengths:**
+
+**1. Product-Line Ownership** - $100M global line, 3 innovation awards, 2 patents
+
+**2. Delivery Leadership** - SAFe execution across 2 teams, release governance
+
+**3. Global Business Acumen** - VP in SE Asia, CEO of Stockholm-listed fintech, 7+ countries`;
+    }
+
     if (hasAny(['education', 'university', 'study abroad', 'gpa', 'mba'])) {
-        return 'Education includes an MBA (3.41 GPA, 39 graduate credits) and BA International/Global Studies (3.13 GPA) with Poland/Russia study context. This supports basic hiring logic for globally-facing roles: business rigor + cross-cultural fluency + practical commercialization experience.';
+        return `**Education:**
+• MBA International Business - UW-Whitewater (3.41 GPA)
+• BA International/Global Studies - UW-Stevens Point (3.13 GPA)
+• Study abroad: Poland/Russia
+
+This supports globally-facing roles: business rigor + cross-cultural fluency + practical commercialization experience.`;
     }
 
     if (hasAny(['certification', 'certifications', 'pmp', 'safe', 'scrum', 'csm'])) {
-        return 'Certification evidence includes PMP and Agile-oriented credentials (including Scrum/SAFe coverage in the assessment). Practical impact is governance + delivery discipline: better planning quality, clearer risk control, and more reliable multi-team execution.';
+        return `**Certifications:**
+• PMP (Project Management Professional)
+• CSM (Certified Scrum Master)
+• SAFe 6.0 Practitioner
+• Product Management Professional
+• Google Data Analytics
+
+Practical impact: governance + delivery discipline for better planning quality and reliable multi-team execution.`;
     }
 
     if (hasAny(['company', 'employer', 'worked at', 'background'])) {
-        return 'Experience spans RSM, Johnson Health Tech, American Family Insurance, SportsArt, Pacific Cycle, and entrepreneurial consulting. The range covers enterprise services, consumer products, and innovation programs, which is useful for roles needing both strategic and hands-on execution depth.';
+        return `**Career History:**
+• RSM US LLP (2022-Present) - Scrum Master/Release Manager
+• SKY Consulting (2017-2021) - Owner/CEO, Fintech
+• Johnson Health Tech Thailand (2015-2017) - VP Commercial Sales
+• American Family Insurance (2014-2015) - Innovation PM
+• Pacific Cycle (2012-2014) - PM, 2 patents
+• Johnson Health Tech NA (2006-2012) - Global PM, $100M line
+
+Experience spans enterprise services, consumer products, and innovation programs.`;
     }
     
     if (hasAny(['location', 'global', 'remote', 'countries'])) {
@@ -638,22 +908,73 @@ function generateAIResponse(question) {
     }
     
     if (hasAny(['hire', 'fit', 'role', 'opportunity'])) {
-        return 'Basic fit reasoning: (1) product strategy and portfolio ownership, (2) Agile + release execution, and (3) global commercialization exposure. Share your role scope and I can map strengths, potential gaps, and interview focus areas in a concise checklist.';
+        return `**Role Fit Assessment:**
+
+Profile fits roles requiring:
+• Product strategy + execution
+• Agile/SAFe delivery leadership
+• Technical product ownership
+
+**Strongest Evidence:**
+• $100M product line
+• PMP/CSM/SAFe certifications
+• Current AI tool development
+
+Share a specific job description for targeted analysis.`;
     }
 
-    if (hasAny(['risk', 'gap', 'mitigate', 'mitigation'])) {
-        return 'A likely gap for some roles is deep single-domain tenure if the team wants only one-industry specialists. Mitigation: frame transferability with concrete outcomes (e.g., $100M product-line ownership, release governance at RSM, and cross-market commercialization) and align examples to your domain priorities.';
+    if (hasAny(['risk', 'gap', 'mitigate', 'mitigation', 'weakness', 'concern'])) {
+        return `**Potential Gap:** Breadth vs. single-domain depth—profile spans multiple industries.
+
+**Mitigation Evidence:**
+• $100M product line (proves scale)
+• 2 patents (proves innovation execution)
+• VP/CEO leadership (proves accountability)
+• Repeated pattern of entering new domains and delivering measurable results within 12-18 months`;
     }
 
-    if (hasAny(['recruiter summary', '3-bullet', 'three bullet', 'summary'])) {
-        return '• 20+ years spanning product leadership, Agile delivery, and release governance across enterprise and consumer contexts.\n• Evidence-backed profile: MBA 3.41 GPA (39 grad credits), BA International/Global Studies 3.13 GPA, plus certification strength (PMP + Agile coverage).\n• Demonstrated impact includes $100M product-line ownership, global commercialization exposure, and cross-functional execution in RSM, Johnson Health Tech, and other major organizations.';
+    if (hasAny(['recruiter summary', '3-bullet', 'three bullet', 'summary', 'tldr'])) {
+        return `**Recruiter Summary:**
+
+• **Experience:** 20+ years product/delivery leadership with $100M P&L
+• **Credentials:** MBA (3.41 GPA), PMP, CSM, SAFe 6.0, 2 patents, 3 awards
+• **Current:** AI/DevOps tools at RSM; Prior: VP SE Asia, CEO Stockholm fintech
+• **Best Fit:** Senior PM, Product Lead, Director roles`;
+    }
+
+    if (hasAny(['patent', 'invention', 'intellectual property'])) {
+        return `**2 U.S. Patents from Pacific Cycle (Schwinn/Mongoose):**
+
+1. EASY-CONNECT ATTACHMENT HEAD AND ADAPTER
+2. Modular accessory connector
+
+One became a Walmart-exclusive product, demonstrating commercial viability.`;
     }
     
-    if (hasAny(['contact', 'reach', 'connect'])) {
-        return 'You can connect via LinkedIn or the contact section. For faster alignment, include role scope, team size, product stage, and timeline so the response can be tailored to your hiring goals.';
+    if (hasAny(['contact', 'reach', 'connect', 'email', 'linkedin'])) {
+        return `**Connect:**
+• LinkedIn: linkedin.com/in/iancassiman
+• Use the contact section on this site
+
+For faster alignment, include role scope, team size, product stage, and timeline.`;
     }
 
-    return 'I can help with career history, product impact, certifications, and role-fit reasoning at a basic level. If you share a specific role or question, I’ll return a concise strengths-and-risks assessment.';
+    if (hasAny(['salary', 'compensation', 'pay'])) {
+        return 'Compensation discussions are best handled directly. Please connect via LinkedIn with role details, location, and structure (base/bonus/equity) for relevant expectations.';
+    }
+
+    if (hasAny(['available', 'start', 'notice', 'timeline'])) {
+        return 'For availability and start date discussions, please connect directly via LinkedIn or the contact form. Timeline flexibility depends on the specific opportunity.';
+    }
+
+    return `I can help with:
+• **Career history** - 20+ years across 7+ countries
+• **Achievements** - $100M product line, 2 patents, 3 awards
+• **Role fit analysis** - Upload a job description for assessment
+• **Strengths & gaps** - Honest evaluation with evidence
+• **Recruiter summary** - Quick talking points
+
+Try asking about a specific role, capability, or upload a job description for detailed fit analysis.`;
 }
 
 /**

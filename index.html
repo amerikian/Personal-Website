@@ -358,13 +358,23 @@
     <!-- AI Chat Assistant -->
     <div class="chat-widget" id="chat-widget">
         <div class="chat-header">
-            <div class="chat-title">
-                <i class="fas fa-robot"></i>
-                <span>Career Assistant</span>
+            <div class="chat-header-left">
+                <div class="chat-title">
+                    <i class="fas fa-robot"></i>
+                    <span>Career Assistant</span>
+                </div>
             </div>
-            <button class="chat-close" id="close-chat" aria-label="Close chat">
-                <i class="fas fa-times"></i>
-            </button>
+            <div class="chat-header-actions">
+                <button class="chat-action-btn" id="clear-chat" aria-label="Clear conversation" title="Clear conversation">
+                    <i class="fas fa-trash-alt"></i>
+                </button>
+                <button class="chat-action-btn" id="export-chat" aria-label="Export conversation" title="Export conversation">
+                    <i class="fas fa-download"></i>
+                </button>
+                <button class="chat-close" id="close-chat" aria-label="Close chat">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
         </div>
         <div class="chat-messages" id="chat-messages">
             <div class="chat-message bot">
@@ -372,21 +382,39 @@
                     <i class="fas fa-robot"></i>
                 </div>
                 <div class="message-content">
-                    <p>Hi! I can analyze this profile for your hiring needs. Try one of these:</p>
+                    <p>Hi! I'm Ian's Career Assistant. I can help hiring managers and recruiters quickly assess fit. Try these:</p>
                     <div class="suggested-questions">
                         <button class="suggestion-chip" data-question="What are the top 3 strengths for a Senior Product Lead role?">Top strengths</button>
                         <button class="suggestion-chip" data-question="Give me a 3-bullet recruiter summary with evidence">Recruiter summary</button>
-                        <button class="suggestion-chip" data-question="What AI/automation work has been done recently?">AI work</button>
+                        <button class="suggestion-chip" data-question="What AI/automation work has been done recently?">AI experience</button>
                         <button class="suggestion-chip" data-question="What's a potential risk or gap and how would you mitigate it?">Risks/gaps</button>
+                    </div>
+                    <div class="upload-prompt">
+                        <i class="fas fa-file-upload"></i>
+                        <span>Upload a job description for personalized fit analysis</span>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="chat-input-container">
-            <input type="text" id="chat-input" placeholder="Ask about experience, skills, or fit...">
-            <button id="send-message" aria-label="Send message">
-                <i class="fas fa-paper-plane"></i>
-            </button>
+        <div class="chat-input-area">
+            <div class="file-upload-zone" id="file-upload-zone">
+                <input type="file" id="jd-file-input" accept=".pdf,.doc,.docx,.txt" hidden>
+                <div class="file-preview" id="file-preview" style="display: none;">
+                    <i class="fas fa-file-alt"></i>
+                    <span id="file-name">document.pdf</span>
+                    <button id="remove-file" aria-label="Remove file"><i class="fas fa-times"></i></button>
+                </div>
+            </div>
+            <div class="chat-input-container">
+                <button class="upload-btn" id="upload-jd-btn" aria-label="Upload job description" title="Upload job description (PDF/Word/Text)">
+                    <i class="fas fa-paperclip"></i>
+                </button>
+                <input type="text" id="chat-input" placeholder="Ask about experience, skills, or fit...">
+                <span class="char-count" id="char-count">0/1200</span>
+                <button id="send-message" aria-label="Send message">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
         </div>
     </div>
 
