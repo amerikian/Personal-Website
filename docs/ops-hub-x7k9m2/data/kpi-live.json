@@ -6,9 +6,9 @@
     "signal": 55
   },
   "meta": {
-    "generatedAt": "2026-03-15T13:21:47.846Z",
+    "generatedAt": "2026-03-15T13:23:50.446Z",
     "source": "fallback:amerikian/acp-dev-workspace",
     "dataQuality": "low",
-    "note": "Fallback values used because telemetry fetch failed: Error: GitHub API 404 /repos/amerikian/acp-dev-workspace/pulls?state=open&per_page=100: {\"message\":\"Not Found\",\"documentation_url\":\"https://docs.github.com/rest/pulls/pulls#list-pull-requests\",\"status\":\"404\"}"
+    "note": "Fallback values used because telemetry fetch failed: Error: GitHub API 403 /repos/amerikian/acp-dev-workspace/pulls?state=open&per_page=100: {\"message\":\"Resource not accessible by personal access token\",\"documentation_url\":\"https://docs.github.com/rest/pulls/pulls#list-pull-requests\",\"status\":\"403\"}"
   }
 }
