@@ -1,14 +1,21 @@
 {
   "kpis": {
-    "reliability": 70,
-    "interop": 65,
-    "speed": 60,
-    "signal": 55
+    "reliability": 84,
+    "interop": 72,
+    "speed": 90,
+    "signal": 87
   },
   "meta": {
-    "generatedAt": "2026-03-15T13:23:50.446Z",
-    "source": "fallback:amerikian/acp-dev-workspace",
-    "dataQuality": "low",
-    "note": "Fallback values used because telemetry fetch failed: Error: GitHub API 403 /repos/amerikian/acp-dev-workspace/pulls?state=open&per_page=100: {\"message\":\"Resource not accessible by personal access token\",\"documentation_url\":\"https://docs.github.com/rest/pulls/pulls#list-pull-requests\",\"status\":\"403\"}"
+    "generatedAt": "2026-03-15T13:25:29.710Z",
+    "source": "github:amerikian/acp-dev-workspace",
+    "dataQuality": "medium",
+    "note": "pulls unavailable: Error: GitHub API 403 /repos/amerikian/acp-dev-workspace/pulls?state=open&per_page=100: {\"message\":\"Resource not accessible by personal access token\",\"documentation_url\":\"https://docs.github.com/rest/pulls/pulls#list-pull-requests\",\"status\":\"403\"} issues unavailable: Error: GitHub API 403 /repos/amerikian/acp-dev-workspace/issues?state=open&per_page=100: {\"message\":\"Resource not accessible by personal access token\",\"documentation_url\":\"https://docs.github.com/rest/issues/issues#list-repository-issues\",\"status\":\"403\"} Reliability estimated from repository freshness and issue/PR pressure due to limited workflow history. Interop estimated because no recent relevant workflow run was available.",
+    "telemetry": {
+      "openPrs": 0,
+      "openIssues": 0,
+      "freshnessDays": 1,
+      "relevantCompletedRuns": 0,
+      "relevantSuccessfulRuns": 0
+    }
   }
 }
