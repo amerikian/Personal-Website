@@ -23,9 +23,7 @@ jobs:
 
       - name: Update KPI feed files
         env:
-          # Optional: set to a PAT with repo read access if telemetry source repo is private.
-          # Example: ACP_REPO_TOKEN: ghp_xxx
-          ACP_REPO_TOKEN: ""
+          ACP_REPO_TOKEN: ${{ secrets.ACP_REPO_TOKEN }}
           TARGET_REPO: amerikian/acp-dev-workspace
         run: |
           node scripts/update-command-center-kpis.mjs
