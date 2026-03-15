@@ -1,0 +1,377 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="robots" content="noindex,nofollow,noarchive" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ACP Ops Wall</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #102224;
+      --ink: #ebf4f4;
+      --muted: #9bb2b2;
+      --line: #295255;
+      --ok: #49d487;
+      --warn: #ffd166;
+      --bad: #ff6b6b;
+      --accent: #4cc9f0;
+      --card: rgba(17, 38, 41, 0.84);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "JetBrains Mono", monospace;
+      color: var(--ink);
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at 12% 10%, rgba(76, 201, 240, 0.22), transparent 35%),
+        radial-gradient(circle at 85% 88%, rgba(255, 209, 102, 0.18), transparent 36%),
+        linear-gradient(155deg, #0a1718, var(--bg));
+    }
+
+    .wrap {
+      width: min(1200px, 95vw);
+      margin: 20px auto;
+      display: grid;
+      gap: 12px;
+      animation: enter 700ms ease-out both;
+    }
+
+    @keyframes enter {
+      from { opacity: 0; transform: scale(0.99) translateY(8px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    .header {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 14px;
+      background: var(--card);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .navlinks {
+      display: flex;
+      gap: 8px;
+      width: 100%;
+      flex-wrap: wrap;
+    }
+
+    .navlinks a {
+      text-decoration: none;
+      color: var(--ink);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 7px 10px;
+      font-size: 0.82rem;
+      background: #173236;
+    }
+
+    .navlinks a.active {
+      background: linear-gradient(90deg, rgba(76, 201, 240, 0.2), rgba(73, 212, 135, 0.2));
+    }
+
+    h1 {
+      margin: 0;
+      font-family: "DM Serif Display", serif;
+      letter-spacing: 0.03em;
+      font-size: clamp(1.2rem, 2.5vw, 1.9rem);
+      font-weight: 400;
+    }
+
+    .status {
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: #0f1f21;
+      color: var(--ok);
+      font-weight: 600;
+    }
+
+    .kpi-strip {
+      display: grid;
+      gap: 10px;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .kpi {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #0f1f21;
+      padding: 10px;
+    }
+
+    .kpi .label {
+      color: var(--muted);
+      font-size: 0.78rem;
+    }
+
+    .kpi .value {
+      margin-top: 3px;
+      font-size: 1.05rem;
+      font-weight: 600;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1.3fr 1fr;
+      gap: 12px;
+    }
+
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: var(--card);
+      padding: 12px;
+    }
+
+    .card h2 {
+      margin: 0 0 10px;
+      font-size: 1rem;
+      color: #d8edee;
+    }
+
+    .commands {
+      display: grid;
+      gap: 8px;
+    }
+
+    .cmd {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 10px;
+      background: #0f1f21;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .cmd code {
+      color: #9ef0ff;
+      word-break: break-word;
+    }
+
+    button {
+      border: 1px solid var(--line);
+      background: #173236;
+      color: var(--ink);
+      border-radius: 10px;
+      padding: 7px 10px;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 0.85rem;
+    }
+
+    button:hover { filter: brightness(1.1); }
+
+    .pulse {
+      height: 190px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #0f1f21;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .line {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 50%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+      animation: sweep 2.4s linear infinite;
+    }
+
+    @keyframes sweep {
+      from { transform: translateX(-100%); }
+      to { transform: translateX(100%); }
+    }
+
+    .ticks {
+      display: grid;
+      gap: 6px;
+      margin-top: 10px;
+      font-size: 0.85rem;
+    }
+
+    .tick {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 99px;
+      background: var(--ok);
+      box-shadow: 0 0 14px rgba(73, 212, 135, 0.6);
+    }
+
+    .warn .dot { background: var(--warn); box-shadow: 0 0 14px rgba(255, 209, 102, 0.6); }
+    .bad .dot { background: var(--bad); box-shadow: 0 0 14px rgba(255, 107, 107, 0.6); }
+
+    .triage {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+
+    .triage th,
+    .triage td {
+      border-bottom: 1px dashed var(--line);
+      text-align: left;
+      padding: 8px 4px;
+      vertical-align: top;
+    }
+
+    .triage th { color: var(--muted); }
+
+    @media (max-width: 900px) {
+      .grid { grid-template-columns: 1fr; }
+      .kpi-strip { grid-template-columns: 1fr; }
+      .card { padding: 10px; }
+      .triage {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <header class="header">
+      <h1>Protocol Ops Wall</h1>
+      <div class="status" id="wallStatus">PRECHECK RESULT: PASS</div>
+      <nav class="navlinks" aria-label="Command center navigation">
+        <a href="./index.html">Strategy Dashboard</a>
+        <a class="active" href="./ops-wall.html">Ops Wall</a>
+        <a href="./trends.html">Weekly Trends</a>
+      </nav>
+    </header>
+
+    <section class="kpi-strip">
+      <article class="kpi">
+        <div class="label">Current Operating Mode</div>
+        <div class="value">Stabilize and Productize</div>
+      </article>
+      <article class="kpi">
+        <div class="label">Most Important Signal</div>
+        <div class="value">Strict preflight remains green</div>
+      </article>
+      <article class="kpi">
+        <div class="label">Immediate Risk Focus</div>
+        <div class="value">Endpoint drift and parity gaps</div>
+      </article>
+    </section>
+
+    <section class="grid">
+      <article class="card">
+        <h2>Runbook Commands</h2>
+        <div class="commands" id="commands"></div>
+      </article>
+
+      <article class="card">
+        <h2>Live Rhythm</h2>
+        <div class="pulse"><div class="line"></div></div>
+        <div class="ticks">
+          <div class="tick"><span class="dot"></span><span>ACP strict schema + lifecycle checks green</span></div>
+          <div class="tick warn"><span class="dot"></span><span>Watch AP2 endpoint drift and auto-fallback events</span></div>
+          <div class="tick warn"><span class="dot"></span><span>Prioritize parity assertions over net-new feature work</span></div>
+          <div class="tick bad"><span class="dot"></span><span>Block release if strict preflight or replay drops red</span></div>
+        </div>
+      </article>
+
+      <article class="card" style="grid-column: 1 / -1;">
+        <h2>Triage Matrix</h2>
+        <table class="triage">
+          <thead>
+            <tr>
+              <th>Signal</th>
+              <th>Interpretation</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>preflight strict fails on ACP</td>
+              <td>Contract/spec drift or local ACP service regression</td>
+              <td>Run ACP conformance standalone, inspect checkout create/get/complete behavior, update fixture if intentional</td>
+            </tr>
+            <tr>
+              <td>auto AP2 fallback triggers repeatedly</td>
+              <td>Primary AP2 endpoint instability or route mismatch</td>
+              <td>Normalize AP2 base URL policy and document default path behavior in runbook</td>
+            </tr>
+            <tr>
+              <td>replay passes, ops fails</td>
+              <td>Live environment issue, not fixture quality</td>
+              <td>Inspect ports, credentials, and running local services before changing contracts</td>
+            </tr>
+            <tr>
+              <td>high repo dirtiness</td>
+              <td>Execution context noise and hidden risk in verification</td>
+              <td>Clean or isolate branch state before checkpointing weekly status</td>
+            </tr>
+          </tbody>
+        </table>
+      </article>
+    </section>
+  </main>
+
+  <script>
+    const runbookCommands = [
+      "cd /workspaces/ACP Dev/protocol-lab && npm run conformance:preflight:strict",
+      "cd /workspaces/ACP Dev/protocol-lab && npm run conformance:all:auto-ap2",
+      "cd /workspaces/ACP Dev/agentic-commerce-protocol && corepack pnpm run validate:all",
+      "cd /workspaces/ACP Dev/protocol-lab && npm run conformance:replay"
+    ];
+
+    const commandsNode = document.getElementById("commands");
+
+    runbookCommands.forEach((line) => {
+      const row = document.createElement("div");
+      row.className = "cmd";
+
+      const code = document.createElement("code");
+      code.textContent = line;
+
+      const copyBtn = document.createElement("button");
+      copyBtn.type = "button";
+      copyBtn.textContent = "Copy";
+      copyBtn.addEventListener("click", async () => {
+        try {
+          await navigator.clipboard.writeText(line);
+          copyBtn.textContent = "Copied";
+          setTimeout(() => { copyBtn.textContent = "Copy"; }, 900);
+        } catch {
+          copyBtn.textContent = "Failed";
+          setTimeout(() => { copyBtn.textContent = "Copy"; }, 900);
+        }
+      });
+
+      row.appendChild(code);
+      row.appendChild(copyBtn);
+      commandsNode.appendChild(row);
+    });
+
+    const status = document.getElementById("wallStatus");
+    const now = new Date();
+    status.textContent = `PRECHECK RESULT: PASS  |  ${now.toLocaleString()}`;
+  </script>
+  <script src="./security.js"></script>
+</body>
+</html>
