@@ -1,0 +1,897 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LINE Cards Studio — ACP Command Center</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #102224;
+      --ink: #ebf4f4;
+      --muted: #9bb2b2;
+      --line: #295255;
+      --ok: #49d487;
+      --warn: #ffd166;
+      --bad: #ff6b6b;
+      --accent: #4cc9f0;
+      --accent2: #8cf4b9;
+      --card: rgba(17, 38, 41, 0.84);
+      --card-strong: rgba(15, 31, 33, 0.96);
+      --line-green: #06C755;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      min-height: 100vh;
+      font-family: "JetBrains Mono", monospace;
+      background:
+        radial-gradient(circle at 12% 10%, rgba(76, 201, 240, 0.22), transparent 35%),
+        radial-gradient(circle at 85% 88%, rgba(6, 199, 85, 0.14), transparent 36%),
+        linear-gradient(155deg, #0a1718, var(--bg));
+    }
+
+    .wrap {
+      width: min(1300px, 95vw);
+      margin: 20px auto;
+      display: grid;
+      gap: 12px;
+      animation: enter 620ms ease-out both;
+    }
+
+    @keyframes enter {
+      from { opacity: 0; transform: scale(0.99) translateY(8px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    .header, .card {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: var(--card);
+      padding: 12px;
+      backdrop-filter: blur(2px);
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    h1 {
+      margin: 0;
+      font-family: "DM Serif Display", serif;
+      letter-spacing: 0.03em;
+      font-size: clamp(1.2rem, 2.5vw, 1.9rem);
+      font-weight: 400;
+    }
+
+    .subtitle { margin: 3px 0 0; color: var(--muted); font-size: 0.84rem; }
+
+    .nav {
+      display: flex;
+      gap: 8px;
+      width: 100%;
+      flex-wrap: wrap;
+    }
+
+    .nav a {
+      text-decoration: none;
+      color: var(--ink);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 7px 10px;
+      font-size: 0.83rem;
+      background: #173236;
+    }
+    .nav a.active {
+      background: linear-gradient(90deg, rgba(6, 199, 85, 0.25), rgba(76, 201, 240, 0.2));
+    }
+    .nav a:hover { filter: brightness(1.1); }
+
+    .grid {
+      display: grid;
+      gap: 12px;
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+    }
+
+    .span-3 { grid-column: span 3; }
+    .span-4 { grid-column: span 4; }
+    .span-5 { grid-column: span 5; }
+    .span-6 { grid-column: span 6; }
+    .span-7 { grid-column: span 7; }
+    .span-8 { grid-column: span 8; }
+    .span-12 { grid-column: span 12; }
+
+    .card h2 {
+      margin: 0 0 9px;
+      font-size: 1rem;
+      color: #d8edee;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .mini { font-size: 0.77rem; color: var(--muted); }
+    .pill {
+      display: inline-flex;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 5px 8px;
+      color: var(--muted);
+      background: #0f1f21;
+      font-size: 0.76rem;
+    }
+    .pill.good { color: var(--ok); border-color: rgba(73,212,135,0.3); }
+    .pill.bad { color: var(--bad); border-color: rgba(255,107,107,0.3); }
+    .pill.warn { color: var(--warn); border-color: rgba(255,209,102,0.3); }
+
+    button, .btn {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 7px 14px;
+      background: #173236;
+      color: var(--ink);
+      font: inherit;
+      font-size: 0.83rem;
+      cursor: pointer;
+      text-decoration: none;
+    }
+    button:hover { filter: brightness(1.1); }
+
+    .btn-primary {
+      background: var(--line-green);
+      color: #fff;
+      border-color: var(--line-green);
+      font-weight: 600;
+    }
+
+    .btn-purple {
+      background: #6D28D9;
+      color: #fff;
+      border-color: #6D28D9;
+    }
+
+    .btn-blue {
+      background: #1E3A5F;
+      color: #fff;
+      border-color: #1E3A5F;
+    }
+
+    input[type="text"], input[type="url"], textarea, select {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #0f1f21;
+      color: var(--ink);
+      font: inherit;
+      padding: 8px 10px;
+      font-size: 0.85rem;
+    }
+    textarea { min-height: 72px; resize: vertical; }
+    select { cursor: pointer; }
+
+    .template-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 10px;
+    }
+
+    .template-card {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 10px;
+      background: #0f1f21;
+      cursor: pointer;
+      transition: border-color 180ms, background 180ms;
+    }
+    .template-card:hover {
+      border-color: var(--accent);
+      background: rgba(76, 201, 240, 0.06);
+    }
+    .template-card.selected {
+      border-color: var(--line-green);
+      background: rgba(6, 199, 85, 0.08);
+    }
+    .template-card h3 {
+      margin: 0 0 4px;
+      font-size: 0.88rem;
+      color: #d6f2f4;
+    }
+    .template-card .tid {
+      font-size: 0.72rem;
+      color: var(--muted);
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.68rem;
+      font-weight: 600;
+      margin-left: 6px;
+    }
+    .badge-acp { background: #6D28D9; color: #fff; }
+    .badge-x402 { background: #1E3A5F; color: #fff; }
+    .badge-ops { background: #0F766E; color: #fff; }
+    .badge-user { background: #1D4ED8; color: #fff; }
+
+    .json-preview {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #0a1516;
+      padding: 10px;
+      overflow: auto;
+      max-height: 480px;
+      white-space: pre-wrap;
+      word-break: break-all;
+      font-size: 0.73rem;
+      color: #93dfe6;
+      line-height: 1.4;
+    }
+
+    .vars-grid {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 6px;
+      align-items: center;
+    }
+    .vars-grid label {
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+    .vars-grid input {
+      font-size: 0.78rem;
+      padding: 5px 8px;
+    }
+
+    .button-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+
+    .status-bar {
+      margin-top: 10px;
+      font-size: 0.78rem;
+    }
+
+    .sim-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--line-green);
+      font-size: 0.82rem;
+      text-decoration: none;
+    }
+    .sim-link:hover { text-decoration: underline; }
+
+    .strategy-box {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #0f1f21;
+      padding: 10px;
+      font-size: 0.82rem;
+      line-height: 1.5;
+      color: #cde6e8;
+    }
+    .strategy-box h3 {
+      margin: 0 0 6px;
+      font-size: 0.9rem;
+      color: #d6f2f4;
+    }
+    .strategy-box ul {
+      margin: 4px 0;
+      padding-left: 16px;
+    }
+    .strategy-box li { margin: 3px 0; }
+
+    .footer {
+      color: var(--muted);
+      font-size: 0.8rem;
+      text-align: center;
+    }
+
+    @media (max-width: 980px) {
+      .span-3, .span-4, .span-5, .span-6, .span-7, .span-8 { grid-column: span 12; }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <header class="header">
+      <div>
+        <h1>LINE Cards Studio</h1>
+        <p class="subtitle">Flex Message prototyping for ACP / x402 / Agent Commerce</p>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <a class="sim-link" href="https://developers.line.biz/flex-simulator/" target="_blank" rel="noopener">
+          Open Flex Simulator ↗
+        </a>
+      </div>
+      <nav class="nav">
+        <a href="./index.html">Strategy Dashboard</a>
+        <a href="./ops-wall.html">Ops Wall</a>
+        <a href="./trends.html">Weekly Trends</a>
+        <a class="active" href="./line-cards.html">LINE Cards Studio</a>
+      </nav>
+    </header>
+
+    <section class="grid">
+
+      <!-- Template Gallery -->
+      <article class="card span-5">
+        <h2>Template Gallery <span class="mini" id="templateCount">0 templates</span></h2>
+        <div id="templateGrid" class="template-grid">
+          <div class="template-card"><h3>Loading...</h3></div>
+        </div>
+        <div class="button-row">
+          <button id="refreshBtn" type="button">Refresh Templates</button>
+        </div>
+      </article>
+
+      <!-- Variable Editor -->
+      <article class="card span-7">
+        <h2>Variable Editor <span class="mini" id="selectedName">Select a template</span></h2>
+        <div id="varsEditor" class="vars-grid">
+          <p class="mini" style="grid-column:span 2">Select a template to edit variables</p>
+        </div>
+        <div class="button-row">
+          <button id="renderBtn" type="button" class="btn-purple">Render Preview</button>
+          <button id="copyJsonBtn" type="button">Copy JSON for Simulator</button>
+          <button id="sendLineBtn" type="button" class="btn-primary">Send to LINE</button>
+        </div>
+        <div class="status-bar">
+          <span class="pill" id="studioStatus">Idle</span>
+        </div>
+      </article>
+
+      <!-- JSON Preview -->
+      <article class="card span-6">
+        <h2>Rendered JSON <span class="mini">Paste into Flex Simulator</span></h2>
+        <div id="jsonPreview" class="json-preview">Select a template and click "Render Preview" to see the Flex JSON here.
+
+Tip: Copy this JSON and paste it directly into the LINE Flex Message Simulator at:
+https://developers.line.biz/flex-simulator/</div>
+      </article>
+
+      <!-- Raw Flex Editor -->
+      <article class="card span-6">
+        <h2>Raw Flex Editor <span class="mini">Freeform prototyping</span></h2>
+        <textarea id="rawFlexInput" rows="12" placeholder='Paste raw Flex JSON here to send directly, e.g.:
+{
+  "type": "bubble",
+  "body": {
+    "type": "box",
+    "layout": "vertical",
+    "contents": [
+      { "type": "text", "text": "Hello from ACP!" }
+    ]
+  }
+}'></textarea>
+        <div class="button-row">
+          <button id="sendRawBtn" type="button" class="btn-primary">Send Raw Flex to LINE</button>
+          <button id="copyRawBtn" type="button">Copy for Simulator</button>
+          <button id="formatRawBtn" type="button">Format JSON</button>
+        </div>
+      </article>
+
+      <!-- Bridge Config -->
+      <article class="card span-4">
+        <h2>Bridge Connection <span class="mini">notify-bridge</span></h2>
+        <div style="margin-bottom:8px">
+          <label class="mini" for="bridgeUrl">Bridge URL</label>
+          <input id="bridgeUrl" type="url" placeholder="http://localhost:8787" />
+        </div>
+        <div style="margin-bottom:8px">
+          <label class="mini" for="lineUserId">LINE User ID</label>
+          <input id="lineUserId" type="text" placeholder="Uxxxxxxxx (or use last-user)" />
+        </div>
+        <div style="margin-bottom:8px">
+          <label class="mini">
+            <input id="useLastUser" type="checkbox" checked /> Use last captured user
+          </label>
+        </div>
+        <div class="button-row">
+          <button id="healthBtn" type="button">Check Health</button>
+          <button id="configBtn" type="button">Check Config</button>
+        </div>
+        <div class="status-bar">
+          <span class="pill" id="bridgeStatus">Not checked</span>
+        </div>
+      </article>
+
+      <!-- ACP/Crypto in LINE Strategy -->
+      <article class="card span-8">
+        <h2>ACP + Crypto in LINE <span class="mini">Vision & Integration Points</span></h2>
+        <div class="strategy-box">
+          <h3>How ACP / x402 Flow Into LINE</h3>
+          <ul>
+            <li><strong>Agent Commerce Handoff</strong> — AI agent (ChatGPT) creates ACP checkout → notify buyer via LINE Flex card → buyer taps Approve/Decline → agent completes purchase</li>
+            <li><strong>Checkout Receipt</strong> — After ACP <code>complete</code>, push a receipt card to the buyer's LINE with item, total, merchant, payment method</li>
+            <li><strong>x402 Crypto Payments</strong> — When payment uses x402 (HTTP 402 flow), the confirmation card shows tx hash, network, token, and links to block explorer</li>
+            <li><strong>Order Updates</strong> — Status changes (shipped, delivered, canceled) push real-time cards to LINE</li>
+          </ul>
+          <h3>Integration Architecture</h3>
+          <ul>
+            <li><code>acp-handler</code> webhooks → notify-bridge → LINE Push API → Flex card to buyer</li>
+            <li>x402 payment confirmation → notify-bridge → LINE Flex with tx details</li>
+            <li>LINE webhook → notify-bridge → capture userId for future pushes</li>
+            <li>Future: LINE Login for user identity → map to ACP sessions</li>
+          </ul>
+          <h3>Card Templates for Each ACP State</h3>
+          <ul>
+            <li><span class="badge badge-acp">ACP</span> <code>not_ready_for_payment</code> — Agent Handoff card (pending buyer review)</li>
+            <li><span class="badge badge-acp">ACP</span> <code>ready_for_payment</code> — Approval card with Approve/Decline buttons</li>
+            <li><span class="badge badge-acp">ACP</span> <code>completed</code> — Receipt card with line items + totals</li>
+            <li><span class="badge badge-acp">ACP</span> <code>canceled</code> — Cancellation notice card</li>
+            <li><span class="badge badge-x402">x402</span> Payment confirmed — Crypto tx receipt with explorer link</li>
+            <li><span class="badge badge-ops">OPS</span> Weekly digest / incident alerts — Existing ops templates</li>
+          </ul>
+        </div>
+      </article>
+
+      <!-- Template Inventory -->
+      <article class="card span-12">
+        <h2>Template Inventory <span class="mini">All available cards</span></h2>
+        <table style="width:100%;border-collapse:collapse;font-size:0.82rem">
+          <thead>
+            <tr style="border-bottom:1px dashed var(--line)">
+              <th style="text-align:left;padding:8px 6px;color:var(--muted)">Template</th>
+              <th style="text-align:left;padding:8px 6px;color:var(--muted)">Category</th>
+              <th style="text-align:left;padding:8px 6px;color:var(--muted)">Variables</th>
+              <th style="text-align:left;padding:8px 6px;color:var(--muted)">Use Case</th>
+            </tr>
+          </thead>
+          <tbody id="inventoryBody"></tbody>
+        </table>
+      </article>
+
+    </section>
+
+    <p class="footer">LINE Cards Studio — ACP Command Center • Flex Message Simulator: developers.line.biz/flex-simulator</p>
+  </main>
+
+  <script>
+    const studioKey = "acp-line-cards-studio-v1";
+    const ccKey = "acp-command-center-v1";
+
+    const templateMeta = {
+      "critical-incident": {
+        category: "ops",
+        badge: "OPS",
+        vars: ["title", "body", "severity", "updatedAt", "url"],
+        useCase: "P1/P2 incident alerts to on-call"
+      },
+      "weekly-digest": {
+        category: "ops",
+        badge: "OPS",
+        vars: ["week", "overall", "tests", "riskBuckets", "body", "url"],
+        useCase: "Weekly PM summary pushed to stakeholders"
+      },
+      "end-user-order-update": {
+        category: "user",
+        badge: "USER",
+        vars: ["orderId", "customerName", "body", "status", "eta", "url"],
+        useCase: "Order status updates to end consumers"
+      },
+      "acp-checkout-receipt": {
+        category: "acp",
+        badge: "ACP",
+        vars: ["sessionId", "merchantName", "itemDescription", "subtotal", "tax", "total", "agentName", "paymentMethod", "completedAt", "url"],
+        useCase: "Receipt card after ACP checkout completion"
+      },
+      "x402-payment-confirmation": {
+        category: "x402",
+        badge: "x402",
+        vars: ["amount", "tokenSymbol", "network", "fromAddress", "toAddress", "txHash", "scheme", "confirmedAt", "explorerUrl", "url"],
+        useCase: "Crypto payment receipt via x402 protocol"
+      },
+      "acp-agent-handoff": {
+        category: "acp",
+        badge: "ACP",
+        vars: ["sessionId", "agentName", "itemDescription", "total", "merchantName", "paymentMethod", "approveUrl", "declineUrl"],
+        useCase: "Buyer approval request when agent initiates checkout"
+      }
+    };
+
+    const defaultVarValues = {
+      title: "Protocol bridge degradation detected",
+      body: "ACP adapter parity check drifted outside SLO.",
+      severity: "P1",
+      updatedAt: new Date().toISOString(),
+      url: "https://amerikian.github.io/Personal-Website/docs/command-center/",
+      week: `Week ${Math.ceil((Date.now() - new Date(2026, 0, 1)) / (7 * 86400000))}`,
+      overall: "78%",
+      tests: "7/9 checks complete",
+      riskBuckets: "H:2 M:3 L:4",
+      orderId: "ORDER-48291",
+      customerName: "Alex",
+      status: "Out for delivery",
+      eta: "Today 4:30 PM",
+      sessionId: "cs_live_abc123def456",
+      merchantName: "Acme Digital Goods",
+      itemDescription: "Premium API Access — 12-month license",
+      subtotal: "$299.00",
+      tax: "$26.91",
+      total: "$325.91",
+      agentName: "ChatGPT Shopping Agent",
+      paymentMethod: "Visa •••• 4242",
+      completedAt: new Date().toISOString(),
+      amount: "0.05 ETH",
+      tokenSymbol: "USDC on Base",
+      network: "Base (L2)",
+      fromAddress: "0x1234…abcd",
+      toAddress: "0x5678…ef01",
+      txHash: "0xabc123…def456",
+      scheme: "exact",
+      confirmedAt: new Date().toISOString(),
+      explorerUrl: "https://basescan.org/tx/0xabc123",
+      approveUrl: "https://example.com/approve?session=cs_live_abc123",
+      declineUrl: "https://example.com/decline?session=cs_live_abc123",
+    };
+
+    let studioState = (() => {
+      try {
+        const saved = JSON.parse(localStorage.getItem(studioKey));
+        return {
+          bridgeUrl: saved?.bridgeUrl || "http://localhost:8787",
+          lineUserId: saved?.lineUserId || "",
+          useLastUser: saved?.useLastUser !== false,
+          selectedTemplate: saved?.selectedTemplate || null,
+          customVars: saved?.customVars || {},
+        };
+      } catch {
+        return {
+          bridgeUrl: "http://localhost:8787",
+          lineUserId: "",
+          useLastUser: true,
+          selectedTemplate: null,
+          customVars: {},
+        };
+      }
+    })();
+
+    // Sync bridgeUrl/lineUserId from main command center state
+    try {
+      const ccState = JSON.parse(localStorage.getItem(ccKey));
+      if (ccState?.notify?.bridgeUrl && !localStorage.getItem(studioKey)) {
+        studioState.bridgeUrl = ccState.notify.bridgeUrl;
+      }
+      if (ccState?.notify?.lineUserId && !studioState.lineUserId) {
+        studioState.lineUserId = ccState.notify.lineUserId;
+      }
+    } catch {}
+
+    function saveStudio() {
+      localStorage.setItem(studioKey, JSON.stringify(studioState));
+    }
+
+    function setStatus(elementId, message, type) {
+      const el = document.getElementById(elementId);
+      el.textContent = message;
+      el.className = `pill ${type || ""}`;
+    }
+
+    function badgeHtml(category) {
+      const map = { acp: "badge-acp", x402: "badge-x402", ops: "badge-ops", user: "badge-user" };
+      const label = category.toUpperCase();
+      return `<span class="badge ${map[category] || ""}">${label}</span>`;
+    }
+
+    function getBridgeBase() {
+      return studioState.bridgeUrl.replace(/\/$/, "");
+    }
+
+    async function fetchJson(url, options) {
+      const res = await fetch(url, options);
+      if (!res.ok) {
+        const text = await res.text();
+        throw new Error(`HTTP ${res.status}: ${text}`);
+      }
+      return res.json();
+    }
+
+    async function loadTemplates() {
+      try {
+        const data = await fetchJson(`${getBridgeBase()}/line/flex/templates`);
+        if (!data.ok) throw new Error(data.error || "Failed to load templates");
+        return data.templates;
+      } catch (err) {
+        setStatus("studioStatus", `Templates load failed: ${err.message}`, "bad");
+        return [];
+      }
+    }
+
+    function renderTemplateGrid(templates) {
+      const grid = document.getElementById("templateGrid");
+      grid.innerHTML = "";
+      document.getElementById("templateCount").textContent = `${templates.length} templates`;
+
+      templates.forEach((t) => {
+        const meta = templateMeta[t.id] || { category: "other", badge: "?", vars: [], useCase: "" };
+        const card = document.createElement("div");
+        card.className = `template-card${studioState.selectedTemplate === t.id ? " selected" : ""}`;
+        card.dataset.id = t.id;
+        card.innerHTML = `
+          <h3>${t.name} ${badgeHtml(meta.category)}</h3>
+          <div class="tid">${t.id}</div>
+        `;
+        card.addEventListener("click", () => selectTemplate(t.id, templates));
+        grid.appendChild(card);
+      });
+    }
+
+    function selectTemplate(id, templates) {
+      studioState.selectedTemplate = id;
+      saveStudio();
+
+      document.querySelectorAll(".template-card").forEach((el) => {
+        el.classList.toggle("selected", el.dataset.id === id);
+      });
+
+      const meta = templateMeta[id] || { vars: [], category: "other" };
+      const info = templates.find((t) => t.id === id);
+      document.getElementById("selectedName").textContent = info?.name || id;
+
+      const editor = document.getElementById("varsEditor");
+      editor.innerHTML = "";
+
+      const vars = meta.vars.length > 0 ? meta.vars : Object.keys(defaultVarValues);
+      vars.forEach((varName) => {
+        const savedVal = studioState.customVars[varName];
+        const defaultVal = defaultVarValues[varName] || "";
+        const label = document.createElement("label");
+        label.textContent = varName;
+        const input = document.createElement("input");
+        input.type = "text";
+        input.value = savedVal !== undefined ? savedVal : defaultVal;
+        input.dataset.var = varName;
+        input.addEventListener("input", () => {
+          studioState.customVars[varName] = input.value;
+          saveStudio();
+        });
+        editor.appendChild(label);
+        editor.appendChild(input);
+      });
+    }
+
+    function renderInventory(templates) {
+      const body = document.getElementById("inventoryBody");
+      body.innerHTML = "";
+      templates.forEach((t) => {
+        const meta = templateMeta[t.id] || { category: "other", badge: "?", vars: [], useCase: "Custom template" };
+        const tr = document.createElement("tr");
+        tr.style.borderBottom = "1px dashed var(--line)";
+        tr.innerHTML = `
+          <td style="padding:8px 6px">${t.name} ${badgeHtml(meta.category)}</td>
+          <td style="padding:8px 6px">${meta.category}</td>
+          <td style="padding:8px 6px;font-size:0.72rem;color:var(--muted)">${meta.vars.join(", ") || "—"}</td>
+          <td style="padding:8px 6px">${meta.useCase}</td>
+        `;
+        body.appendChild(tr);
+      });
+    }
+
+    async function renderPreview() {
+      if (!studioState.selectedTemplate) {
+        setStatus("studioStatus", "Select a template first", "warn");
+        return null;
+      }
+
+      try {
+        const vars = {};
+        document.querySelectorAll("#varsEditor input[data-var]").forEach((el) => {
+          vars[el.dataset.var] = el.value;
+        });
+
+        const data = await fetchJson(`${getBridgeBase()}/line/flex/render`, {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ templateId: studioState.selectedTemplate, vars }),
+        });
+
+        if (!data.ok) throw new Error(data.error);
+
+        const json = JSON.stringify(data.payload.contents, null, 2);
+        document.getElementById("jsonPreview").textContent = json;
+        setStatus("studioStatus", `Rendered ${data.payload.name}`, "good");
+        return data.payload;
+      } catch (err) {
+        setStatus("studioStatus", `Render failed: ${err.message}`, "bad");
+        return null;
+      }
+    }
+
+    async function sendToLine(contents, altText) {
+      const base = getBridgeBase();
+      const useLastUser = document.getElementById("useLastUser").checked;
+
+      if (useLastUser) {
+        if (!studioState.selectedTemplate && !contents) {
+          setStatus("studioStatus", "Nothing to send", "warn");
+          return;
+        }
+
+        if (studioState.selectedTemplate && !contents) {
+          const payload = await renderPreview();
+          if (!payload) return;
+          contents = payload.contents;
+          altText = payload.altText;
+        }
+
+        const data = await fetchJson(`${base}/notify/line/flex/last-user`, {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({
+            templateId: studioState.selectedTemplate,
+            vars: studioState.customVars,
+          }),
+        });
+        if (!data.ok) throw new Error(data.error);
+        setStatus("studioStatus", `Sent to LINE user ${data.userId}`, "good");
+      } else {
+        const userId = studioState.lineUserId;
+        if (!userId) {
+          setStatus("studioStatus", "Enter a LINE User ID or enable last-user", "warn");
+          return;
+        }
+
+        await fetchJson(`${base}/notify/line/flex`, {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({
+            userId,
+            templateId: studioState.selectedTemplate,
+            vars: studioState.customVars,
+          }),
+        });
+        setStatus("studioStatus", `Sent to LINE user ${userId}`, "good");
+      }
+    }
+
+    // Event listeners
+    document.getElementById("renderBtn").addEventListener("click", () => renderPreview());
+
+    document.getElementById("copyJsonBtn").addEventListener("click", async () => {
+      const payload = await renderPreview();
+      if (!payload) return;
+      try {
+        await navigator.clipboard.writeText(JSON.stringify(payload.contents, null, 2));
+        setStatus("studioStatus", "JSON copied — paste into Flex Simulator", "good");
+      } catch (err) {
+        setStatus("studioStatus", `Copy failed: ${err.message}`, "bad");
+      }
+    });
+
+    document.getElementById("sendLineBtn").addEventListener("click", async () => {
+      try {
+        await sendToLine();
+      } catch (err) {
+        setStatus("studioStatus", `LINE send failed: ${err.message}`, "bad");
+      }
+    });
+
+    document.getElementById("sendRawBtn").addEventListener("click", async () => {
+      try {
+        const raw = document.getElementById("rawFlexInput").value.trim();
+        if (!raw) {
+          setStatus("studioStatus", "Enter raw Flex JSON first", "warn");
+          return;
+        }
+        const contents = JSON.parse(raw);
+        const base = getBridgeBase();
+        const useLastUser = document.getElementById("useLastUser").checked;
+        const endpoint = useLastUser
+          ? `${base}/line/flex/push-raw/last-user`
+          : `${base}/line/flex/push-raw`;
+
+        const body = useLastUser
+          ? { altText: "ACP Cards Studio test", contents }
+          : { userId: studioState.lineUserId, altText: "ACP Cards Studio test", contents };
+
+        const data = await fetchJson(endpoint, {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify(body),
+        });
+        if (!data.ok) throw new Error(data.error);
+        setStatus("studioStatus", `Raw Flex sent to LINE`, "good");
+      } catch (err) {
+        setStatus("studioStatus", `Raw send failed: ${err.message}`, "bad");
+      }
+    });
+
+    document.getElementById("copyRawBtn").addEventListener("click", async () => {
+      try {
+        const raw = document.getElementById("rawFlexInput").value.trim();
+        if (!raw) { setStatus("studioStatus", "Nothing to copy", "warn"); return; }
+        const parsed = JSON.parse(raw);
+        await navigator.clipboard.writeText(JSON.stringify(parsed, null, 2));
+        setStatus("studioStatus", "Raw JSON copied for Simulator", "good");
+      } catch (err) {
+        setStatus("studioStatus", `Copy failed: ${err.message}`, "bad");
+      }
+    });
+
+    document.getElementById("formatRawBtn").addEventListener("click", () => {
+      try {
+        const raw = document.getElementById("rawFlexInput").value.trim();
+        if (!raw) return;
+        const parsed = JSON.parse(raw);
+        document.getElementById("rawFlexInput").value = JSON.stringify(parsed, null, 2);
+        setStatus("studioStatus", "JSON formatted", "good");
+      } catch (err) {
+        setStatus("studioStatus", `Invalid JSON: ${err.message}`, "bad");
+      }
+    });
+
+    document.getElementById("healthBtn").addEventListener("click", async () => {
+      try {
+        const data = await fetchJson(`${getBridgeBase()}/health`);
+        setStatus("bridgeStatus", data.ok ? "Bridge healthy" : "Bridge error", data.ok ? "good" : "bad");
+      } catch (err) {
+        setStatus("bridgeStatus", `Unreachable: ${err.message}`, "bad");
+      }
+    });
+
+    document.getElementById("configBtn").addEventListener("click", async () => {
+      try {
+        const data = await fetchJson(`${getBridgeBase()}/line/config-check`);
+        const parts = [];
+        if (data.hasLineAccessToken) parts.push("Token:OK");
+        else parts.push("Token:MISSING");
+        if (data.lastUserId) parts.push(`User:${data.lastUserId.slice(0,8)}…`);
+        else parts.push("User:none");
+        setStatus("bridgeStatus", parts.join(" | "), data.hasLineAccessToken ? "good" : "warn");
+      } catch (err) {
+        setStatus("bridgeStatus", `Config check failed: ${err.message}`, "bad");
+      }
+    });
+
+    document.getElementById("refreshBtn").addEventListener("click", async () => {
+      const templates = await loadTemplates();
+      renderTemplateGrid(templates);
+      renderInventory(templates);
+    });
+
+    // Persist bridge config
+    document.getElementById("bridgeUrl").addEventListener("input", (e) => {
+      studioState.bridgeUrl = e.target.value.trim();
+      saveStudio();
+    });
+    document.getElementById("lineUserId").addEventListener("input", (e) => {
+      studioState.lineUserId = e.target.value.trim();
+      saveStudio();
+    });
+    document.getElementById("useLastUser").addEventListener("change", (e) => {
+      studioState.useLastUser = e.target.checked;
+      saveStudio();
+    });
+
+    // Init
+    document.getElementById("bridgeUrl").value = studioState.bridgeUrl;
+    document.getElementById("lineUserId").value = studioState.lineUserId;
+    document.getElementById("useLastUser").checked = studioState.useLastUser;
+
+    (async () => {
+      const templates = await loadTemplates();
+      renderTemplateGrid(templates);
+      renderInventory(templates);
+      if (studioState.selectedTemplate) {
+        selectTemplate(studioState.selectedTemplate, templates);
+      }
+    })();
+  </script>
+  <script src="./security.js"></script>
+</body>
+</html>
