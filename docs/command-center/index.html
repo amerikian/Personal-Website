@@ -564,6 +564,14 @@
           <input id="dashboardUrl" type="url" placeholder="https://your-dashboard" />
         </div>
         <div class="row" style="grid-template-columns:1fr">
+          <label for="flexTemplateId">Flex template</label>
+          <select id="flexTemplateId">
+            <option value="critical-incident">Critical Incident Alert</option>
+            <option value="weekly-digest">Weekly PM Digest</option>
+            <option value="end-user-order-update">End User Order Update</option>
+          </select>
+        </div>
+        <div class="row" style="grid-template-columns:1fr">
           <label for="alertBody">Alert message</label>
           <textarea id="alertBody">Strict preflight status update: PASS</textarea>
         </div>
@@ -571,8 +579,12 @@
           <button id="sendLineBtn" type="button">Send LINE Test</button>
           <button id="discoverLineBtn" type="button">Discover LINE User</button>
           <button id="sendLineLastBtn" type="button">Send to Last LINE User</button>
+          <button id="previewFlexBtn" type="button">Preview Flex</button>
+          <button id="sendLineFlexBtn" type="button">Send Flex to User</button>
+          <button id="sendLineFlexLastBtn" type="button">Send Flex to Last User</button>
           <button id="sendProviderBtn" type="button">Send Provider Test</button>
         </div>
+        <div id="flexPreview" class="digest" style="margin-top:9px; min-height:90px;">Flex preview will appear here.</div>
         <div style="margin-top:9px" class="pill warn" id="lineProvisioningStatus">LINE provisioning: blocked on Business account verification (API currently returns 403)</div>
         <div style="margin-top:9px" class="pill" id="notifyStatus">Idle</div>
       </article>
@@ -623,7 +635,7 @@
         risks: {},
         links: {},
       },
-      notify: { bridgeUrl: "http://localhost:8787", lineUserId: "", dashboardUrl: "" },
+      notify: { bridgeUrl: "http://localhost:8787", lineUserId: "", dashboardUrl: "", flexTemplateId: "critical-incident" },
       ui: { refreshSeconds: 300, compactMode: false },
       history: [],
       risks: [
@@ -1127,6 +1139,59 @@
       ].join("\n");
     }
 
+    function getFlexTemplateLabel(templateId) {
+      if (templateId === "critical-incident") return "Critical Incident Alert";
+      if (templateId === "weekly-digest") return "Weekly PM Digest";
+      if (templateId === "end-user-order-update") return "End User Order Update";
+      return templateId || "unknown";
+    }
+
+    function buildFlexVars() {
+      const now = new Date();
+      const testsDone = state.tests.filter((t) => t.done).length;
+      const riskBuckets = state.risks.reduce((acc, r) => {
+        const score = r.impact * r.probability;
+        if (score >= 15) acc.high += 1;
+        else if (score >= 8) acc.medium += 1;
+        else acc.low += 1;
+        return acc;
+      }, { high: 0, medium: 0, low: 0 });
+
+      return {
+        title: "ACP Command Center",
+        body: document.getElementById("alertBody").value.trim() || "Status update",
+        severity: getOverallScore() < 60 ? "P1" : getOverallScore() < 80 ? "P2" : "P3",
+        updatedAt: now.toLocaleString(),
+        url: state.notify.dashboardUrl || window.location.href,
+        week: getWeekKey(now),
+        overall: `${getOverallScore()}%`,
+        tests: `${testsDone}/${state.tests.length} checks complete`,
+        riskBuckets: `H:${riskBuckets.high} M:${riskBuckets.medium} L:${riskBuckets.low}`,
+        orderId: "ORD-ACP-2026-01",
+        customerName: "Taylor",
+        status: "Preparing shipment",
+        eta: "Tomorrow 10:30 AM",
+      };
+    }
+
+    async function previewFlexTemplate() {
+      const base = state.notify.bridgeUrl.replace(/\/$/, "");
+      const templateId = state.notify.flexTemplateId || "critical-incident";
+      const payload = await postJson(`${base}/line/flex/render`, {
+        templateId,
+        vars: buildFlexVars(),
+      });
+
+      const preview = {
+        template: getFlexTemplateLabel(templateId),
+        altText: payload?.payload?.altText,
+        contents: payload?.payload?.contents,
+      };
+
+      document.getElementById("flexPreview").textContent = JSON.stringify(preview, null, 2);
+      return payload;
+    }
+
     async function postJson(url, payload) {
       const res = await fetch(url, {
         method: "POST",
@@ -1154,6 +1219,7 @@
       document.getElementById("bridgeUrl").value = state.notify.bridgeUrl;
       document.getElementById("lineUserId").value = state.notify.lineUserId;
       document.getElementById("dashboardUrl").value = state.notify.dashboardUrl;
+      document.getElementById("flexTemplateId").value = state.notify.flexTemplateId || "critical-incident";
     }
 
     ["relInput", "interopInput", "speedInput", "signalInput"].forEach((id, idx) => {
@@ -1164,11 +1230,12 @@
       });
     });
 
-    ["bridgeUrl", "lineUserId", "dashboardUrl"].forEach((id) => {
+    ["bridgeUrl", "lineUserId", "dashboardUrl", "flexTemplateId"].forEach((id) => {
       document.getElementById(id).addEventListener("input", (e) => {
         if (id === "bridgeUrl") state.notify.bridgeUrl = e.target.value.trim();
         if (id === "lineUserId") state.notify.lineUserId = e.target.value.trim();
         if (id === "dashboardUrl") state.notify.dashboardUrl = e.target.value.trim();
+        if (id === "flexTemplateId") state.notify.flexTemplateId = e.target.value;
         save();
       });
     });
@@ -1290,6 +1357,42 @@
         setNotifyStatus("LINE alert sent to last discovered user", true);
       } catch (error) {
         setNotifyStatus(`LINE last-user failed: ${String(error)}`, false);
+      }
+    });
+
+    document.getElementById("previewFlexBtn").addEventListener("click", async () => {
+      try {
+        await previewFlexTemplate();
+        setNotifyStatus("Flex preview updated", true);
+      } catch (error) {
+        setNotifyStatus(`Flex preview failed: ${String(error)}`, false);
+      }
+    });
+
+    document.getElementById("sendLineFlexBtn").addEventListener("click", async () => {
+      try {
+        const base = state.notify.bridgeUrl.replace(/\/$/, "");
+        await postJson(`${base}/notify/line/flex`, {
+          userId: state.notify.lineUserId,
+          templateId: state.notify.flexTemplateId || "critical-incident",
+          vars: buildFlexVars(),
+        });
+        setNotifyStatus(`Flex sent to configured LINE user (${getFlexTemplateLabel(state.notify.flexTemplateId)})`, true);
+      } catch (error) {
+        setNotifyStatus(`LINE flex failed: ${String(error)}`, false);
+      }
+    });
+
+    document.getElementById("sendLineFlexLastBtn").addEventListener("click", async () => {
+      try {
+        const base = state.notify.bridgeUrl.replace(/\/$/, "");
+        await postJson(`${base}/notify/line/flex/last-user`, {
+          templateId: state.notify.flexTemplateId || "critical-incident",
+          vars: buildFlexVars(),
+        });
+        setNotifyStatus(`Flex sent to last discovered LINE user (${getFlexTemplateLabel(state.notify.flexTemplateId)})`, true);
+      } catch (error) {
+        setNotifyStatus(`LINE flex last-user failed: ${String(error)}`, false);
       }
     });
 
