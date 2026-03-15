@@ -3,19 +3,42 @@
     "reliability": 84,
     "interop": 72,
     "speed": 90,
-    "signal": 87
+    "signal": 87,
+    "releaseReadiness": 72
   },
   "meta": {
-    "generatedAt": "2026-03-15T13:34:17.491Z",
+    "generatedAt": "2026-03-15T13:50:17.067Z",
     "source": "github:amerikian/acp-dev-workspace",
     "dataQuality": "high",
     "note": "Reliability estimated from repository freshness and issue/PR pressure due to limited workflow history. Interop estimated because no recent relevant workflow run was available.",
+    "links": {
+      "repo": "https://github.com/amerikian/acp-dev-workspace",
+      "pulls": "https://github.com/amerikian/acp-dev-workspace/pulls",
+      "issues": "https://github.com/amerikian/acp-dev-workspace/issues",
+      "actions": "https://github.com/amerikian/acp-dev-workspace/actions"
+    },
     "telemetry": {
       "openPrs": 0,
       "openIssues": 0,
       "freshnessDays": 0,
       "relevantCompletedRuns": 0,
-      "relevantSuccessfulRuns": 0
+      "relevantSuccessfulRuns": 0,
+      "ciFailureStreak": 0,
+      "ciSuccessRate7d": 0,
+      "ciSuccessRate30d": 0,
+      "prMedianAgeDays": 0,
+      "issueMedianAgeDays": 0,
+      "staleOpenPrs7d": 0,
+      "staleOpenIssues14d": 0,
+      "staleOpenIssues30d": 0,
+      "mergedPrs7d": 0,
+      "mergedPrs30d": 0
+    },
+    "risks": {
+      "ciFailureStreakRisk": "low",
+      "stalenessRisk": "low",
+      "qualityConfidenceRisk": "low",
+      "backlogAgingRisk": "low"
     }
   }
 }
