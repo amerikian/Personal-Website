@@ -1,0 +1,888 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ACP Strategy Command Center</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #102224;
+      --ink: #ebf4f4;
+      --muted: #9bb2b2;
+      --line: #295255;
+      --ok: #49d487;
+      --warn: #ffd166;
+      --bad: #ff6b6b;
+      --accent: #4cc9f0;
+      --accent2: #8cf4b9;
+      --card: rgba(17, 38, 41, 0.84);
+      --card-strong: rgba(15, 31, 33, 0.96);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      min-height: 100vh;
+      font-family: "JetBrains Mono", monospace;
+      background:
+        radial-gradient(circle at 12% 10%, rgba(76, 201, 240, 0.22), transparent 35%),
+        radial-gradient(circle at 85% 88%, rgba(255, 209, 102, 0.16), transparent 36%),
+        linear-gradient(155deg, #0a1718, var(--bg));
+    }
+
+    .wrap {
+      width: min(1250px, 95vw);
+      margin: 20px auto;
+      display: grid;
+      gap: 12px;
+      animation: enter 620ms ease-out both;
+    }
+
+    @keyframes enter {
+      from { opacity: 0; transform: scale(0.99) translateY(8px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    .header, .card {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: var(--card);
+      padding: 12px;
+      backdrop-filter: blur(2px);
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    h1 {
+      margin: 0;
+      font-family: "DM Serif Display", serif;
+      letter-spacing: 0.03em;
+      font-size: clamp(1.2rem, 2.5vw, 1.9rem);
+      font-weight: 400;
+    }
+
+    .subtitle {
+      margin: 3px 0 0;
+      color: var(--muted);
+      font-size: 0.84rem;
+    }
+
+    .toolbar {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      width: 100%;
+    }
+
+    .nav {
+      display: flex;
+      gap: 8px;
+      width: 100%;
+      flex-wrap: wrap;
+    }
+
+    .chip, button, .nav a {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 7px 10px;
+      background: #173236;
+      color: var(--ink);
+      font: inherit;
+      font-size: 0.83rem;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .nav a.active {
+      background: linear-gradient(90deg, rgba(76, 201, 240, 0.2), rgba(73, 212, 135, 0.2));
+    }
+
+    button:hover, .nav a:hover {
+      filter: brightness(1.1);
+    }
+
+    .grid {
+      display: grid;
+      gap: 12px;
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+    }
+
+    .span-3 { grid-column: span 3; }
+    .span-4 { grid-column: span 4; }
+    .span-5 { grid-column: span 5; }
+    .span-6 { grid-column: span 6; }
+    .span-7 { grid-column: span 7; }
+    .span-8 { grid-column: span 8; }
+    .span-12 { grid-column: span 12; }
+
+    .card h2 {
+      margin: 0 0 9px;
+      font-size: 1rem;
+      color: #d8edee;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .mini {
+      font-size: 0.77rem;
+      color: var(--muted);
+    }
+
+    .metric {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 10px;
+      background: var(--card-strong);
+      height: 100%;
+    }
+
+    .metric .value {
+      font-size: clamp(1.2rem, 2.2vw, 1.8rem);
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      margin-top: 3px;
+    }
+
+    .good { color: var(--ok); }
+    .warn { color: var(--warn); }
+    .bad { color: var(--bad); }
+
+    .pill {
+      display: inline-flex;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 5px 8px;
+      color: var(--muted);
+      background: #0f1f21;
+      font-size: 0.76rem;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 7px;
+      font-size: 0.85rem;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--accent2);
+    }
+
+    input[type="text"], input[type="url"], textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #0f1f21;
+      color: var(--ink);
+      font: inherit;
+      padding: 8px 10px;
+    }
+
+    textarea {
+      min-height: 72px;
+      resize: vertical;
+    }
+
+    .bar {
+      margin-top: 8px;
+      height: 9px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: #0d1a1c;
+      overflow: hidden;
+    }
+
+    .bar i {
+      display: block;
+      height: 100%;
+      width: 0;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      transition: width 220ms ease;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.86rem;
+    }
+
+    th, td {
+      text-align: left;
+      padding: 8px 6px;
+      border-bottom: 1px dashed var(--line);
+      vertical-align: top;
+    }
+
+    th { color: var(--muted); }
+
+    .checklist {
+      display: grid;
+      gap: 8px;
+    }
+
+    .check {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 8px;
+      background: #0f1f21;
+      font-size: 0.85rem;
+    }
+
+    .check input { transform: scale(1.08); }
+
+    .opportunity {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #0f1f21;
+      padding: 9px;
+      margin-bottom: 8px;
+    }
+
+    .opportunity h3 {
+      margin: 0 0 4px;
+      font-size: 0.9rem;
+      color: #d6f2f4;
+    }
+
+    .meta {
+      color: var(--muted);
+      font-size: 0.78rem;
+    }
+
+    canvas {
+      width: 100%;
+      max-height: 280px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #0f1f21;
+    }
+
+    .button-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .button-row button {
+      flex: 1;
+      min-width: 130px;
+    }
+
+    .digest {
+      margin-top: 9px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #0f1f21;
+      padding: 10px;
+      min-height: 126px;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      color: #d6f4f5;
+      font-size: 0.78rem;
+    }
+
+    .insight-list {
+      margin: 0;
+      padding-left: 18px;
+      color: #cde6e8;
+      font-size: 0.84rem;
+      line-height: 1.45;
+    }
+
+    .insight-list li { margin: 4px 0; }
+
+    .footer {
+      color: var(--muted);
+      font-size: 0.8rem;
+      text-align: center;
+    }
+
+    @media (max-width: 980px) {
+      .span-3, .span-4, .span-5, .span-6, .span-7, .span-8 { grid-column: span 12; }
+      table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <header class="header">
+      <div>
+        <h1>Strategy Command Center</h1>
+        <p class="subtitle">Top-level execution intelligence for ACP/AP2/x402</p>
+      </div>
+      <div class="toolbar">
+        <span class="chip" id="clock">Syncing...</span>
+        <button id="resetBtn" type="button">Reset</button>
+        <button id="exportBtn" type="button">Export</button>
+        <button id="importBtn" type="button">Import</button>
+      </div>
+      <nav class="nav" aria-label="Command center navigation">
+        <a class="active" href="./index.html">Strategy Dashboard</a>
+        <a href="./ops-wall.html">Ops Wall</a>
+        <a href="./trends.html">Weekly Trends</a>
+      </nav>
+    </header>
+
+    <section class="grid">
+      <article class="card span-3 metric">
+        <h2>Overall Health <span class="mini">Auto</span></h2>
+        <div class="value" id="overallHealth">0%</div>
+        <div class="bar"><i id="overallBar"></i></div>
+        <span class="pill" id="healthLabel">Waiting for inputs</span>
+      </article>
+
+      <article class="card span-3 metric">
+        <h2>Strict Preflight <span class="mini">Current</span></h2>
+        <div class="value good">PASS</div>
+        <span class="pill">conformance:preflight:strict</span>
+      </article>
+
+      <article class="card span-3 metric">
+        <h2>Repo Hygiene <span class="mini">Current</span></h2>
+        <div class="value" id="repoHygiene">7/8 clean</div>
+        <span class="pill warn">1 dirty repo (acp-handler)</span>
+      </article>
+
+      <article class="card span-3 metric">
+        <h2>Top Constraint <span class="mini">Assessment</span></h2>
+        <div class="value" style="font-size:1rem">Productization</div>
+        <span class="pill warn">scope, parity, release gates</span>
+      </article>
+
+      <article class="card span-5">
+        <h2>KPI Controls <span class="mini">Interactive</span></h2>
+        <div class="row"><label for="relInput">Reliability pass rate (14d)</label><output id="relOut">95%</output></div>
+        <input id="relInput" type="range" min="0" max="100" value="95" />
+
+        <div class="row"><label for="interopInput">Interoperability parity</label><output id="interopOut">72%</output></div>
+        <input id="interopInput" type="range" min="0" max="100" value="72" />
+
+        <div class="row"><label for="speedInput">Onboarding speed</label><output id="speedOut">68%</output></div>
+        <input id="speedInput" type="range" min="0" max="100" value="68" />
+
+        <div class="row"><label for="signalInput">External pilot readiness</label><output id="signalOut">42%</output></div>
+        <input id="signalInput" type="range" min="0" max="100" value="42" />
+      </article>
+
+      <article class="card span-7">
+        <h2>Risk Matrix <span class="mini">Impact x Probability</span></h2>
+        <canvas id="riskCanvas" width="800" height="280"></canvas>
+      </article>
+
+      <article class="card span-6">
+        <h2>Active Risks <span class="mini">What to de-risk first</span></h2>
+        <table id="riskTable">
+          <thead>
+            <tr><th>Risk</th><th>Impact</th><th>Probability</th><th>Score</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </article>
+
+      <article class="card span-6">
+        <h2>Testing Status <span class="mini">Execution confidence</span></h2>
+        <div class="checklist" id="testList"></div>
+        <div style="margin-top:9px" class="pill" id="testSummary">0/0 checks complete</div>
+      </article>
+
+      <article class="card span-8">
+        <h2>Opportunity Backlog <span class="mini">ICE-style ordering</span></h2>
+        <div id="opportunities"></div>
+      </article>
+
+      <article class="card span-4">
+        <h2>Situation Insights <span class="mini">Auto-generated</span></h2>
+        <ul class="insight-list" id="snapshotList"></ul>
+      </article>
+
+      <article class="card span-4">
+        <h2>Alert Bridge <span class="mini">LINE + Provider</span></h2>
+        <div class="row" style="grid-template-columns:1fr">
+          <label for="bridgeUrl">Bridge URL</label>
+          <input id="bridgeUrl" type="url" placeholder="http://localhost:8787" />
+        </div>
+        <div class="row" style="grid-template-columns:1fr">
+          <label for="lineUserId">LINE User ID (optional)</label>
+          <input id="lineUserId" type="text" placeholder="Uxxxxxxxx" />
+        </div>
+        <div class="row" style="grid-template-columns:1fr">
+          <label for="dashboardUrl">Dashboard URL (optional)</label>
+          <input id="dashboardUrl" type="url" placeholder="https://your-dashboard" />
+        </div>
+        <div class="row" style="grid-template-columns:1fr">
+          <label for="alertBody">Alert message</label>
+          <textarea id="alertBody">Strict preflight status update: PASS</textarea>
+        </div>
+        <div class="button-row">
+          <button id="sendLineBtn" type="button">Send LINE Test</button>
+          <button id="sendProviderBtn" type="button">Send Provider Test</button>
+        </div>
+        <div style="margin-top:9px" class="pill" id="notifyStatus">Idle</div>
+      </article>
+
+      <article class="card span-8">
+        <h2>Weekly PM Digest <span class="mini">Copy-ready leadership update</span></h2>
+        <div class="button-row">
+          <button id="genDigestBtn" type="button">Generate Digest</button>
+          <button id="copyDigestBtn" type="button">Copy Digest</button>
+        </div>
+        <div id="digestBox" class="digest">Click Generate Digest to create your weekly update text.</div>
+      </article>
+
+      <article class="card span-12">
+        <h2>Focus This Week <span class="mini">Outcome-based</span></h2>
+        <table>
+          <thead><tr><th>Outcome</th><th>Definition of Done</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td>MVP contract freeze</td><td>Fields, operations, non-goals documented in protocol-lab docs</td><td class="warn">In Progress</td></tr>
+            <tr><td>Parity assertions in smoke harness</td><td>ACP/AP2/x402 semantic checks in strict preflight</td><td class="warn">In Progress</td></tr>
+            <tr><td>One-command runbook</td><td>Bring-up + triage table + expected output captured</td><td class="bad">Not Started</td></tr>
+          </tbody>
+        </table>
+      </article>
+    </section>
+
+    <p class="footer">State persists in localStorage for weekly review continuity.</p>
+  </main>
+
+  <script>
+    const key = "acp-command-center-v1";
+
+    const defaults = {
+      kpis: { reliability: 95, interop: 72, speed: 68, signal: 42 },
+      notify: { bridgeUrl: "http://localhost:8787", lineUserId: "", dashboardUrl: "" },
+      history: [],
+      risks: [
+        { name: "AP2 endpoint drift (:8080 vs :8000)", impact: 4, probability: 3 },
+        { name: "Spec-adapter-demos drift", impact: 5, probability: 3 },
+        { name: "Hidden local state (ports/creds/cache)", impact: 3, probability: 4 },
+        { name: "Solo bandwidth bottleneck", impact: 5, probability: 2 }
+      ],
+      tests: [
+        { id: "acp-schema", label: "ACP schema conformance", done: true },
+        { id: "strict-preflight", label: "Strict preflight end-to-end", done: true },
+        { id: "parity-assertions", label: "Semantic parity assertions", done: false },
+        { id: "runbook-verified", label: "Runbook validated from clean env", done: false },
+        { id: "external-pilot", label: "External pilot dry run", done: false }
+      ],
+      opportunities: [
+        { title: "One-command local stack launcher", impact: 9, confidence: 8, ease: 7 },
+        { title: "Parity fixture expansion (negative paths)", impact: 8, confidence: 8, ease: 6 },
+        { title: "External pilot quickstart kit", impact: 10, confidence: 6, ease: 4 }
+      ]
+    };
+
+    const state = (() => {
+      try {
+        const saved = JSON.parse(localStorage.getItem(key));
+        if (!saved) return defaults;
+        return {
+          ...defaults,
+          ...saved,
+          kpis: { ...defaults.kpis, ...(saved.kpis || {}) },
+          notify: { ...defaults.notify, ...(saved.notify || {}) },
+          history: Array.isArray(saved.history) ? saved.history : defaults.history,
+          risks: Array.isArray(saved.risks) ? saved.risks : defaults.risks,
+          tests: Array.isArray(saved.tests) ? saved.tests : defaults.tests,
+          opportunities: Array.isArray(saved.opportunities) ? saved.opportunities : defaults.opportunities,
+        };
+      } catch {
+        return defaults;
+      }
+    })();
+
+    function save() {
+      localStorage.setItem(key, JSON.stringify(state));
+      render();
+    }
+
+    function getOverallScore() {
+      return Math.round((state.kpis.reliability + state.kpis.interop + state.kpis.speed + state.kpis.signal) / 4);
+    }
+
+    function scoreBand(v) {
+      if (v >= 80) return ["good", "Strong"];
+      if (v >= 60) return ["warn", "Watch"];
+      return ["bad", "At Risk"];
+    }
+
+    function riskColor(score) {
+      if (score >= 15) return "#ff6b6b";
+      if (score >= 8) return "#ffd166";
+      return "#49d487";
+    }
+
+    function getWeekKey(date = new Date()) {
+      const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+      const day = d.getUTCDay() || 7;
+      d.setUTCDate(d.getUTCDate() + 4 - day);
+      const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+      const weekNo = Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+      return `${d.getUTCFullYear()}-W${String(weekNo).padStart(2, "0")}`;
+    }
+
+    function ensureWeeklySnapshot() {
+      const currentWeek = getWeekKey();
+      if (state.history.some((item) => item.week === currentWeek)) return;
+
+      const riskBuckets = state.risks.reduce((acc, r) => {
+        const score = r.impact * r.probability;
+        if (score >= 15) acc.high += 1;
+        else if (score >= 8) acc.medium += 1;
+        else acc.low += 1;
+        return acc;
+      }, { high: 0, medium: 0, low: 0 });
+
+      const testsDone = state.tests.filter((t) => t.done).length;
+      state.history.push({
+        week: currentWeek,
+        capturedAt: new Date().toISOString(),
+        overall: getOverallScore(),
+        kpis: { ...state.kpis },
+        testsDone,
+        testsTotal: state.tests.length,
+        risks: riskBuckets,
+      });
+
+      state.history = state.history.slice(-26);
+      localStorage.setItem(key, JSON.stringify(state));
+    }
+
+    function renderRisks() {
+      const body = document.querySelector("#riskTable tbody");
+      body.innerHTML = "";
+      state.risks.forEach((r, i) => {
+        const score = r.impact * r.probability;
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${r.name}</td>
+          <td><input data-i="${i}" data-k="impact" type="range" min="1" max="5" value="${r.impact}" /></td>
+          <td><input data-i="${i}" data-k="probability" type="range" min="1" max="5" value="${r.probability}" /></td>
+          <td style="color:${riskColor(score)}">${score}</td>
+        `;
+        body.appendChild(tr);
+      });
+
+      body.querySelectorAll("input").forEach((el) => {
+        el.addEventListener("input", () => {
+          const i = Number(el.dataset.i);
+          const k = el.dataset.k;
+          state.risks[i][k] = Number(el.value);
+          save();
+        });
+      });
+    }
+
+    function renderRiskCanvas() {
+      const canvas = document.getElementById("riskCanvas");
+      const ctx = canvas.getContext("2d");
+      const w = canvas.width;
+      const h = canvas.height;
+      ctx.clearRect(0, 0, w, h);
+
+      ctx.strokeStyle = "#295255";
+      ctx.lineWidth = 1;
+      for (let i = 1; i <= 5; i++) {
+        const x = (i / 5) * (w - 70) + 35;
+        const y = h - ((i / 5) * (h - 45) + 25);
+        ctx.beginPath(); ctx.moveTo(x, 20); ctx.lineTo(x, h - 25); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(35, y); ctx.lineTo(w - 35, y); ctx.stroke();
+      }
+
+      ctx.fillStyle = "#9bb2b2";
+      ctx.font = "12px JetBrains Mono";
+      ctx.fillText("Probability", 40, 16);
+      ctx.fillText("Impact", w - 70, h - 6);
+
+      state.risks.forEach((r, idx) => {
+        const x = (r.probability / 5) * (w - 70) + 35;
+        const y = h - ((r.impact / 5) * (h - 45) + 25);
+        const score = r.impact * r.probability;
+        const radius = 7 + score / 3;
+
+        ctx.beginPath();
+        ctx.fillStyle = riskColor(score);
+        ctx.globalAlpha = 0.86;
+        ctx.arc(x, y, radius, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalAlpha = 1;
+
+        ctx.fillStyle = "#102224";
+        ctx.font = "11px JetBrains Mono";
+        ctx.fillText(String(idx + 1), x - 3, y + 4);
+      });
+    }
+
+    function renderTests() {
+      const list = document.getElementById("testList");
+      list.innerHTML = "";
+      state.tests.forEach((t, i) => {
+        const row = document.createElement("label");
+        row.className = "check";
+        row.innerHTML = `<input type="checkbox" data-i="${i}" ${t.done ? "checked" : ""} /> <span>${t.label}</span>`;
+        list.appendChild(row);
+      });
+
+      list.querySelectorAll("input").forEach((el) => {
+        el.addEventListener("change", () => {
+          const i = Number(el.dataset.i);
+          state.tests[i].done = el.checked;
+          save();
+        });
+      });
+
+      const done = state.tests.filter((t) => t.done).length;
+      document.getElementById("testSummary").textContent = `${done}/${state.tests.length} checks complete`;
+    }
+
+    function renderOpportunities() {
+      const wrap = document.getElementById("opportunities");
+      wrap.innerHTML = "";
+      const sorted = [...state.opportunities].sort((a, b) => ((b.impact + b.confidence + b.ease) / 3) - ((a.impact + a.confidence + a.ease) / 3));
+      sorted.forEach((o, i) => {
+        const score = ((o.impact + o.confidence + o.ease) / 3).toFixed(1);
+        const card = document.createElement("article");
+        card.className = "opportunity";
+        card.innerHTML = `<h3>${i + 1}. ${o.title}</h3><div class="meta">Impact ${o.impact} / Confidence ${o.confidence} / Ease ${o.ease} -> Score ${score}</div>`;
+        wrap.appendChild(card);
+      });
+    }
+
+    function renderInsights() {
+      const list = document.getElementById("snapshotList");
+      const overall = getOverallScore();
+      const testsDone = state.tests.filter((t) => t.done).length;
+      const topRisk = Math.max(...state.risks.map((r) => r.impact * r.probability));
+      const topOpp = [...state.opportunities].sort((a, b) => ((b.impact + b.confidence + b.ease) - (a.impact + a.confidence + a.ease)))[0];
+      const items = [
+        `Overall health is ${overall}%. ${overall >= 80 ? "Execution quality is strong." : "Tighten weekly focus for better execution confidence."}`,
+        `Testing completion is ${testsDone}/${state.tests.length}.`,
+        `Highest risk score is ${topRisk}; target any score >= 12 first.`,
+        `Best leverage this week: ${topOpp ? topOpp.title : "n/a"}.`,
+      ];
+      list.innerHTML = items.map((item) => `<li>${item}</li>`).join("");
+    }
+
+    function renderKpis() {
+      const map = [
+        ["relInput", "relOut", "reliability"],
+        ["interopInput", "interopOut", "interop"],
+        ["speedInput", "speedOut", "speed"],
+        ["signalInput", "signalOut", "signal"],
+      ];
+
+      map.forEach(([inputId, outId, k]) => {
+        const input = document.getElementById(inputId);
+        const out = document.getElementById(outId);
+        input.value = state.kpis[k];
+        out.textContent = `${state.kpis[k]}%`;
+      });
+
+      const overall = getOverallScore();
+      const [band, label] = scoreBand(overall);
+      const health = document.getElementById("overallHealth");
+      health.textContent = `${overall}%`;
+      health.className = `value ${band}`;
+      document.getElementById("overallBar").style.width = `${overall}%`;
+
+      const badge = document.getElementById("healthLabel");
+      badge.textContent = label;
+      badge.className = `pill ${band}`;
+    }
+
+    function renderClock() {
+      document.getElementById("clock").textContent = `Updated ${new Date().toLocaleString()}`;
+    }
+
+    function setNotifyStatus(message, ok = true) {
+      const node = document.getElementById("notifyStatus");
+      node.textContent = message;
+      node.className = `pill ${ok ? "good" : "bad"}`;
+    }
+
+    function generateDigestText() {
+      const overall = getOverallScore();
+      const testsDone = state.tests.filter((t) => t.done).length;
+      const riskBuckets = state.risks.reduce((acc, r) => {
+        const score = r.impact * r.probability;
+        if (score >= 15) acc.high += 1;
+        else if (score >= 8) acc.medium += 1;
+        else acc.low += 1;
+        return acc;
+      }, { high: 0, medium: 0, low: 0 });
+
+      const topOpp = [...state.opportunities]
+        .sort((a, b) => ((b.impact + b.confidence + b.ease) / 3) - ((a.impact + a.confidence + a.ease) / 3))
+        .slice(0, 2)
+        .map((o) => `${o.title} (score ${((o.impact + o.confidence + o.ease) / 3).toFixed(1)})`)
+        .join("; ");
+
+      return [
+        "# ACP Weekly Command Center Digest",
+        "",
+        `Date: ${new Date().toLocaleString()}`,
+        `Overall health: ${overall}%`,
+        `KPIs: reliability ${state.kpis.reliability}%, interop ${state.kpis.interop}%, speed ${state.kpis.speed}%, pilot readiness ${state.kpis.signal}%`,
+        `Testing: ${testsDone}/${state.tests.length} checks complete`,
+        `Risk buckets: High ${riskBuckets.high}, Medium ${riskBuckets.medium}, Low ${riskBuckets.low}`,
+        `Top opportunities: ${topOpp || "n/a"}`,
+        "",
+        "Suggested focus next week:",
+        "1. Raise pilot readiness through a hardened quickstart and runbook.",
+        "2. Convert remaining smoke checks to semantic parity assertions.",
+        "3. Keep strict preflight pass rate above 95%.",
+      ].join("\n");
+    }
+
+    async function postJson(url, payload) {
+      const res = await fetch(url, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) {
+        const text = await res.text();
+        throw new Error(`HTTP ${res.status}: ${text}`);
+      }
+      return res.json();
+    }
+
+    function render() {
+      renderClock();
+      renderKpis();
+      renderRisks();
+      renderRiskCanvas();
+      renderTests();
+      renderOpportunities();
+      renderInsights();
+      document.getElementById("bridgeUrl").value = state.notify.bridgeUrl;
+      document.getElementById("lineUserId").value = state.notify.lineUserId;
+      document.getElementById("dashboardUrl").value = state.notify.dashboardUrl;
+    }
+
+    ["relInput", "interopInput", "speedInput", "signalInput"].forEach((id, idx) => {
+      const keys = ["reliability", "interop", "speed", "signal"];
+      document.getElementById(id).addEventListener("input", (e) => {
+        state.kpis[keys[idx]] = Number(e.target.value);
+        save();
+      });
+    });
+
+    ["bridgeUrl", "lineUserId", "dashboardUrl"].forEach((id) => {
+      document.getElementById(id).addEventListener("input", (e) => {
+        if (id === "bridgeUrl") state.notify.bridgeUrl = e.target.value.trim();
+        if (id === "lineUserId") state.notify.lineUserId = e.target.value.trim();
+        if (id === "dashboardUrl") state.notify.dashboardUrl = e.target.value.trim();
+        save();
+      });
+    });
+
+    document.getElementById("resetBtn").addEventListener("click", () => {
+      if (!confirm("Reset all dashboard values to defaults?")) return;
+      localStorage.removeItem(key);
+      location.reload();
+    });
+
+    document.getElementById("exportBtn").addEventListener("click", () => {
+      const blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "acp-command-center-export.json";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    });
+
+    document.getElementById("importBtn").addEventListener("click", () => {
+      const picker = document.createElement("input");
+      picker.type = "file";
+      picker.accept = "application/json,.json";
+      picker.addEventListener("change", async () => {
+        const file = picker.files?.[0];
+        if (!file) return;
+        try {
+          const text = await file.text();
+          const parsed = JSON.parse(text);
+          localStorage.setItem(key, JSON.stringify(parsed));
+          location.reload();
+        } catch (error) {
+          setNotifyStatus(`Import failed: ${String(error)}`, false);
+        }
+      });
+      picker.click();
+    });
+
+    document.getElementById("sendLineBtn").addEventListener("click", async () => {
+      try {
+        const base = state.notify.bridgeUrl.replace(/\/$/, "");
+        await postJson(`${base}/notify/line`, {
+          userId: state.notify.lineUserId,
+          title: "ACP Command Center",
+          body: document.getElementById("alertBody").value.trim(),
+          url: state.notify.dashboardUrl || undefined,
+        });
+        setNotifyStatus("LINE alert sent", true);
+      } catch (error) {
+        setNotifyStatus(`LINE failed: ${String(error)}`, false);
+      }
+    });
+
+    document.getElementById("sendProviderBtn").addEventListener("click", async () => {
+      try {
+        const base = state.notify.bridgeUrl.replace(/\/$/, "");
+        await postJson(`${base}/notify/imessage-provider`, {
+          title: "ACP Command Center",
+          body: document.getElementById("alertBody").value.trim(),
+          severity: getOverallScore() < 60 ? "high" : "info",
+          url: state.notify.dashboardUrl || undefined,
+        });
+        setNotifyStatus("Provider alert sent", true);
+      } catch (error) {
+        setNotifyStatus(`Provider failed: ${String(error)}`, false);
+      }
+    });
+
+    document.getElementById("genDigestBtn").addEventListener("click", () => {
+      document.getElementById("digestBox").textContent = generateDigestText();
+    });
+
+    document.getElementById("copyDigestBtn").addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(document.getElementById("digestBox").textContent);
+        setNotifyStatus("Digest copied", true);
+      } catch (error) {
+        setNotifyStatus(`Copy failed: ${String(error)}`, false);
+      }
+    });
+
+    ensureWeeklySnapshot();
+    render();
+  </script>
+  <script src="./security.js"></script>
+</body>
+</html>
