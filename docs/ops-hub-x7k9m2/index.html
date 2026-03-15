@@ -477,8 +477,8 @@
 
       <article class="card span-3 metric">
         <h2>Repo Hygiene <span class="mini">Current</span></h2>
-        <div class="value" id="repoHygiene">7/8 clean</div>
-        <a id="repoLink" class="pill warn" href="https://github.com/amerikian/acp-dev-workspace" target="_blank" rel="noreferrer">1 dirty repo (acp-handler)</a>
+        <div class="value" id="repoHygiene">8/8 clean</div>
+        <a id="repoLink" class="pill good" href="https://github.com/amerikian/acp-dev-workspace" target="_blank" rel="noreferrer">workspace checkpoint clean</a>
       </article>
 
       <article class="card span-3 metric">
@@ -573,6 +573,7 @@
           <button id="sendLineLastBtn" type="button">Send to Last LINE User</button>
           <button id="sendProviderBtn" type="button">Send Provider Test</button>
         </div>
+        <div style="margin-top:9px" class="pill warn" id="lineProvisioningStatus">LINE provisioning: blocked on Business account verification (API currently returns 403)</div>
         <div style="margin-top:9px" class="pill" id="notifyStatus">Idle</div>
       </article>
 
@@ -592,7 +593,8 @@
           <tbody>
             <tr><td>MVP contract freeze</td><td>Fields, operations, non-goals documented in protocol-lab docs</td><td class="warn">In Progress</td></tr>
             <tr><td>Parity assertions in smoke harness</td><td>ACP/AP2/x402 semantic checks in strict preflight</td><td class="warn">In Progress</td></tr>
-            <tr><td>One-command runbook</td><td>Bring-up + triage table + expected output captured</td><td class="bad">Not Started</td></tr>
+            <tr><td>LINE bridge go-live</td><td>Business account verification complete and /v2/bot/info returns 200</td><td class="warn">Blocked (external verification)</td></tr>
+            <tr><td>One-command runbook</td><td>Bring-up + triage table + expected output captured</td><td class="warn">In Progress</td></tr>
           </tbody>
         </table>
       </article>
@@ -875,6 +877,7 @@
         `Overall health is ${overall}%. ${overall >= 80 ? "Execution quality is strong." : "Tighten weekly focus for better execution confidence."}`,
         `Testing completion is ${testsDone}/${state.tests.length} (${testsPct}%).`,
         `Highest risk score is ${topRisk}; target any score >= 12 first.`,
+        "LINE integration remains blocked by Business account verification (Messaging API endpoints currently return 403).",
         `Auto risk signals -> CI streak: ${autoRisks.ciFailureStreakRisk || "unknown"}, backlog aging: ${autoRisks.backlogAgingRisk || "unknown"}, quality confidence: ${autoRisks.qualityConfidenceRisk || "unknown"}.`,
         `Best leverage this week: ${topOpp ? topOpp.title : "n/a"}.`,
       ];
@@ -1114,6 +1117,7 @@
         `KPIs: reliability ${state.kpis.reliability}%, interop ${state.kpis.interop}%, speed ${state.kpis.speed}%, pilot readiness ${state.kpis.signal}%`,
         `Testing: ${testsDone}/${state.tests.length} checks complete`,
         `Risk buckets: High ${riskBuckets.high}, Medium ${riskBuckets.medium}, Low ${riskBuckets.low}`,
+        "Integrations: LINE bridge is running, but LINE account entitlement is still blocked pending Business verification.",
         `Top opportunities: ${topOpp || "n/a"}`,
         "",
         "Suggested focus next week:",

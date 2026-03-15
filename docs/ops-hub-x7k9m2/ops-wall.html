@@ -273,7 +273,7 @@
       </article>
       <article class="kpi">
         <div class="label">Immediate Risk Focus</div>
-        <div class="value" id="riskFocusValue">Endpoint drift and parity gaps</div>
+        <div class="value" id="riskFocusValue">LINE account entitlement + endpoint parity gaps</div>
       </article>
     </section>
 
@@ -304,6 +304,7 @@
         <div class="ticks">
           <div class="tick"><span class="dot"></span><span>ACP strict schema + lifecycle checks green</span></div>
           <div class="tick warn"><span class="dot"></span><span>Watch AP2 endpoint drift and auto-fallback events</span></div>
+          <div class="tick warn"><span class="dot"></span><span>LINE bridge configured, but Messaging API still blocked by Business verification</span></div>
           <div class="tick warn"><span class="dot"></span><span>Prioritize parity assertions over net-new feature work</span></div>
           <div class="tick bad"><span class="dot"></span><span>Block release if strict preflight or replay drops red</span></div>
         </div>
@@ -339,6 +340,11 @@
               <td>high repo dirtiness</td>
               <td>Execution context noise and hidden risk in verification</td>
               <td>Clean or isolate branch state before checkpointing weekly status</td>
+            </tr>
+            <tr>
+              <td>line push returns 403</td>
+              <td>LINE channel entitlement incomplete (Business verification or Messaging API readiness)</td>
+              <td>Complete Business verification, reissue access token, then retest /v2/bot/info and push endpoints</td>
             </tr>
           </tbody>
         </table>
@@ -414,6 +420,10 @@
         document.getElementById("modeValue").textContent = (telemetry.ciFailureStreak ?? 0) >= 2
           ? "Stabilize release pipeline"
           : "Stabilize and Productize";
+
+        if (qualityRisk !== "low") {
+          document.getElementById("riskFocusValue").textContent = `LINE entitlement blocker + Backlog ${backlogRisk}`;
+        }
 
         if (meta?.links?.actions) {
           document.getElementById("drillActions").href = meta.links.actions;
