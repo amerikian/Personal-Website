@@ -335,6 +335,7 @@
       </div>
       <div class="toolbar">
         <span class="chip" id="clock">Syncing...</span>
+        <span class="chip" id="liveStatus">Live KPI: loading...</span>
         <button id="resetBtn" type="button">Reset</button>
         <button id="exportBtn" type="button">Export</button>
         <button id="importBtn" type="button">Import</button>
@@ -470,6 +471,7 @@
 
   <script>
     const key = "acp-command-center-v1";
+    const liveFeedPath = "./data/kpi-live.json";
 
     const defaults = {
       kpis: { reliability: 95, interop: 72, speed: 68, signal: 42 },
@@ -723,6 +725,51 @@
       node.className = `pill ${ok ? "good" : "bad"}`;
     }
 
+    function setLiveStatus(message, tone = "warn") {
+      const node = document.getElementById("liveStatus");
+      node.textContent = message;
+      node.className = `chip ${tone}`;
+    }
+
+    function clampPercent(value, fallback) {
+      const n = Number(value);
+      if (!Number.isFinite(n)) return fallback;
+      return Math.max(0, Math.min(100, Math.round(n)));
+    }
+
+    async function loadLiveKpis() {
+      try {
+        const response = await fetch(`${liveFeedPath}?t=${Date.now()}`, { cache: "no-store" });
+        if (!response.ok) {
+          throw new Error(`feed HTTP ${response.status}`);
+        }
+
+        const payload = await response.json();
+        const feedKpis = payload?.kpis;
+        if (!feedKpis || typeof feedKpis !== "object") {
+          throw new Error("feed missing kpis object");
+        }
+
+        state.kpis = {
+          reliability: clampPercent(feedKpis.reliability, state.kpis.reliability),
+          interop: clampPercent(feedKpis.interop, state.kpis.interop),
+          speed: clampPercent(feedKpis.speed, state.kpis.speed),
+          signal: clampPercent(feedKpis.signal, state.kpis.signal),
+        };
+
+        localStorage.setItem(key, JSON.stringify(state));
+
+        const generatedAt = payload?.meta?.generatedAt
+          ? new Date(payload.meta.generatedAt).toLocaleString()
+          : "unknown";
+        const quality = String(payload?.meta?.dataQuality || "live");
+        const tone = quality === "high" ? "good" : quality === "medium" ? "warn" : "bad";
+        setLiveStatus(`Live KPI: ${quality} (${generatedAt})`, tone);
+      } catch (error) {
+        setLiveStatus(`Live KPI: fallback (${String(error)})`, "bad");
+      }
+    }
+
     function generateDigestText() {
       const overall = getOverallScore();
       const testsDone = state.tests.filter((t) => t.done).length;
@@ -880,8 +927,13 @@
       }
     });
 
-    ensureWeeklySnapshot();
-    render();
+    async function init() {
+      await loadLiveKpis();
+      ensureWeeklySnapshot();
+      render();
+    }
+
+    init();
   </script>
   <script src="./security.js"></script>
 </body>
