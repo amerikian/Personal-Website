@@ -62,6 +62,9 @@
       align-items: center;
       flex-wrap: wrap;
       gap: 8px;
+      position: sticky;
+      top: 8px;
+      z-index: 20;
     }
 
     h1 {
@@ -83,6 +86,17 @@
       gap: 8px;
       flex-wrap: wrap;
       width: 100%;
+      align-items: center;
+    }
+
+    .toolbar select {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 7px 10px;
+      background: #173236;
+      color: var(--ink);
+      font: inherit;
+      font-size: 0.83rem;
     }
 
     .nav {
@@ -216,10 +230,33 @@
       transition: width 220ms ease;
     }
 
+    .freshness {
+      margin-top: 8px;
+      height: 7px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: #0d1a1c;
+      overflow: hidden;
+    }
+
+    .freshness i {
+      display: block;
+      height: 100%;
+      width: 0;
+      background: linear-gradient(90deg, #49d487, #ffd166, #ff6b6b);
+      transition: width 220ms ease;
+    }
+
     table {
       width: 100%;
       border-collapse: collapse;
       font-size: 0.86rem;
+    }
+
+    .telemetry-table td:last-child,
+    .telemetry-table th:last-child {
+      text-align: right;
+      font-variant-numeric: tabular-nums;
     }
 
     th, td {
@@ -336,9 +373,19 @@
       <div class="toolbar">
         <span class="chip" id="clock">Syncing...</span>
         <span class="chip" id="liveStatus">Live KPI: loading...</span>
+        <span class="chip" id="freshnessStatus">Feed age: --</span>
+        <label class="chip" for="refreshSelect">Auto refresh</label>
+        <select id="refreshSelect" aria-label="Auto refresh interval">
+          <option value="off">Off</option>
+          <option value="60">1m</option>
+          <option value="300" selected>5m</option>
+          <option value="900">15m</option>
+        </select>
+        <span class="chip" id="refreshCountdown">Next refresh: --</span>
         <button id="resetBtn" type="button">Reset</button>
         <button id="exportBtn" type="button">Export</button>
         <button id="importBtn" type="button">Import</button>
+        <button id="shareBtn" type="button">Share Link</button>
       </div>
       <nav class="nav" aria-label="Command center navigation">
         <a class="active" href="./index.html">Strategy Dashboard</a>
@@ -358,19 +405,35 @@
       <article class="card span-3 metric">
         <h2>Strict Preflight <span class="mini">Current</span></h2>
         <div class="value good">PASS</div>
-        <span class="pill">conformance:preflight:strict</span>
+        <a id="actionsLink" class="pill" href="https://github.com/amerikian/acp-dev-workspace/actions" target="_blank" rel="noreferrer">conformance:preflight:strict</a>
       </article>
 
       <article class="card span-3 metric">
         <h2>Repo Hygiene <span class="mini">Current</span></h2>
         <div class="value" id="repoHygiene">7/8 clean</div>
-        <span class="pill warn">1 dirty repo (acp-handler)</span>
+        <a id="repoLink" class="pill warn" href="https://github.com/amerikian/acp-dev-workspace" target="_blank" rel="noreferrer">1 dirty repo (acp-handler)</a>
       </article>
 
       <article class="card span-3 metric">
-        <h2>Top Constraint <span class="mini">Assessment</span></h2>
-        <div class="value" style="font-size:1rem">Productization</div>
-        <span class="pill warn">scope, parity, release gates</span>
+        <h2>Release Readiness <span class="mini">Auto score</span></h2>
+        <div class="value" style="font-size:1rem" id="releaseReadiness">--</div>
+        <span class="pill warn" id="topConstraint">scope, parity, release gates</span>
+        <div class="freshness"><i id="freshnessBar"></i></div>
+      </article>
+
+      <article class="card span-12">
+        <h2>Auto Telemetry <span class="mini">GitHub-backed, drill-through ready</span></h2>
+        <table class="telemetry-table" id="telemetryTable">
+          <thead>
+            <tr><th>Metric</th><th>Value</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+        <div class="button-row" style="margin-top:8px;">
+          <a class="chip" id="pullsLink" href="https://github.com/amerikian/acp-dev-workspace/pulls" target="_blank" rel="noreferrer">Open PRs</a>
+          <a class="chip" id="issuesLink" href="https://github.com/amerikian/acp-dev-workspace/issues" target="_blank" rel="noreferrer">Open Issues</a>
+          <a class="chip" id="actionsLink2" href="https://github.com/amerikian/acp-dev-workspace/actions" target="_blank" rel="noreferrer">Workflow Runs</a>
+        </div>
       </article>
 
       <article class="card span-5">
@@ -439,6 +502,8 @@
         </div>
         <div class="button-row">
           <button id="sendLineBtn" type="button">Send LINE Test</button>
+          <button id="discoverLineBtn" type="button">Discover LINE User</button>
+          <button id="sendLineLastBtn" type="button">Send to Last LINE User</button>
           <button id="sendProviderBtn" type="button">Send Provider Test</button>
         </div>
         <div style="margin-top:9px" class="pill" id="notifyStatus">Idle</div>
@@ -475,7 +540,16 @@
 
     const defaults = {
       kpis: { reliability: 95, interop: 72, speed: 68, signal: 42 },
+      liveMeta: {
+        generatedAt: null,
+        dataQuality: "unknown",
+        note: "",
+        telemetry: {},
+        risks: {},
+        links: {},
+      },
       notify: { bridgeUrl: "http://localhost:8787", lineUserId: "", dashboardUrl: "" },
+      ui: { refreshSeconds: 300 },
       history: [],
       risks: [
         { name: "AP2 endpoint drift (:8080 vs :8000)", impact: 4, probability: 3 },
@@ -505,7 +579,9 @@
           ...defaults,
           ...saved,
           kpis: { ...defaults.kpis, ...(saved.kpis || {}) },
+          liveMeta: { ...defaults.liveMeta, ...(saved.liveMeta || {}) },
           notify: { ...defaults.notify, ...(saved.notify || {}) },
+          ui: { ...defaults.ui, ...(saved.ui || {}) },
           history: Array.isArray(saved.history) ? saved.history : defaults.history,
           risks: Array.isArray(saved.risks) ? saved.risks : defaults.risks,
           tests: Array.isArray(saved.tests) ? saved.tests : defaults.tests,
@@ -515,6 +591,40 @@
         return defaults;
       }
     })();
+
+    function encodeShareState(payload) {
+      const json = JSON.stringify(payload);
+      return btoa(unescape(encodeURIComponent(json))).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "");
+    }
+
+    function decodeShareState(token) {
+      const padded = token.replace(/-/g, "+").replace(/_/g, "/");
+      const restore = padded + "===".slice((padded.length + 3) % 4);
+      const json = decodeURIComponent(escape(atob(restore)));
+      return JSON.parse(json);
+    }
+
+    function applyStateFromUrl() {
+      const params = new URLSearchParams(window.location.search);
+      const token = params.get("s");
+      if (!token) return;
+
+      try {
+        const imported = decodeShareState(token);
+        if (imported && typeof imported === "object") {
+          Object.assign(state, {
+            ...state,
+            ...imported,
+            kpis: { ...state.kpis, ...(imported.kpis || {}) },
+            notify: { ...state.notify, ...(imported.notify || {}) },
+            ui: { ...state.ui, ...(imported.ui || {}) },
+          });
+          localStorage.setItem(key, JSON.stringify(state));
+        }
+      } catch {
+        // Ignore malformed share links.
+      }
+    }
 
     function save() {
       localStorage.setItem(key, JSON.stringify(state));
@@ -677,12 +787,15 @@
       const list = document.getElementById("snapshotList");
       const overall = getOverallScore();
       const testsDone = state.tests.filter((t) => t.done).length;
+      const testsPct = state.tests.length ? Math.round((testsDone / state.tests.length) * 100) : 0;
       const topRisk = Math.max(...state.risks.map((r) => r.impact * r.probability));
       const topOpp = [...state.opportunities].sort((a, b) => ((b.impact + b.confidence + b.ease) - (a.impact + a.confidence + a.ease)))[0];
+      const autoRisks = state.liveMeta?.risks || {};
       const items = [
         `Overall health is ${overall}%. ${overall >= 80 ? "Execution quality is strong." : "Tighten weekly focus for better execution confidence."}`,
-        `Testing completion is ${testsDone}/${state.tests.length}.`,
+        `Testing completion is ${testsDone}/${state.tests.length} (${testsPct}%).`,
         `Highest risk score is ${topRisk}; target any score >= 12 first.`,
+        `Auto risk signals -> CI streak: ${autoRisks.ciFailureStreakRisk || "unknown"}, backlog aging: ${autoRisks.backlogAgingRisk || "unknown"}, quality confidence: ${autoRisks.qualityConfidenceRisk || "unknown"}.`,
         `Best leverage this week: ${topOpp ? topOpp.title : "n/a"}.`,
       ];
       list.innerHTML = items.map((item) => `<li>${item}</li>`).join("");
@@ -713,6 +826,27 @@
       const badge = document.getElementById("healthLabel");
       badge.textContent = label;
       badge.className = `pill ${band}`;
+
+      const telemetry = state.liveMeta?.telemetry || {};
+      const releaseReadiness = Math.round(
+        (overall * 0.45)
+        + ((telemetry.ciSuccessRate7d ?? 0) * 0.25)
+        + ((100 - Math.min(40, (telemetry.staleOpenIssues30d ?? 0) * 8)) * 0.2)
+        + ((100 - Math.min(30, (telemetry.staleOpenPrs7d ?? 0) * 10)) * 0.1),
+      );
+      const relNode = document.getElementById("releaseReadiness");
+      relNode.textContent = `${clampPercent(releaseReadiness, overall)}%`;
+      const relBand = releaseReadiness >= 80 ? "good" : releaseReadiness >= 60 ? "warn" : "bad";
+      relNode.className = `value ${relBand}`;
+
+      const constraint = document.getElementById("topConstraint");
+      if ((telemetry.ciFailureStreak ?? 0) >= 2) {
+        constraint.textContent = "ci stability, release gates";
+      } else if ((telemetry.staleOpenIssues30d ?? 0) >= 3) {
+        constraint.textContent = "aging backlog, prioritization";
+      } else {
+        constraint.textContent = "scope, parity, release gates";
+      }
     }
 
     function renderClock() {
@@ -729,6 +863,102 @@
       const node = document.getElementById("liveStatus");
       node.textContent = message;
       node.className = `chip ${tone}`;
+    }
+
+    function setFreshnessStatus(message, tone = "warn") {
+      const node = document.getElementById("freshnessStatus");
+      node.textContent = message;
+      node.className = `chip ${tone}`;
+    }
+
+    function renderFreshness() {
+      const generatedAt = state.liveMeta?.generatedAt ? new Date(state.liveMeta.generatedAt) : null;
+      if (!generatedAt || Number.isNaN(generatedAt.getTime())) {
+        setFreshnessStatus("Feed age: unknown", "warn");
+        document.getElementById("freshnessBar").style.width = "0%";
+        return;
+      }
+
+      const ageMinutes = Math.max(0, Math.round((Date.now() - generatedAt.getTime()) / 60000));
+      const freshnessPct = Math.max(0, 100 - Math.min(100, (ageMinutes / 180) * 100));
+      document.getElementById("freshnessBar").style.width = `${freshnessPct}%`;
+
+      const tone = ageMinutes <= 30 ? "good" : ageMinutes <= 120 ? "warn" : "bad";
+      setFreshnessStatus(`Feed age: ${ageMinutes}m`, tone);
+    }
+
+    function renderTelemetry() {
+      const telemetry = state.liveMeta?.telemetry || {};
+      const risks = state.liveMeta?.risks || {};
+      const links = state.liveMeta?.links || {};
+
+      const rows = [
+        ["CI failure streak", `${telemetry.ciFailureStreak ?? 0}`],
+        ["CI success (7d)", `${telemetry.ciSuccessRate7d ?? 0}%`],
+        ["CI success (30d)", `${telemetry.ciSuccessRate30d ?? 0}%`],
+        ["Median PR age", `${telemetry.prMedianAgeDays ?? 0}d`],
+        ["Median issue age", `${telemetry.issueMedianAgeDays ?? 0}d`],
+        ["Merged PR throughput (7d/30d)", `${telemetry.mergedPrs7d ?? 0}/${telemetry.mergedPrs30d ?? 0}`],
+        ["Stale PRs >7d", `${telemetry.staleOpenPrs7d ?? 0}`],
+        ["Stale issues >14d / >30d", `${telemetry.staleOpenIssues14d ?? 0}/${telemetry.staleOpenIssues30d ?? 0}`],
+        ["Auto risk: quality confidence", `${risks.qualityConfidenceRisk || "unknown"}`],
+        ["Auto risk: backlog aging", `${risks.backlogAgingRisk || "unknown"}`],
+      ];
+
+      const body = document.querySelector("#telemetryTable tbody");
+      body.innerHTML = rows.map(([k, v]) => `<tr><td>${k}</td><td>${v}</td></tr>`).join("");
+
+      if (links.repo) document.getElementById("repoLink").href = links.repo;
+      if (links.pulls) document.getElementById("pullsLink").href = links.pulls;
+      if (links.issues) document.getElementById("issuesLink").href = links.issues;
+      if (links.actions) {
+        document.getElementById("actionsLink").href = links.actions;
+        document.getElementById("actionsLink2").href = links.actions;
+      }
+    }
+
+    let refreshTimer = null;
+    let refreshCountdown = 0;
+
+    function refreshCountdownText(seconds) {
+      if (!Number.isFinite(seconds) || seconds <= 0) return "Next refresh: now";
+      const m = Math.floor(seconds / 60);
+      const s = seconds % 60;
+      return `Next refresh: ${m}:${String(s).padStart(2, "0")}`;
+    }
+
+    function setRefreshUi(seconds) {
+      if (!Number.isFinite(seconds)) {
+        document.getElementById("refreshCountdown").textContent = "Next refresh: off";
+        return;
+      }
+      document.getElementById("refreshCountdown").textContent = refreshCountdownText(seconds);
+    }
+
+    function startAutoRefreshLoop() {
+      if (refreshTimer) {
+        clearInterval(refreshTimer);
+        refreshTimer = null;
+      }
+
+      const intervalSeconds = Number(state.ui?.refreshSeconds || 0);
+      if (!intervalSeconds) {
+        setRefreshUi(NaN);
+        return;
+      }
+
+      refreshCountdown = intervalSeconds;
+      setRefreshUi(refreshCountdown);
+
+      refreshTimer = setInterval(async () => {
+        refreshCountdown -= 1;
+        if (refreshCountdown <= 0) {
+          await loadLiveKpis();
+          render();
+          refreshCountdown = intervalSeconds;
+        }
+        setRefreshUi(refreshCountdown);
+      }, 1000);
     }
 
     function clampPercent(value, fallback) {
@@ -757,12 +987,21 @@
           signal: clampPercent(feedKpis.signal, state.kpis.signal),
         };
 
+        state.liveMeta = {
+          generatedAt: payload?.meta?.generatedAt || null,
+          dataQuality: String(payload?.meta?.dataQuality || "unknown"),
+          note: String(payload?.meta?.note || ""),
+          telemetry: payload?.meta?.telemetry || {},
+          risks: payload?.meta?.risks || {},
+          links: payload?.meta?.links || {},
+        };
+
         localStorage.setItem(key, JSON.stringify(state));
 
-        const generatedAt = payload?.meta?.generatedAt
-          ? new Date(payload.meta.generatedAt).toLocaleString()
+        const generatedAt = state.liveMeta.generatedAt
+          ? new Date(state.liveMeta.generatedAt).toLocaleString()
           : "unknown";
-        const quality = String(payload?.meta?.dataQuality || "live");
+        const quality = String(state.liveMeta.dataQuality || "live");
         const tone = quality === "high" ? "good" : quality === "medium" ? "warn" : "bad";
         setLiveStatus(`Live KPI: ${quality} (${generatedAt})`, tone);
       } catch (error) {
@@ -820,6 +1059,8 @@
     function render() {
       renderClock();
       renderKpis();
+      renderFreshness();
+      renderTelemetry();
       renderRisks();
       renderRiskCanvas();
       renderTests();
@@ -845,6 +1086,13 @@
         if (id === "dashboardUrl") state.notify.dashboardUrl = e.target.value.trim();
         save();
       });
+    });
+
+    document.getElementById("refreshSelect").addEventListener("change", (e) => {
+      const value = e.target.value;
+      state.ui.refreshSeconds = value === "off" ? 0 : Number(value);
+      localStorage.setItem(key, JSON.stringify(state));
+      startAutoRefreshLoop();
     });
 
     document.getElementById("resetBtn").addEventListener("click", () => {
@@ -884,6 +1132,26 @@
       picker.click();
     });
 
+    document.getElementById("shareBtn").addEventListener("click", async () => {
+      const payload = {
+        kpis: state.kpis,
+        tests: state.tests,
+        risks: state.risks,
+        opportunities: state.opportunities,
+        ui: state.ui,
+      };
+      const token = encodeShareState(payload);
+      const url = new URL(window.location.href);
+      url.searchParams.set("s", token);
+      try {
+        await navigator.clipboard.writeText(url.toString());
+        setNotifyStatus("Share link copied", true);
+      } catch {
+        setNotifyStatus("Share link ready in URL bar", true);
+      }
+      history.replaceState({}, "", url.toString());
+    });
+
     document.getElementById("sendLineBtn").addEventListener("click", async () => {
       try {
         const base = state.notify.bridgeUrl.replace(/\/$/, "");
@@ -896,6 +1164,41 @@
         setNotifyStatus("LINE alert sent", true);
       } catch (error) {
         setNotifyStatus(`LINE failed: ${String(error)}`, false);
+      }
+    });
+
+    document.getElementById("discoverLineBtn").addEventListener("click", async () => {
+      try {
+        const base = state.notify.bridgeUrl.replace(/\/$/, "");
+        const res = await fetch(`${base}/line/last-user`);
+        if (!res.ok) {
+          throw new Error(`HTTP ${res.status}`);
+        }
+        const payload = await res.json();
+        if (payload?.lastUserId) {
+          state.notify.lineUserId = payload.lastUserId;
+          document.getElementById("lineUserId").value = payload.lastUserId;
+          localStorage.setItem(key, JSON.stringify(state));
+          setNotifyStatus(`LINE user found: ${payload.lastUserId}`, true);
+        } else {
+          setNotifyStatus("No LINE user captured yet. Send a message to the bot first.", false);
+        }
+      } catch (error) {
+        setNotifyStatus(`Discover failed: ${String(error)}`, false);
+      }
+    });
+
+    document.getElementById("sendLineLastBtn").addEventListener("click", async () => {
+      try {
+        const base = state.notify.bridgeUrl.replace(/\/$/, "");
+        await postJson(`${base}/notify/line/last-user`, {
+          title: "ACP Command Center",
+          body: document.getElementById("alertBody").value.trim(),
+          url: state.notify.dashboardUrl || undefined,
+        });
+        setNotifyStatus("LINE alert sent to last discovered user", true);
+      } catch (error) {
+        setNotifyStatus(`LINE last-user failed: ${String(error)}`, false);
       }
     });
 
@@ -928,9 +1231,12 @@
     });
 
     async function init() {
+      applyStateFromUrl();
+      document.getElementById("refreshSelect").value = state.ui?.refreshSeconds ? String(state.ui.refreshSeconds) : "off";
       await loadLiveKpis();
       ensureWeeklySnapshot();
       render();
+      startAutoRefreshLoop();
     }
 
     init();

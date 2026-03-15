@@ -98,6 +98,9 @@ A starter bridge is included at `notify-bridge/`.
 What it does:
 
 - POST `/notify/line` to push text alerts via LINE Messaging API.
+- POST `/webhooks/line` to receive LINE webhook events and capture `source.userId` for your personal account.
+- GET `/line/last-user` to inspect the latest discovered LINE user id.
+- POST `/notify/line/last-user` to send a test alert to the last discovered LINE user id.
 
 Required environment variable:
 
@@ -113,6 +116,14 @@ Payload shape:
   "url": "https://your-dashboard.example"
 }
 ```
+
+Webhook capture flow for personal testing:
+
+1. Expose your bridge URL publicly (for example via a tunnel).
+2. In LINE Developers, set webhook URL to `https://YOUR_BRIDGE/webhooks/line`.
+3. Add your bot account as friend from your LINE account and send a message.
+4. Call `GET /line/last-user` and copy the discovered `lastUserId`.
+5. Send test push via either `POST /notify/line` with that `userId`, or `POST /notify/line/last-user`.
 
 ## 5) iMessage integration
 
@@ -142,6 +153,22 @@ Health check:
 ```bash
 curl http://localhost:8787/health
 ```
+
+Config check:
+
+```bash
+curl http://localhost:8787/line/config-check
+```
+
+Webhook status check:
+
+```bash
+curl http://localhost:8787/line/last-user
+```
+
+Cross-origin note:
+
+- The bridge returns permissive CORS headers so hosted GitHub Pages dashboards can call it directly.
 
 ## 7) Suggested production architecture
 

@@ -265,15 +265,30 @@
     <section class="kpi-strip">
       <article class="kpi">
         <div class="label">Current Operating Mode</div>
-        <div class="value">Stabilize and Productize</div>
+        <div class="value" id="modeValue">Stabilize and Productize</div>
       </article>
       <article class="kpi">
         <div class="label">Most Important Signal</div>
-        <div class="value">Strict preflight remains green</div>
+        <div class="value" id="signalValue">Strict preflight remains green</div>
       </article>
       <article class="kpi">
         <div class="label">Immediate Risk Focus</div>
-        <div class="value">Endpoint drift and parity gaps</div>
+        <div class="value" id="riskFocusValue">Endpoint drift and parity gaps</div>
+      </article>
+    </section>
+
+    <section class="kpi-strip">
+      <article class="kpi">
+        <div class="label">Live feed quality</div>
+        <div class="value" id="qualityValue">loading...</div>
+      </article>
+      <article class="kpi">
+        <div class="label">Feed freshness</div>
+        <div class="value" id="freshnessValue">--</div>
+      </article>
+      <article class="kpi">
+        <div class="label">Drill-through</div>
+        <div class="value"><a id="drillActions" href="https://github.com/amerikian/acp-dev-workspace/actions" target="_blank" rel="noreferrer" style="color:#9ef0ff;">workflow runs</a></div>
       </article>
     </section>
 
@@ -370,6 +385,45 @@
     const status = document.getElementById("wallStatus");
     const now = new Date();
     status.textContent = `PRECHECK RESULT: PASS  |  ${now.toLocaleString()}`;
+
+    async function loadLiveOpsSignals() {
+      try {
+        const response = await fetch(`./data/kpi-live.json?t=${Date.now()}`, { cache: "no-store" });
+        if (!response.ok) {
+          throw new Error(`feed HTTP ${response.status}`);
+        }
+        const payload = await response.json();
+        const meta = payload?.meta || {};
+        const telemetry = meta?.telemetry || {};
+        const risks = meta?.risks || {};
+
+        const generatedAt = meta.generatedAt ? new Date(meta.generatedAt) : null;
+        const ageMinutes = generatedAt ? Math.max(0, Math.round((Date.now() - generatedAt.getTime()) / 60000)) : null;
+
+        document.getElementById("qualityValue").textContent = String(meta.dataQuality || "unknown").toUpperCase();
+        document.getElementById("freshnessValue").textContent = Number.isFinite(ageMinutes) ? `${ageMinutes}m` : "unknown";
+
+        document.getElementById("signalValue").textContent = (telemetry.ciFailureStreak ?? 0) > 0
+          ? `CI failure streak: ${telemetry.ciFailureStreak}`
+          : "Strict preflight remains green";
+
+        const backlogRisk = risks.backlogAgingRisk || "low";
+        const qualityRisk = risks.qualityConfidenceRisk || "low";
+        document.getElementById("riskFocusValue").textContent = `Backlog ${backlogRisk} / Quality ${qualityRisk}`;
+
+        document.getElementById("modeValue").textContent = (telemetry.ciFailureStreak ?? 0) >= 2
+          ? "Stabilize release pipeline"
+          : "Stabilize and Productize";
+
+        if (meta?.links?.actions) {
+          document.getElementById("drillActions").href = meta.links.actions;
+        }
+      } catch {
+        document.getElementById("qualityValue").textContent = "UNKNOWN";
+      }
+    }
+
+    loadLiveOpsSignals();
   </script>
   <script src="./security.js"></script>
 </body>
