@@ -612,14 +612,31 @@ https://developers.line.biz/flex-simulator/</div>
     }
 
     async function loadTemplates() {
+      // Client-side: return embedded templates (no bridge needed)
       try {
-        const data = await fetchJson(`${getBridgeBase()}/line/flex/templates`);
-        if (!data.ok) throw new Error(data.error || "Failed to load templates");
-        return data.templates;
+        return Object.values(embeddedTemplates).map(t => ({
+          id: t.id,
+          name: t.name,
+          altText: t.altText,
+          contents: t.contents,
+        }));
       } catch (err) {
         setStatus("studioStatus", `Templates load failed: ${err.message}`, "bad");
         return [];
       }
+    }
+
+    function applyVarsToTemplate(obj, vars) {
+      if (typeof obj === "string") {
+        return obj.replace(/\{\{(\w+)\}\}/g, (_, key) => vars[key] !== undefined ? vars[key] : `{{${key}}}`);
+      }
+      if (Array.isArray(obj)) return obj.map(item => applyVarsToTemplate(item, vars));
+      if (obj && typeof obj === "object") {
+        const out = {};
+        for (const [k, v] of Object.entries(obj)) out[k] = applyVarsToTemplate(v, vars);
+        return out;
+      }
+      return obj;
     }
 
     function renderTemplateGrid(templates) {
@@ -704,18 +721,17 @@ https://developers.line.biz/flex-simulator/</div>
           vars[el.dataset.var] = el.value;
         });
 
-        const data = await fetchJson(`${getBridgeBase()}/line/flex/render`, {
-          method: "POST",
-          headers: { "content-type": "application/json" },
-          body: JSON.stringify({ templateId: studioState.selectedTemplate, vars }),
-        });
+        const tpl = embeddedTemplates[studioState.selectedTemplate];
+        if (!tpl) throw new Error("Template not found: " + studioState.selectedTemplate);
 
-        if (!data.ok) throw new Error(data.error);
+        const rendered = applyVarsToTemplate(tpl.contents, vars);
+        const altText = applyVarsToTemplate(tpl.altText, vars);
+        const payload = { name: tpl.name, altText, contents: rendered };
 
-        const json = JSON.stringify(data.payload.contents, null, 2);
+        const json = JSON.stringify(rendered, null, 2);
         document.getElementById("jsonPreview").textContent = json;
-        setStatus("studioStatus", `Rendered ${data.payload.name}`, "good");
-        return data.payload;
+        setStatus("studioStatus", `Rendered ${tpl.name}`, "good");
+        return payload;
       } catch (err) {
         setStatus("studioStatus", `Render failed: ${err.message}`, "bad");
         return null;
