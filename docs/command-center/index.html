@@ -33,6 +33,27 @@
         radial-gradient(circle at 12% 10%, rgba(76, 201, 240, 0.22), transparent 35%),
         radial-gradient(circle at 85% 88%, rgba(255, 209, 102, 0.16), transparent 36%),
         linear-gradient(155deg, #0a1718, var(--bg));
+      padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+    }
+
+    body.compact .card,
+    body.compact .header {
+      padding: 9px;
+      border-radius: 11px;
+    }
+
+    body.compact .card h2 {
+      margin-bottom: 6px;
+      font-size: 0.92rem;
+    }
+
+    body.compact .row {
+      margin-bottom: 4px;
+      font-size: 0.8rem;
+    }
+
+    body.compact .check {
+      padding: 6px;
     }
 
     .wrap {
@@ -353,12 +374,57 @@
       text-align: center;
     }
 
+    .mobile-actions {
+      display: none;
+    }
+
+    .mobile-actions button {
+      min-width: 0;
+      width: 100%;
+    }
+
     @media (max-width: 980px) {
       .span-3, .span-4, .span-5, .span-6, .span-7, .span-8 { grid-column: span 12; }
       table {
         display: block;
         overflow-x: auto;
         white-space: nowrap;
+      }
+
+      .header {
+        top: 4px;
+      }
+
+      .toolbar {
+        gap: 6px;
+      }
+
+      .chip,
+      button,
+      .nav a,
+      .toolbar select {
+        padding: 8px 10px;
+        font-size: 0.79rem;
+      }
+
+      .mobile-actions {
+        position: fixed;
+        left: 8px;
+        right: 8px;
+        bottom: calc(8px + env(safe-area-inset-bottom, 0px));
+        z-index: 50;
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 8px;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        background: rgba(15, 31, 33, 0.96);
+        padding: 8px;
+        backdrop-filter: blur(4px);
+      }
+
+      body {
+        padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px));
       }
     }
   </style>
@@ -386,6 +452,7 @@
         <button id="exportBtn" type="button">Export</button>
         <button id="importBtn" type="button">Import</button>
         <button id="shareBtn" type="button">Share Link</button>
+        <button id="compactBtn" type="button">Compact: Off</button>
       </div>
       <nav class="nav" aria-label="Command center navigation">
         <a class="active" href="./index.html">Strategy Dashboard</a>
@@ -534,6 +601,12 @@
     <p class="footer">State persists in localStorage for weekly review continuity.</p>
   </main>
 
+  <div class="mobile-actions" aria-label="Quick actions">
+    <button id="refreshNowBtn" type="button">Refresh</button>
+    <button id="mobileDigestBtn" type="button">Digest</button>
+    <button id="mobileLineBtn" type="button">LINE</button>
+  </div>
+
   <script>
     const key = "acp-command-center-v1";
     const liveFeedPath = "./data/kpi-live.json";
@@ -549,7 +622,7 @@
         links: {},
       },
       notify: { bridgeUrl: "http://localhost:8787", lineUserId: "", dashboardUrl: "" },
-      ui: { refreshSeconds: 300 },
+      ui: { refreshSeconds: 300, compactMode: false },
       history: [],
       risks: [
         { name: "AP2 endpoint drift (:8080 vs :8000)", impact: 4, probability: 3 },
@@ -629,6 +702,13 @@
     function save() {
       localStorage.setItem(key, JSON.stringify(state));
       render();
+    }
+
+    function applyCompactMode() {
+      const compactOn = Boolean(state.ui?.compactMode);
+      document.body.classList.toggle("compact", compactOn);
+      const btn = document.getElementById("compactBtn");
+      if (btn) btn.textContent = `Compact: ${compactOn ? "On" : "Off"}`;
     }
 
     function getOverallScore() {
@@ -1057,6 +1137,7 @@
     }
 
     function render() {
+      applyCompactMode();
       renderClock();
       renderKpis();
       renderFreshness();
@@ -1093,6 +1174,12 @@
       state.ui.refreshSeconds = value === "off" ? 0 : Number(value);
       localStorage.setItem(key, JSON.stringify(state));
       startAutoRefreshLoop();
+    });
+
+    document.getElementById("compactBtn").addEventListener("click", () => {
+      state.ui.compactMode = !state.ui.compactMode;
+      localStorage.setItem(key, JSON.stringify(state));
+      render();
     });
 
     document.getElementById("resetBtn").addEventListener("click", () => {
@@ -1227,6 +1314,32 @@
         setNotifyStatus("Digest copied", true);
       } catch (error) {
         setNotifyStatus(`Copy failed: ${String(error)}`, false);
+      }
+    });
+
+    document.getElementById("refreshNowBtn")?.addEventListener("click", async () => {
+      await loadLiveKpis();
+      render();
+      setNotifyStatus("Live feed refreshed", true);
+    });
+
+    document.getElementById("mobileDigestBtn")?.addEventListener("click", () => {
+      document.getElementById("digestBox").textContent = generateDigestText();
+      setNotifyStatus("Digest generated", true);
+      document.getElementById("digestBox").scrollIntoView({ behavior: "smooth", block: "center" });
+    });
+
+    document.getElementById("mobileLineBtn")?.addEventListener("click", async () => {
+      try {
+        const base = state.notify.bridgeUrl.replace(/\/$/, "");
+        await postJson(`${base}/notify/line/last-user`, {
+          title: "ACP Command Center",
+          body: document.getElementById("alertBody").value.trim(),
+          url: state.notify.dashboardUrl || undefined,
+        });
+        setNotifyStatus("LINE alert sent", true);
+      } catch (error) {
+        setNotifyStatus(`LINE failed: ${String(error)}`, false);
       }
     });
 
