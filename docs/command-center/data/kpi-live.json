@@ -6,9 +6,9 @@
     "signal": 87
   },
   "meta": {
-    "generatedAt": "2026-03-15T13:31:43.936Z",
+    "generatedAt": "2026-03-15T13:34:17.491Z",
     "source": "github:amerikian/acp-dev-workspace",
-    "dataQuality": "medium",
+    "dataQuality": "high",
     "note": "Reliability estimated from repository freshness and issue/PR pressure due to limited workflow history. Interop estimated because no recent relevant workflow run was available.",
     "telemetry": {
       "openPrs": 0,
