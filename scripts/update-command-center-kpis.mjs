@@ -32,23 +32,47 @@ async function computeKpis() {
   const now = new Date();
 
   let dataQuality = "high";
-  let note = "Derived from repository telemetry.";
+  const notes = [];
 
   try {
-    const [repo, pulls, issues, actions] = await Promise.all([
-      ghApi(`/repos/${targetRepo}`),
-      ghApi(`/repos/${targetRepo}/pulls?state=open&per_page=100`),
-      ghApi(`/repos/${targetRepo}/issues?state=open&per_page=100`),
-      ghApi(`/repos/${targetRepo}/actions/runs?per_page=50`),
-    ]);
+    const repo = await ghApi(`/repos/${targetRepo}`);
+
+    // Optional telemetry calls. If permission is missing, degrade quality instead of hard fallback.
+    let pulls = [];
+    let issues = [];
+    let actions = { workflow_runs: [] };
+
+    try {
+      pulls = await ghApi(`/repos/${targetRepo}/pulls?state=open&per_page=100`);
+    } catch (error) {
+      dataQuality = "medium";
+      notes.push(`pulls unavailable: ${String(error)}`);
+    }
+
+    try {
+      issues = await ghApi(`/repos/${targetRepo}/issues?state=open&per_page=100`);
+    } catch (error) {
+      dataQuality = "medium";
+      notes.push(`issues unavailable: ${String(error)}`);
+    }
+
+    try {
+      actions = await ghApi(`/repos/${targetRepo}/actions/runs?per_page=50`);
+    } catch (error) {
+      dataQuality = "medium";
+      notes.push(`actions unavailable: ${String(error)}`);
+    }
 
     const pushedAt = new Date(repo.pushed_at);
     const freshnessDays = Math.max(0, Math.floor((now - pushedAt) / 86400000));
 
     const openPrs = Array.isArray(pulls) ? pulls.length : 0;
-    const openIssues = Array.isArray(issues)
+    const openIssuesFromIssuesEndpoint = Array.isArray(issues)
       ? issues.filter((issue) => !issue.pull_request).length
       : 0;
+    const openIssues = openIssuesFromIssuesEndpoint > 0
+      ? openIssuesFromIssuesEndpoint
+      : Number(repo.open_issues_count || 0);
 
     const runs = Array.isArray(actions.workflow_runs) ? actions.workflow_runs : [];
     const relevantRuns = runs.filter((run) => {
@@ -62,12 +86,12 @@ async function computeKpis() {
     let reliability;
     if (completedRelevant.length >= 3) {
       reliability = (successfulRelevant.length / completedRelevant.length) * 100;
-      note = "Reliability based on recent preflight/conformance workflow outcomes.";
+      notes.push("Reliability based on recent preflight/conformance workflow outcomes.");
     } else {
-      dataQuality = "medium";
+      if (dataQuality === "high") dataQuality = "medium";
       const freshnessBoost = freshnessDays <= 2 ? 12 : freshnessDays <= 7 ? 6 : freshnessDays <= 14 ? 0 : -10;
       reliability = 72 + freshnessBoost - Math.min(14, openIssues * 0.9) - Math.min(8, openPrs * 0.8);
-      note = "Reliability estimated from repository freshness and issue/PR pressure due to limited workflow history.";
+      notes.push("Reliability estimated from repository freshness and issue/PR pressure due to limited workflow history.");
     }
 
     const latestRelevant = completedRelevant[0];
@@ -75,6 +99,7 @@ async function computeKpis() {
     if (!latestRelevant) {
       interop = 68;
       dataQuality = dataQuality === "high" ? "medium" : dataQuality;
+      notes.push("Interop estimated because no recent relevant workflow run was available.");
     }
     interop += freshnessDays <= 7 ? 4 : 0;
 
@@ -97,7 +122,7 @@ async function computeKpis() {
         generatedAt: now.toISOString(),
         source: `github:${targetRepo}`,
         dataQuality,
-        note,
+        note: notes.join(" ") || "Derived from repository telemetry.",
         telemetry: {
           openPrs,
           openIssues,
