@@ -88,7 +88,6 @@ async function computeKpis() {
       reliability = (successfulRelevant.length / completedRelevant.length) * 100;
       notes.push("Reliability based on recent preflight/conformance workflow outcomes.");
     } else {
-      if (dataQuality === "high") dataQuality = "medium";
       const freshnessBoost = freshnessDays <= 2 ? 12 : freshnessDays <= 7 ? 6 : freshnessDays <= 14 ? 0 : -10;
       reliability = 72 + freshnessBoost - Math.min(14, openIssues * 0.9) - Math.min(8, openPrs * 0.8);
       notes.push("Reliability estimated from repository freshness and issue/PR pressure due to limited workflow history.");
@@ -98,7 +97,6 @@ async function computeKpis() {
     let interop = latestRelevant?.conclusion === "success" ? 78 : 62;
     if (!latestRelevant) {
       interop = 68;
-      dataQuality = dataQuality === "high" ? "medium" : dataQuality;
       notes.push("Interop estimated because no recent relevant workflow run was available.");
     }
     interop += freshnessDays <= 7 ? 4 : 0;
