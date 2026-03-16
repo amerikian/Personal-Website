@@ -16,7 +16,7 @@
       --body-soft: #cde6e8;
       --muted: #9bb2b2;
       --line: #295255;
-      --ok: #49d487;
+      --ok: #22c3ee;
       --warn: #ffd166;
       --bad: #ff6b6b;
       --accent: #4cc9f0;
@@ -28,7 +28,7 @@
       --surface-deep: #0a1516;
       --phone-bg: #7494A5;
       --phone-empty: rgba(255,255,255,0.6);
-      --line-green: #06C755;
+      --line-green: #0ea5e9;
       --header-grad: linear-gradient(135deg, #3b82f6, #06b6d4);
     }
 
@@ -60,7 +60,7 @@
       font-family: "Inter", sans-serif;
       background:
         radial-gradient(circle at 12% 10%, rgba(76, 201, 240, 0.22), transparent 35%),
-        radial-gradient(circle at 85% 88%, rgba(6, 199, 85, 0.14), transparent 36%),
+        radial-gradient(circle at 85% 88%, rgba(59, 130, 246, 0.14), transparent 36%),
         linear-gradient(155deg, var(--bg-edge), var(--bg));
     }
 
@@ -135,7 +135,7 @@
       background: var(--surface-elevated);
     }
     .nav a.active {
-      background: linear-gradient(90deg, rgba(6, 199, 85, 0.25), rgba(76, 201, 240, 0.2));
+      background: linear-gradient(90deg, rgba(59, 130, 246, 0.25), rgba(76, 201, 240, 0.25));
     }
     .nav a:hover { filter: brightness(1.1); }
 
@@ -267,7 +267,7 @@
     }
     .template-card.selected {
       border-color: var(--line-green);
-      background: rgba(6, 199, 85, 0.08);
+      background: rgba(14, 165, 233, 0.1);
     }
     .template-card h3 {
       margin: 0 0 4px;
@@ -354,7 +354,7 @@
       border-radius: 14px;
       background:
         radial-gradient(circle at 8% 14%, rgba(59,130,246,0.18), transparent 44%),
-        linear-gradient(135deg, rgba(6,199,85,0.12), rgba(59,130,246,0.12));
+        linear-gradient(135deg, rgba(14,165,233,0.14), rgba(59,130,246,0.12));
       padding: 14px;
       display: grid;
       grid-template-columns: 1.5fr 1fr;
@@ -400,7 +400,7 @@
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      color: var(--line-green);
+      color: var(--accent);
       font-size: 0.82rem;
       text-decoration: none;
     }
@@ -619,7 +619,7 @@ https://developers.line.biz/flex-simulator/</div>
       </article>
 
       <!-- Bot Status Indicator -->
-      <article class="card span-12" id="botStatusCard" style="border-color:rgba(6,199,85,0.3);background:rgba(6,199,85,0.04)">
+      <article class="card span-12" id="botStatusCard" style="border-color:rgba(14,165,233,0.35);background:rgba(14,165,233,0.08)">
         <h2>Bot Status <span class="mini">@flexmessagesim</span></h2>
         <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
           <span id="botDot" style="width:12px;height:12px;border-radius:50%;background:var(--muted);flex-shrink:0"></span>
@@ -1275,7 +1275,7 @@ https://developers.line.biz/flex-simulator/</div>
 
       if (btn.style === 'primary') {
         el.classList.add('primary');
-        el.style.backgroundColor = btn.color || '#06C755';
+        el.style.backgroundColor = btn.color || '#0ea5e9';
       } else {
         el.classList.add('secondary');
         if (btn.color) { el.style.color = btn.color; el.style.borderColor = btn.color; }
@@ -1704,8 +1704,8 @@ https://developers.line.biz/flex-simulator/</div>
         if (!health.ok) throw new Error("Bridge unhealthy");
 
         var config = await fetchJson(getBridgeBase() + "/line/config-check");
-        dot.style.background = config.hasLineAccessToken ? "var(--line-green)" : "var(--warn)";
-        dot.style.boxShadow = config.hasLineAccessToken ? "0 0 10px rgba(6,199,85,0.6)" : "0 0 10px rgba(255,209,102,0.6)";
+        dot.style.background = config.hasLineAccessToken ? "var(--accent)" : "var(--warn)";
+        dot.style.boxShadow = config.hasLineAccessToken ? "0 0 10px rgba(14,165,233,0.6)" : "0 0 10px rgba(255,209,102,0.6)";
         label.textContent = config.hasLineAccessToken
           ? "@flexmessagesim — Connected via notify-bridge"
           : "Bridge running but LINE token missing";
