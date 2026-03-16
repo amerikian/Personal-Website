@@ -9,6 +9,7 @@
         "build": "echo 'Static site - no build required'",
         "deploy": "swa deploy . --env production",
         "command-center:sync": "node scripts/sync-command-center-pages.mjs",
+        "command-center:drift-check": "node scripts/check-command-center-drift.mjs",
         "chat:smoke": "node scripts/chat-smoke.js",
         "visual:check": "node scripts/visual-check.js",
         "visual:baseline": "node scripts/visual-regression.js baseline",
