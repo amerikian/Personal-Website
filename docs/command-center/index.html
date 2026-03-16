@@ -47,6 +47,8 @@
       --text-primary: #0f172a;
       --text-secondary: #475569;
       --text-muted: #94a3b8;
+      --hero-soft: rgba(37, 99, 235, 0.08);
+      --hero-strong: rgba(37, 99, 235, 0.18);
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -75,6 +77,48 @@
       top: 0; left: 0; right: 0; height: 1px;
       background: linear-gradient(90deg, transparent, var(--glass-highlight), transparent);
     }
+    .hero-panel {
+      padding: 18px;
+      background:
+        radial-gradient(circle at 12% 15%, var(--hero-soft, rgba(59,130,246,0.2)), transparent 45%),
+        linear-gradient(135deg, rgba(59,130,246,0.2), rgba(6,182,212,0.12));
+    }
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 14px;
+      align-items: center;
+    }
+    .hero-title {
+      font-family: "DM Serif Display", serif;
+      font-size: clamp(1.2rem, 2.4vw, 1.9rem);
+      margin-bottom: 6px;
+      line-height: 1.2;
+    }
+    .hero-copy {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+      margin-bottom: 12px;
+    }
+    .chip-row { display:flex; gap:8px; flex-wrap:wrap; }
+    .hero-chip {
+      border: 1px solid var(--glass-border);
+      border-radius: 999px;
+      padding: 5px 10px;
+      font-size: 0.72rem;
+      background: var(--bg-input);
+      color: var(--text-secondary);
+    }
+    .hero-metrics { display:grid; gap:8px; }
+    .hero-metric {
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-md);
+      background: var(--bg-input);
+      padding: 10px;
+    }
+    .hero-metric .l { font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: .05em; }
+    .hero-metric .v { font-family: "JetBrains Mono", monospace; font-size: 1.1rem; font-weight: 700; margin-top: 4px; }
     .topbar { padding: 14px 20px; margin-bottom: 14px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; }
     .topbar h1 {
       font-family: "DM Serif Display", serif;
@@ -125,6 +169,8 @@
     .phase-label { display:flex; justify-content:space-between; font-size:.78rem; margin-bottom: 4px; }
     .phase-track { height: 8px; border-radius:999px; background: var(--bg-input); overflow:hidden; }
     .phase-fill { height:100%; border-radius:999px; }
+    input[type="range"] { width:100%; accent-color: var(--accent-blue); }
+    output { color: var(--accent-cyan); font-family: "JetBrains Mono", monospace; font-weight: 700; }
     .fill-green{background:var(--gradient-success)} .fill-blue{background:var(--gradient-primary)} .fill-purple{background:var(--gradient-purple)} .fill-amber{background:linear-gradient(135deg,#f59e0b,#f97316)}
     .timeline { list-style:none; position:relative; padding-left: 28px; }
     .timeline::before { content:""; position:absolute; left: 8px; top: 4px; bottom: 6px; width:2px; background: var(--glass-border); }
@@ -142,10 +188,12 @@
     .opp-card h3 { font-size: .85rem; margin-bottom: 3px; }
     .opp-meta { font-size:.72rem; color: var(--text-muted); }
     .digest { margin-top: 10px; border:1px solid var(--glass-border); border-radius: var(--radius-md); background: var(--bg-input); min-height: 120px; padding: 12px; white-space: pre-wrap; overflow-wrap:anywhere; font-family:"JetBrains Mono", monospace; font-size:.75rem; color: var(--text-secondary); line-height: 1.5; }
+    .button-row { display:flex; gap:8px; flex-wrap:wrap; }
+    .button-row .btn { flex:1; min-width: 150px; }
     .pill { display:inline-flex; padding:4px 9px; border-radius:999px; border:1px solid var(--glass-border); background: var(--bg-input); font-size:.72rem; color: var(--text-secondary); }
     .pill.good{color:var(--accent-green)} .pill.warn{color:var(--accent-amber)} .pill.bad{color:var(--accent-red)}
     .footer { text-align:center; color: var(--text-muted); font-size: .78rem; margin-top: 2px; }
-    @media (max-width:1080px){.s3,.s4,.s5,.s6,.s7,.s8{grid-column:span 12}}
+    @media (max-width:1080px){.s3,.s4,.s5,.s6,.s7,.s8{grid-column:span 12}.hero-grid{grid-template-columns:1fr}}
   </style>
 </head>
 <body>
@@ -172,6 +220,25 @@
     </nav>
 
     <section class="grid g12">
+      <article class="glass s12 hero-panel">
+        <div class="hero-grid">
+          <div>
+            <div class="hero-title">Cross-Protocol Mission Control</div>
+            <div class="hero-copy">Single-pane execution view for ACP, AP2, and x402 with reliability, risk, and pilot-readiness signals tuned for weekly operating rhythm.</div>
+            <div class="chip-row">
+              <span class="hero-chip">ACP: Stable</span>
+              <span class="hero-chip">AP2: Watch latency</span>
+              <span class="hero-chip">x402: Healthy</span>
+              <span class="hero-chip">LINE: Connected</span>
+            </div>
+          </div>
+          <div class="hero-metrics">
+            <div class="hero-metric"><div class="l">Current Focus</div><div class="v">Parity + Pilot</div></div>
+            <div class="hero-metric"><div class="l">Release Gate</div><div class="v">Strict Preflight</div></div>
+          </div>
+        </div>
+      </article>
+
       <article class="glass s3 card-pad">
         <div class="kpi-label">Overall Health</div>
         <div id="overallHealth" class="kpi-value">0%</div>

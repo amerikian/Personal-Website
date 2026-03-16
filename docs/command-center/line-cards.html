@@ -10,7 +10,10 @@
   <style>
     :root {
       --bg: #102224;
+      --bg-edge: #0a1718;
       --ink: #ebf4f4;
+      --title: #d8edee;
+      --body-soft: #cde6e8;
       --muted: #9bb2b2;
       --line: #295255;
       --ok: #49d487;
@@ -20,17 +23,30 @@
       --accent2: #8cf4b9;
       --card: rgba(17, 38, 41, 0.84);
       --card-strong: rgba(15, 31, 33, 0.96);
+      --surface-elevated: #173236;
+      --surface-input: #0f1f21;
+      --surface-deep: #0a1516;
+      --phone-bg: #7494A5;
+      --phone-empty: rgba(255,255,255,0.6);
       --line-green: #06C755;
       --header-grad: linear-gradient(135deg, #3b82f6, #06b6d4);
     }
 
     [data-theme="light"] {
       --bg: #eef2f7;
+      --bg-edge: #dbeafe;
       --ink: #0f172a;
+      --title: #0f172a;
+      --body-soft: #334155;
       --muted: #64748b;
       --line: rgba(15, 23, 42, 0.12);
       --card: rgba(255, 255, 255, 0.78);
       --card-strong: #ffffff;
+      --surface-elevated: rgba(255, 255, 255, 0.92);
+      --surface-input: rgba(248, 250, 252, 1);
+      --surface-deep: #ffffff;
+      --phone-bg: #cbd5e1;
+      --phone-empty: rgba(15, 23, 42, 0.55);
       --accent: #2563eb;
       --accent2: #0891b2;
     }
@@ -45,7 +61,7 @@
       background:
         radial-gradient(circle at 12% 10%, rgba(76, 201, 240, 0.22), transparent 35%),
         radial-gradient(circle at 85% 88%, rgba(6, 199, 85, 0.14), transparent 36%),
-        linear-gradient(155deg, #0a1718, var(--bg));
+        linear-gradient(155deg, var(--bg-edge), var(--bg));
     }
 
     .wrap {
@@ -105,7 +121,7 @@
       border-radius: 999px;
       padding: 7px 10px;
       font-size: 0.83rem;
-      background: #173236;
+      background: var(--surface-elevated);
     }
     .nav a.active {
       background: linear-gradient(90deg, rgba(6, 199, 85, 0.25), rgba(76, 201, 240, 0.2));
@@ -154,7 +170,7 @@
     .card h2 {
       margin: 0 0 9px;
       font-size: 1rem;
-      color: #d8edee;
+      color: var(--title);
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -168,7 +184,7 @@
       border-radius: 999px;
       padding: 5px 8px;
       color: var(--muted);
-      background: #0f1f21;
+      background: var(--surface-elevated);
       font-size: 0.76rem;
     }
     .pill.good { color: var(--ok); border-color: rgba(73,212,135,0.3); }
@@ -179,7 +195,7 @@
       border: 1px solid var(--line);
       border-radius: 999px;
       padding: 7px 14px;
-      background: #173236;
+      background: var(--surface-elevated);
       color: var(--ink);
       font: inherit;
       font-size: 0.83rem;
@@ -211,7 +227,7 @@
       width: 100%;
       border: 1px solid var(--line);
       border-radius: 10px;
-      background: #0f1f21;
+      background: var(--surface-input);
       color: var(--ink);
       font: inherit;
       padding: 8px 10px;
@@ -230,7 +246,7 @@
       border: 1px solid var(--line);
       border-radius: 10px;
       padding: 10px;
-      background: #0f1f21;
+      background: var(--surface-input);
       cursor: pointer;
       transition: border-color 180ms, background 180ms;
     }
@@ -245,7 +261,7 @@
     .template-card h3 {
       margin: 0 0 4px;
       font-size: 0.88rem;
-      color: #d6f2f4;
+      color: var(--title);
     }
     .template-card .tid {
       font-size: 0.72rem;
@@ -268,14 +284,14 @@
     .json-preview {
       border: 1px solid var(--line);
       border-radius: 10px;
-      background: #0a1516;
+      background: var(--surface-deep);
       padding: 10px;
       overflow: auto;
       max-height: 480px;
       white-space: pre-wrap;
       word-break: break-all;
       font-size: 0.73rem;
-      color: #93dfe6;
+      color: var(--accent);
       line-height: 1.4;
     }
 
@@ -330,16 +346,16 @@
     .strategy-box {
       border: 1px solid var(--line);
       border-radius: 10px;
-      background: #0f1f21;
+      background: var(--surface-input);
       padding: 10px;
       font-size: 0.82rem;
       line-height: 1.5;
-      color: #cde6e8;
+      color: var(--body-soft);
     }
     .strategy-box h3 {
       margin: 0 0 6px;
       font-size: 0.9rem;
-      color: #d6f2f4;
+      color: var(--title);
     }
     .strategy-box ul {
       margin: 4px 0;
@@ -358,7 +374,7 @@
       width: 360px;
       max-width: 100%;
       margin: 0 auto;
-      background: #7494A5;
+      background: var(--phone-bg);
       border-radius: 18px;
       padding: 24px 16px;
       min-height: 200px;
@@ -416,7 +432,7 @@
     .flex-empty {
       text-align: center;
       padding: 40px 20px;
-      color: rgba(255,255,255,0.6);
+      color: var(--phone-empty);
       font-size: 0.85rem;
     }
 

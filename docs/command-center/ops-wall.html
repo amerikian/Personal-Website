@@ -13,11 +13,13 @@
       --bg-base:#060b18; --bg-card:rgba(15,23,42,.66); --bg-input:rgba(15,23,42,.9);
       --text:#f1f5f9; --muted:#94a3b8; --line:rgba(148,163,184,.12);
       --ok:#10b981; --warn:#f59e0b; --bad:#ef4444; --blue:#3b82f6; --cyan:#06b6d4;
+      --code:#67e8f9;
       --grad:linear-gradient(135deg,#3b82f6,#06b6d4); --radius:16px; --radius-sm:10px;
     }
     [data-theme="light"] {
       --bg-base:#eef2f7; --bg-card:rgba(255,255,255,.78); --bg-input:#fff;
       --text:#0f172a; --muted:#64748b; --line:rgba(15,23,42,.1);
+      --code:#0f766e;
     }
     *{box-sizing:border-box;margin:0;padding:0}
     body{font-family:"Inter",sans-serif;color:var(--text);background:radial-gradient(ellipse at 12% 0%,rgba(59,130,246,.13),transparent 46%),radial-gradient(ellipse at 90% 100%,rgba(6,182,212,.1),transparent 48%),var(--bg-base)}
@@ -49,7 +51,7 @@
     .cmd-list{display:grid;gap:8px}
     .cmd{border:1px solid var(--line);border-radius:10px;background:var(--bg-input);padding:10px;display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center}
     .cmd .l{font-size:.7rem;color:var(--muted);margin-bottom:2px}
-    .cmd code{font-size:.76rem;color:#67e8f9;word-break:break-word}
+    .cmd code{font-size:.76rem;color:var(--code);word-break:break-word}
     .tick-list{display:grid;gap:6px}
     .tick{display:grid;grid-template-columns:auto 1fr;gap:8px;align-items:start;font-size:.82rem}
     .dot{width:10px;height:10px;border-radius:50%;margin-top:4px;background:var(--ok);box-shadow:0 0 12px rgba(16,185,129,.6)}
