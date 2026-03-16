@@ -7,15 +7,15 @@
     "releaseReadiness": 72
   },
   "meta": {
-    "generatedAt": "2026-03-15T18:59:11.344Z",
-    "source": "github:amerikian/acp-dev-workspace",
+    "generatedAt": "2026-03-16T01:06:45.741Z",
+    "source": "github:amerikian/Personal-Website",
     "dataQuality": "high",
     "note": "Reliability estimated from repository freshness and issue/PR pressure due to limited workflow history. Interop estimated because no recent relevant workflow run was available.",
     "links": {
-      "repo": "https://github.com/amerikian/acp-dev-workspace",
-      "pulls": "https://github.com/amerikian/acp-dev-workspace/pulls",
-      "issues": "https://github.com/amerikian/acp-dev-workspace/issues",
-      "actions": "https://github.com/amerikian/acp-dev-workspace/actions"
+      "repo": "https://github.com/amerikian/Personal-Website",
+      "pulls": "https://github.com/amerikian/Personal-Website/pulls",
+      "issues": "https://github.com/amerikian/Personal-Website/issues",
+      "actions": "https://github.com/amerikian/Personal-Website/actions"
     },
     "telemetry": {
       "openPrs": 0,
