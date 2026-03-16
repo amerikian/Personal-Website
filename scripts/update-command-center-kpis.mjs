@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 
-const targetRepo = process.env.TARGET_REPO || "amerikian/acp-dev-workspace";
+const targetRepo = process.env.TARGET_REPO || "amerikian/Personal-Website";
 const token = process.env.ACP_REPO_TOKEN || process.env.GITHUB_TOKEN || "";
 
 function clamp(value, min = 0, max = 100) {

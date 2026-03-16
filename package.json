@@ -10,6 +10,7 @@
         "deploy": "swa deploy . --env production",
         "command-center:sync": "node scripts/sync-command-center-pages.mjs",
         "command-center:drift-check": "node scripts/check-command-center-drift.mjs",
+        "command-center:validate": "npm run command-center:sync && npm run command-center:drift-check && node scripts/update-command-center-kpis.mjs",
         "chat:smoke": "node scripts/chat-smoke.js",
         "visual:check": "node scripts/visual-check.js",
         "visual:baseline": "node scripts/visual-regression.js baseline",
