@@ -40,10 +40,17 @@
     .kpi .l{font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
     .kpi .v{font-family:"JetBrains Mono",monospace;font-size:1.45rem;font-weight:700;margin-top:3px}
     .pill{display:inline-flex;padding:4px 9px;border-radius:999px;border:1px solid var(--line);background:var(--input);font-size:.72rem;color:var(--muted);margin-right:6px;margin-bottom:6px}
+    .pill.good{color:var(--green);border-color:color-mix(in srgb,var(--green) 40%,var(--line))}
+    .pill.warn{color:var(--amber);border-color:color-mix(in srgb,var(--amber) 40%,var(--line))}
+    .pill.bad{color:var(--red);border-color:color-mix(in srgb,var(--red) 40%,var(--line))}
     .insight{font-size:.84rem;color:var(--text);line-height:1.5;margin-bottom:8px}
     .btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
     .btn-row .btn{flex:1;min-width:140px}
     .digest{margin-top:9px;border:1px solid var(--line);border-radius:10px;background:var(--input);min-height:120px;padding:11px;white-space:pre-wrap;overflow-wrap:anywhere;color:var(--text);font-family:"JetBrains Mono",monospace;font-size:.75rem;line-height:1.5}
+    .list{list-style:none;padding:0;margin:8px 0 0;display:grid;gap:8px}
+    .list li{border:1px solid var(--line);background:var(--input);border-radius:10px;padding:9px 10px;font-size:.8rem;line-height:1.45}
+    .list li strong{display:block;margin-bottom:2px}
+    .empty-note{color:var(--muted);font-size:.8rem}
     table{width:100%;border-collapse:collapse;font-size:.82rem}
     th,td{text-align:left;padding:9px 7px;border-bottom:1px solid var(--line)}
     th{font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
@@ -75,6 +82,17 @@
       <article class="glass s3 kpi"><div class="l">Current Health</div><div id="kpiHealth" class="v">0%</div></article>
       <article class="glass s3 kpi"><div class="l">Trend Direction</div><div id="kpiDirection" class="v">Flat</div></article>
       <article class="glass s3 kpi"><div class="l">Test Progress</div><div id="kpiTests" class="v">0/0</div></article>
+
+      <article class="glass s12 pad">
+        <div class="title">Release Decision Engine <span class="mini">Actionable recommendation</span></div>
+        <p id="decisionSummary" class="insight">Capture at least one snapshot to generate a release recommendation.</p>
+        <div>
+          <span id="decisionPill" class="pill">Decision: -</span>
+          <span id="confidencePill" class="pill">Confidence: -</span>
+          <span id="anomalyPill" class="pill">Anomalies: -</span>
+        </div>
+        <ul id="actionQueue" class="list"></ul>
+      </article>
 
       <article class="glass s8 pad">
         <div class="title">Health Trend <span class="mini">Weekly snapshots</span></div>
@@ -116,6 +134,14 @@
         <div class="title">History Table <span class="mini">Reverse chronological</span></div>
         <table id="historyTable">
           <thead><tr><th>Week</th><th>Overall</th><th>Reliability</th><th>Interop</th><th>Speed</th><th>Signal</th><th>Tests</th><th>Risk (H/M/L)</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </article>
+
+      <article class="glass s12 pad">
+        <div class="title">Anomaly Monitor <span class="mini">Latest week vs previous week</span></div>
+        <table id="anomalyTable">
+          <thead><tr><th>Signal</th><th>Current</th><th>Previous</th><th>Delta</th><th>Status</th></tr></thead>
           <tbody></tbody>
         </table>
       </article>
@@ -276,6 +302,7 @@
       if (!state.history.length) return "No history snapshots available yet.";
       const latest = state.history[state.history.length - 1];
       const prior = state.history.length > 1 ? state.history[state.history.length - 2] : null;
+      const diagnostics = computeDiagnostics();
       const delta = prior ? Number(latest.overall || 0) - Number(prior.overall || 0) : 0;
       const deltaText = prior ? `${delta >= 0 ? "+" : ""}${delta} vs prior week` : "first captured week";
       return [
@@ -286,7 +313,122 @@
         `KPIs: reliability ${latest.kpis?.reliability || 0}%, interop ${latest.kpis?.interop || 0}%, speed ${latest.kpis?.speed || 0}%, pilot readiness ${latest.kpis?.signal || 0}%`,
         `Tests: ${latest.testsDone}/${latest.testsTotal}`,
         `Risks H/M/L: ${latest.risks?.high || 0}/${latest.risks?.medium || 0}/${latest.risks?.low || 0}`,
+        `Decision: ${diagnostics.decision} (confidence ${diagnostics.confidence}%)`,
+        `Anomalies: ${diagnostics.anomalies.length ? diagnostics.anomalies.join("; ") : "none"}`,
+        "Action Queue:",
+        ...diagnostics.actions.map((a, i) => `${i + 1}. ${a}`),
       ].join("\n");
+    }
+
+    function setPill(el, text, level) {
+      if (!el) return;
+      el.textContent = text;
+      el.className = `pill ${level || ""}`.trim();
+    }
+
+    function computeDiagnostics() {
+      const history = state.history;
+      if (!history.length) {
+        return {
+          decision: "NO DATA",
+          decisionLevel: "warn",
+          confidence: 0,
+          confidenceLevel: "warn",
+          anomalies: [],
+          anomalyLevel: "warn",
+          actions: ["Capture a baseline snapshot from Strategy before any release recommendation."],
+          comparisons: [],
+          summary: "No snapshots yet. Capture one snapshot to start trend intelligence.",
+        };
+      }
+
+      const latest = history[history.length - 1];
+      const prev = history.length > 1 ? history[history.length - 2] : null;
+      const mk = (signal, current, previous) => {
+        const c = Number(current || 0);
+        const p = Number(previous || 0);
+        return { signal, current: c, previous: p, delta: c - p };
+      };
+
+      const comparisons = prev ? [
+        mk("Overall", latest.overall, prev.overall),
+        mk("Reliability", latest.kpis?.reliability, prev.kpis?.reliability),
+        mk("Interop", latest.kpis?.interop, prev.kpis?.interop),
+        mk("Speed", latest.kpis?.speed, prev.kpis?.speed),
+        mk("Signal", latest.kpis?.signal, prev.kpis?.signal),
+        mk("Tests Done", latest.testsDone, prev.testsDone),
+        mk("High Risks", latest.risks?.high, prev.risks?.high),
+      ] : [];
+
+      const anomalies = [];
+      if (prev) {
+        if ((latest.overall - prev.overall) <= -8) anomalies.push("Overall dropped by 8+ points");
+        if ((Number(latest.kpis?.interop || 0) - Number(prev.kpis?.interop || 0)) <= -10) anomalies.push("Interop dropped by 10+ points");
+        if ((Number(latest.testsDone || 0) - Number(prev.testsDone || 0)) < 0) anomalies.push("Test completion regressed");
+        if ((Number(latest.risks?.high || 0) - Number(prev.risks?.high || 0)) >= 2) anomalies.push("High-risk count increased by 2+");
+      }
+
+      const testsPct = latest.testsTotal ? Math.round((latest.testsDone / latest.testsTotal) * 100) : 0;
+      const overall = Number(latest.overall || 0);
+      const highRisks = Number(latest.risks?.high || 0);
+
+      let decision = "HOLD";
+      let decisionLevel = "warn";
+      if (overall >= 80 && testsPct >= 90 && highRisks <= 1 && anomalies.length === 0) {
+        decision = "GO";
+        decisionLevel = "good";
+      } else if (overall < 65 || testsPct < 70 || highRisks >= 3) {
+        decision = "STOP";
+        decisionLevel = "bad";
+      }
+
+      const confidence = Math.max(20, Math.min(98, Math.round((overall * 0.45) + (testsPct * 0.35) + ((3 - Math.min(3, highRisks)) * 8) - (anomalies.length * 7) + (Math.min(history.length, 8) * 2))));
+      const confidenceLevel = confidence >= 80 ? "good" : confidence >= 60 ? "warn" : "bad";
+      const anomalyLevel = anomalies.length === 0 ? "good" : anomalies.length <= 2 ? "warn" : "bad";
+
+      const actions = [];
+      if (decision !== "GO") actions.push("Run strict preflight and attach pass/fail evidence in handoff notes.");
+      if (testsPct < 100) actions.push(`Close remaining testing tasks (${latest.testsDone}/${latest.testsTotal} complete).`);
+      if (highRisks > 0) actions.push(`Mitigate or accept ${highRisks} high-risk item(s) before promotion.`);
+      if (anomalies.length) actions.push(`Investigate anomalies: ${anomalies.join("; ")}.`);
+      if (!actions.length) actions.push("Prepare pilot handoff and execute external dry run.");
+
+      const summary = `Decision ${decision}: overall ${overall}% with tests ${latest.testsDone}/${latest.testsTotal} and high-risk count ${highRisks}.`;
+      return { decision, decisionLevel, confidence, confidenceLevel, anomalies, anomalyLevel, actions, comparisons, summary };
+    }
+
+    function renderDecision() {
+      const d = computeDiagnostics();
+      document.getElementById("decisionSummary").textContent = d.summary;
+      setPill(document.getElementById("decisionPill"), `Decision: ${d.decision}`, d.decisionLevel);
+      setPill(document.getElementById("confidencePill"), `Confidence: ${d.confidence}%`, d.confidenceLevel);
+      setPill(document.getElementById("anomalyPill"), `Anomalies: ${d.anomalies.length}`, d.anomalyLevel);
+
+      const queue = document.getElementById("actionQueue");
+      queue.innerHTML = "";
+      d.actions.forEach((a, i) => {
+        const li = document.createElement("li");
+        li.innerHTML = `<strong>P${i + 1} Action</strong>${a}`;
+        queue.appendChild(li);
+      });
+
+      const tbody = document.querySelector("#anomalyTable tbody");
+      tbody.innerHTML = "";
+      if (!d.comparisons.length) {
+        const tr = document.createElement("tr");
+        tr.innerHTML = '<td colspan="5" class="empty-note">Need at least two snapshots to detect anomalies.</td>';
+        tbody.appendChild(tr);
+        return;
+      }
+      d.comparisons.forEach((row) => {
+        const status = row.signal === "High Risks"
+          ? (row.delta > 0 ? "Worse" : row.delta < 0 ? "Improved" : "Stable")
+          : (row.delta < 0 ? "Worse" : row.delta > 0 ? "Improved" : "Stable");
+        const deltaTxt = `${row.delta >= 0 ? "+" : ""}${row.delta}`;
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td>${row.signal}</td><td>${row.current}</td><td>${row.previous}</td><td>${deltaTxt}</td><td>${status}</td>`;
+        tbody.appendChild(tr);
+      });
     }
 
     function renderKpis() {
@@ -315,6 +457,7 @@
 
     function render() {
       renderKpis();
+      renderDecision();
       renderCharts();
       renderTable();
     }
