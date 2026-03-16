@@ -82,7 +82,7 @@
       border-radius: 14px;
       background: var(--card);
       padding: 12px;
-      backdrop-filter: blur(2px);
+      backdrop-filter: blur(10px);
     }
 
     .header {
@@ -103,6 +103,17 @@
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
+    }
+    .v2-tag {
+      display: inline-flex;
+      margin-left: 8px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      color: var(--muted);
+      background: var(--surface-elevated);
+      font-size: 0.68rem;
+      vertical-align: middle;
     }
 
     .subtitle { margin: 3px 0 0; color: var(--muted); font-size: 0.84rem; }
@@ -316,6 +327,11 @@
       flex-wrap: wrap;
       margin-top: 10px;
     }
+    .button-row button,
+    .button-row .btn {
+      flex: 1;
+      min-width: 135px;
+    }
 
     .filter-row {
       display: grid;
@@ -331,6 +347,53 @@
     .status-bar {
       margin-top: 10px;
       font-size: 0.78rem;
+    }
+
+    .studio-hero {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background:
+        radial-gradient(circle at 8% 14%, rgba(59,130,246,0.18), transparent 44%),
+        linear-gradient(135deg, rgba(6,199,85,0.12), rgba(59,130,246,0.12));
+      padding: 14px;
+      display: grid;
+      grid-template-columns: 1.5fr 1fr;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .studio-hero h3 {
+      margin: 0 0 6px;
+      font-size: 1.05rem;
+      color: var(--title);
+    }
+    .studio-hero p {
+      margin: 0;
+      font-size: 0.84rem;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+    .hero-stats {
+      display: grid;
+      gap: 8px;
+    }
+    .hero-stat {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--surface-elevated);
+      padding: 8px 10px;
+    }
+    .hero-stat .k {
+      font-size: 0.68rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .hero-stat .v {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-top: 3px;
+      color: var(--title);
     }
 
     .sim-link {
@@ -438,6 +501,7 @@
 
     @media (max-width: 980px) {
       .span-3, .span-4, .span-5, .span-6, .span-7, .span-8 { grid-column: span 12; }
+      .studio-hero { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -445,7 +509,7 @@
   <main class="wrap">
     <header class="header">
       <div>
-        <h1>LINE Cards Studio</h1>
+        <h1>LINE Cards Studio <span class="v2-tag">v2</span></h1>
         <p class="subtitle">Flex Message prototyping for ACP / x402 / Agent Commerce</p>
       </div>
       <div style="display:flex;gap:8px;flex-wrap:wrap">
@@ -461,6 +525,18 @@
         <a class="active" href="./line-cards.html">LINE Cards Studio</a>
       </nav>
     </header>
+
+    <section class="studio-hero">
+      <div>
+        <h3>Build, Preview, Push in One Flow</h3>
+        <p>Design ACP/x402 message cards, preview real Flex output, and push to LINE via notify-bridge from a single operator surface. All core template/send behaviors remain intact.</p>
+      </div>
+      <div class="hero-stats">
+        <div class="hero-stat"><div class="k">Template Engine</div><div class="v">Embedded + Filterable</div></div>
+        <div class="hero-stat"><div class="k">Delivery Path</div><div class="v">notify-bridge → LINE</div></div>
+        <div class="hero-stat"><div class="k">Workflow</div><div class="v">Render → Copy → Send</div></div>
+      </div>
+    </section>
 
     <section class="grid">
 
