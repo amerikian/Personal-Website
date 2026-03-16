@@ -192,17 +192,40 @@
       return Math.round((Number(kpis.reliability || 0) + Number(kpis.interop || 0) + Number(kpis.speed || 0) + Number(kpis.signal || 0)) / 4);
     }
 
-    function captureSnapshotNow() {
-      const kpis = state.kpis || { reliability: 0, interop: 0, speed: 0, signal: 0 };
+    function currentRiskBuckets() {
       const risks = Array.isArray(state.risks) ? state.risks : [];
-      const tests = Array.isArray(state.tests) ? state.tests : [];
-      const buckets = risks.reduce((acc, r) => {
+      return risks.reduce((acc, r) => {
         const score = Number(r.impact || 0) * Number(r.probability || 0);
         if (score >= 15) acc.high += 1;
         else if (score >= 8) acc.medium += 1;
         else acc.low += 1;
         return acc;
       }, { high: 0, medium: 0, low: 0 });
+    }
+
+    function getLiveSnapshot() {
+      const kpis = state.kpis || { reliability: 0, interop: 0, speed: 0, signal: 0 };
+      const tests = Array.isArray(state.tests) ? state.tests : [];
+      return {
+        week: "Live",
+        capturedAt: new Date().toISOString(),
+        overall: overallFromKpis(kpis),
+        kpis: { ...kpis },
+        testsDone: tests.filter((t) => t.done).length,
+        testsTotal: tests.length,
+        risks: currentRiskBuckets(),
+        unsavedPreview: true,
+      };
+    }
+
+    function historyForView() {
+      return state.history.length ? [...state.history] : [getLiveSnapshot()];
+    }
+
+    function captureSnapshotNow() {
+      const kpis = state.kpis || { reliability: 0, interop: 0, speed: 0, signal: 0 };
+      const tests = Array.isArray(state.tests) ? state.tests : [];
+      const buckets = currentRiskBuckets();
 
       state.history.push({
         week: getWeekKey(),
@@ -233,7 +256,7 @@
 
     function renderCharts() {
       const c = colors();
-      const history = [...state.history];
+      const history = historyForView();
       const weeks = history.map((h) => h.week);
       const overall = history.map((h) => Number(h.overall || 0));
 
@@ -282,7 +305,7 @@
     function renderTable() {
       const tbody = document.querySelector("#historyTable tbody");
       tbody.innerHTML = "";
-      [...state.history].reverse().forEach((item) => {
+      [...historyForView()].reverse().forEach((item) => {
         const tr = document.createElement("tr");
         tr.innerHTML = `
           <td>${item.week || "-"}</td>
@@ -329,16 +352,17 @@
     function computeDiagnostics() {
       const history = state.history;
       if (!history.length) {
+        const live = getLiveSnapshot();
         return {
-          decision: "NO DATA",
+          decision: "PREPARE",
           decisionLevel: "warn",
-          confidence: 0,
+          confidence: Math.max(35, Math.round((live.overall * 0.5) + ((live.testsTotal ? (live.testsDone / live.testsTotal) * 100 : 0) * 0.3))),
           confidenceLevel: "warn",
           anomalies: [],
-          anomalyLevel: "warn",
-          actions: ["Capture a baseline snapshot from Strategy before any release recommendation."],
+          anomalyLevel: "good",
+          actions: ["Capture a baseline snapshot now to persist this live preview and enable weekly deltas."],
           comparisons: [],
-          summary: "No snapshots yet. Capture one snapshot to start trend intelligence.",
+          summary: `Live preview loaded from current Strategy state (overall ${live.overall}%). Capture a snapshot to start week-over-week tracking.`,
         };
       }
 
@@ -433,12 +457,13 @@
 
     function renderKpis() {
       const history = state.history;
-      const latest = history[history.length - 1];
-      const first = history[0];
+      const view = historyForView();
+      const latest = view[view.length - 1];
+      const first = view[0];
       const delta = latest && first ? Number(latest.overall || 0) - Number(first.overall || 0) : 0;
-      document.getElementById("kpiSnapshots").textContent = String(history.length);
+      document.getElementById("kpiSnapshots").textContent = String(state.history.length);
       document.getElementById("kpiHealth").textContent = latest ? `${latest.overall}%` : "0%";
-      document.getElementById("kpiDirection").textContent = delta > 0 ? "Improving" : delta < 0 ? "Declining" : "Flat";
+      document.getElementById("kpiDirection").textContent = state.history.length < 2 ? "Baseline" : delta > 0 ? "Improving" : delta < 0 ? "Declining" : "Flat";
       document.getElementById("kpiTests").textContent = latest ? `${latest.testsDone}/${latest.testsTotal}` : "0/0";
       if (!latest) {
         document.getElementById("insight").textContent = "No snapshots yet.";
@@ -452,7 +477,11 @@
       document.getElementById("latestOverall").textContent = `Overall: ${latest.overall}%`;
       document.getElementById("latestTests").textContent = `Tests: ${latest.testsDone}/${latest.testsTotal}`;
       document.getElementById("latestRisk").textContent = `Risk H/M/L: ${latest.risks?.high || 0}/${latest.risks?.medium || 0}/${latest.risks?.low || 0}`;
-      document.getElementById("insight").textContent = `Trend is ${delta > 0 ? "improving" : delta < 0 ? "declining" : "flat"} (${delta >= 0 ? "+" : ""}${delta} points across captured history).`;
+      if (state.history.length < 2) {
+        document.getElementById("insight").textContent = "Live baseline shown from current Strategy state. Capture Snapshot Now to persist week 1.";
+      } else {
+        document.getElementById("insight").textContent = `Trend is ${delta > 0 ? "improving" : delta < 0 ? "declining" : "flat"} (${delta >= 0 ? "+" : ""}${delta} points across captured history).`;
+      }
     }
 
     function render() {
