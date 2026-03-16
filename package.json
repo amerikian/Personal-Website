@@ -8,6 +8,7 @@
         "dev": "npx live-server --port=3000",
         "build": "echo 'Static site - no build required'",
         "deploy": "swa deploy . --env production",
+        "command-center:sync": "node scripts/sync-command-center-pages.mjs",
         "chat:smoke": "node scripts/chat-smoke.js",
         "visual:check": "node scripts/visual-check.js",
         "visual:baseline": "node scripts/visual-regression.js baseline",
