@@ -1,12 +1,12 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>LINE Cards Studio — ACP Command Center</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
   <style>
     :root {
       --bg: #102224;
@@ -21,6 +21,18 @@
       --card: rgba(17, 38, 41, 0.84);
       --card-strong: rgba(15, 31, 33, 0.96);
       --line-green: #06C755;
+      --header-grad: linear-gradient(135deg, #3b82f6, #06b6d4);
+    }
+
+    [data-theme="light"] {
+      --bg: #eef2f7;
+      --ink: #0f172a;
+      --muted: #64748b;
+      --line: rgba(15, 23, 42, 0.12);
+      --card: rgba(255, 255, 255, 0.78);
+      --card-strong: #ffffff;
+      --accent: #2563eb;
+      --accent2: #0891b2;
     }
 
     * { box-sizing: border-box; }
@@ -29,7 +41,7 @@
       margin: 0;
       color: var(--ink);
       min-height: 100vh;
-      font-family: "JetBrains Mono", monospace;
+      font-family: "Inter", sans-serif;
       background:
         radial-gradient(circle at 12% 10%, rgba(76, 201, 240, 0.22), transparent 35%),
         radial-gradient(circle at 85% 88%, rgba(6, 199, 85, 0.14), transparent 36%),
@@ -71,6 +83,10 @@
       letter-spacing: 0.03em;
       font-size: clamp(1.2rem, 2.5vw, 1.9rem);
       font-weight: 400;
+      background: var(--header-grad);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
 
     .subtitle { margin: 3px 0 0; color: var(--muted); font-size: 0.84rem; }
@@ -95,6 +111,31 @@
       background: linear-gradient(90deg, rgba(6, 199, 85, 0.25), rgba(76, 201, 240, 0.2));
     }
     .nav a:hover { filter: brightness(1.1); }
+
+    .theme-toggle {
+      width: 46px;
+      height: 26px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: var(--card-strong);
+      position: relative;
+      cursor: pointer;
+    }
+    .theme-toggle::after {
+      content: '';
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      left: 2px;
+      top: 2px;
+      background: var(--warn);
+      transition: transform 180ms ease;
+    }
+    [data-theme="dark"] .theme-toggle::after {
+      transform: translateX(20px);
+      background: var(--accent);
+    }
 
     .grid {
       display: grid;
@@ -260,6 +301,17 @@
       margin-top: 10px;
     }
 
+    .filter-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    .filter-row select,
+    .filter-row input {
+      height: 34px;
+    }
+
     .status-bar {
       margin-top: 10px;
       font-size: 0.78rem;
@@ -381,6 +433,7 @@
         <p class="subtitle">Flex Message prototyping for ACP / x402 / Agent Commerce</p>
       </div>
       <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button id="themeBtn" class="theme-toggle" type="button" aria-label="Toggle light/dark theme"></button>
         <a class="sim-link" href="https://developers.line.biz/flex-simulator/" target="_blank" rel="noopener">
           Open Flex Simulator ↗
         </a>
@@ -398,6 +451,16 @@
       <!-- Template Gallery -->
       <article class="card span-5">
         <h2>Template Gallery <span class="mini" id="templateCount">0 templates</span></h2>
+        <div class="filter-row">
+          <input id="templateSearch" type="text" placeholder="Search templates..." />
+          <select id="templateCategory">
+            <option value="all">All</option>
+            <option value="acp">ACP</option>
+            <option value="x402">x402</option>
+            <option value="ops">Ops</option>
+            <option value="user">User</option>
+          </select>
+        </div>
         <div id="templateGrid" class="template-grid">
           <div class="template-card"><h3>Loading...</h3></div>
         </div>
@@ -463,6 +526,16 @@ https://developers.line.biz/flex-simulator/</div>
         </div>
       </article>
 
+      <!-- Bot Status Indicator -->
+      <article class="card span-12" id="botStatusCard" style="border-color:rgba(6,199,85,0.3);background:rgba(6,199,85,0.04)">
+        <h2>Bot Status <span class="mini">@flexmessagesim</span></h2>
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+          <span id="botDot" style="width:12px;height:12px;border-radius:50%;background:var(--muted);flex-shrink:0"></span>
+          <span id="botLabel" style="font-size:0.85rem">Not checked</span>
+          <span class="pill" id="botUserPill" style="margin-left:auto">No user captured</span>
+        </div>
+      </article>
+
       <!-- Bridge Config -->
       <article class="card span-4">
         <h2>Bridge Connection <span class="mini">notify-bridge</span></h2>
@@ -486,6 +559,52 @@ https://developers.line.biz/flex-simulator/</div>
         <div class="status-bar">
           <span class="pill" id="bridgeStatus">Not checked</span>
         </div>
+      </article>
+
+      <!-- Alert Bridge -->
+      <article class="card span-8">
+        <h2>Alert Bridge <span class="mini">Send test notifications</span></h2>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <div>
+            <label class="mini">Alert Type</label>
+            <select id="alertType">
+              <option value="critical-incident">Critical Incident</option>
+              <option value="protocol-health">Protocol Health Monitor</option>
+              <option value="weekly-digest">Weekly PM Digest</option>
+            </select>
+          </div>
+          <div>
+            <label class="mini">Alert Title</label>
+            <input id="alertTitle" type="text" placeholder="Protocol bridge degradation detected" />
+          </div>
+        </div>
+        <div style="margin-top:8px">
+          <label class="mini">Alert Body</label>
+          <textarea id="alertBody" rows="2" placeholder="ACP adapter parity check drifted outside SLO."></textarea>
+        </div>
+        <div class="button-row">
+          <button id="sendAlertBtn" type="button" class="btn-primary">Send Alert to LINE</button>
+          <button id="previewAlertBtn" type="button" class="btn-purple">Preview Alert Card</button>
+        </div>
+        <div class="status-bar">
+          <span class="pill" id="alertStatus">Ready</span>
+        </div>
+      </article>
+
+      <!-- Quick Message Tests -->
+      <article class="card span-4">
+        <h2>Quick Test <span class="mini">Debug LINE connectivity</span></h2>
+        <p class="mini" style="margin-bottom:8px">Send non-Flex messages to test push capability. If all fail with 403, the channel access token may lack push permission, or the bot isn't friended.</p>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <button id="testTextBtn" type="button" class="btn-primary" style="width:100%">📨 Send Text Message</button>
+          <button id="testStickerBtn" type="button" style="width:100%">😀 Send Sticker</button>
+          <button id="testImageBtn" type="button" style="width:100%">🖼️ Send Test Image</button>
+          <button id="botInfoBtn" type="button" style="width:100%">🤖 Get Bot Info</button>
+        </div>
+        <div class="status-bar" style="margin-top:8px">
+          <span class="pill" id="quickTestStatus">Ready</span>
+        </div>
+        <pre id="quickTestResult" style="font-size:0.72rem;max-height:120px;overflow:auto;background:var(--bg);padding:6px;border-radius:4px;margin-top:4px;display:none"></pre>
       </article>
 
       <!-- ACP/Crypto in LINE Strategy -->
@@ -542,6 +661,7 @@ https://developers.line.biz/flex-simulator/</div>
   <script>
     const studioKey = "acp-line-cards-studio-v1";
     const ccKey = "acp-command-center-v1";
+    const themeKey = "acp-cc-theme";
 
     // Embedded template contents — works offline without bridge
     const embeddedTemplates = {
@@ -555,7 +675,10 @@ https://developers.line.biz/flex-simulator/</div>
       "x402-subscription-renewal": {"id":"x402-subscription-renewal","name":"x402 Subscription Renewal","altText":"Subscription renewed: {{serviceName}} — {{amount}} charged via x402","contents":{"type":"bubble","size":"mega","header":{"type":"box","layout":"vertical","backgroundColor":"#065F46","paddingAll":"14px","contents":[{"type":"box","layout":"horizontal","contents":[{"type":"text","text":"SUBSCRIPTION","weight":"bold","color":"#FFFFFF","size":"sm","flex":0},{"type":"text","text":"RENEWED","color":"#6EE7B7","size":"xxs","align":"end","gravity":"center","weight":"bold"}]},{"type":"text","text":"x402 auto-payment","color":"#A7F3D0","size":"xxs","margin":"sm"}]},"body":{"type":"box","layout":"vertical","spacing":"md","paddingAll":"14px","contents":[{"type":"text","text":"{{serviceName}}","weight":"bold","size":"md","color":"#111827"},{"type":"box","layout":"vertical","backgroundColor":"#ECFDF5","cornerRadius":"8px","paddingAll":"10px","margin":"sm","contents":[{"type":"box","layout":"horizontal","contents":[{"type":"text","text":"Amount","size":"xs","color":"#6B7280","flex":2},{"type":"text","text":"{{amount}}","size":"md","weight":"bold","color":"#065F46","flex":3,"align":"end"}]},{"type":"box","layout":"horizontal","margin":"xs","contents":[{"type":"text","text":"Period","size":"xxs","color":"#6B7280","flex":2},{"type":"text","text":"{{billingPeriod}}","size":"xxs","color":"#374151","flex":3,"align":"end"}]}]},{"type":"separator","margin":"md"},{"type":"box","layout":"horizontal","margin":"md","contents":[{"type":"text","text":"Next Renewal","size":"xxs","color":"#6B7280","flex":3},{"type":"text","text":"{{nextRenewal}}","size":"xxs","color":"#374151","flex":4}]},{"type":"box","layout":"horizontal","contents":[{"type":"text","text":"Wallet","size":"xxs","color":"#6B7280","flex":3},{"type":"text","text":"{{walletAddress}}","size":"xxs","color":"#374151","flex":4,"wrap":true}]},{"type":"box","layout":"horizontal","contents":[{"type":"text","text":"Tx Hash","size":"xxs","color":"#6B7280","flex":3},{"type":"text","text":"{{txHash}}","size":"xxs","color":"#374151","flex":4,"wrap":true}]}]},"footer":{"type":"box","layout":"horizontal","spacing":"sm","contents":[{"type":"button","style":"primary","height":"sm","color":"#065F46","flex":1,"action":{"type":"uri","label":"Manage","uri":"{{manageUrl}}"}},{"type":"button","style":"secondary","height":"sm","flex":1,"action":{"type":"uri","label":"Cancel","uri":"{{cancelUrl}}"}}]}}},
       "acp-refund": {"id":"acp-refund","name":"ACP Refund Processed","altText":"Refund of {{refundAmount}} processed for session {{sessionId}}","contents":{"type":"bubble","size":"mega","header":{"type":"box","layout":"vertical","backgroundColor":"#C2410C","paddingAll":"14px","contents":[{"type":"box","layout":"horizontal","contents":[{"type":"text","text":"REFUND","weight":"bold","color":"#FFFFFF","size":"sm","flex":0},{"type":"text","text":"PROCESSED","color":"#FED7AA","size":"xxs","align":"end","gravity":"center","weight":"bold"}]},{"type":"text","text":"Session {{sessionId}}","color":"#FFEDD5","size":"xxs","margin":"sm"}]},"body":{"type":"box","layout":"vertical","spacing":"md","paddingAll":"14px","contents":[{"type":"text","text":"{{refundAmount}}","weight":"bold","size":"xl","color":"#C2410C","align":"center"},{"type":"text","text":"returned to {{paymentMethod}}","size":"xs","color":"#6B7280","align":"center"},{"type":"separator","margin":"md"},{"type":"box","layout":"horizontal","margin":"md","contents":[{"type":"text","text":"Reason","size":"xxs","color":"#6B7280","flex":2},{"type":"text","text":"{{refundReason}}","size":"xxs","color":"#374151","flex":4,"wrap":true}]},{"type":"box","layout":"horizontal","contents":[{"type":"text","text":"Merchant","size":"xxs","color":"#6B7280","flex":2},{"type":"text","text":"{{merchantName}}","size":"xxs","color":"#374151","flex":4}]},{"type":"box","layout":"horizontal","contents":[{"type":"text","text":"Original","size":"xxs","color":"#6B7280","flex":2},{"type":"text","text":"{{originalTotal}}","size":"xxs","color":"#374151","flex":4}]},{"type":"box","layout":"horizontal","contents":[{"type":"text","text":"Initiated by","size":"xxs","color":"#6B7280","flex":2},{"type":"text","text":"{{initiatedBy}}","size":"xxs","color":"#374151","flex":4}]},{"type":"box","layout":"horizontal","contents":[{"type":"text","text":"ETA","size":"xxs","color":"#6B7280","flex":2},{"type":"text","text":"{{refundEta}}","size":"xxs","color":"#C2410C","flex":4,"weight":"bold"}]}]},"footer":{"type":"box","layout":"vertical","contents":[{"type":"button","style":"primary","height":"sm","color":"#C2410C","action":{"type":"uri","label":"View Details","uri":"{{url}}"}}]}}},
       "protocol-health": {"id":"protocol-health","name":"Protocol Health Monitor","altText":"Protocol status: ACP {{acpStatus}}, x402 {{x402Status}}, AP2 {{ap2Status}}","contents":{"type":"bubble","size":"mega","header":{"type":"box","layout":"vertical","backgroundColor":"#1E293B","paddingAll":"14px","contents":[{"type":"box","layout":"horizontal","contents":[{"type":"text","text":"PROTOCOL HEALTH","weight":"bold","color":"#FFFFFF","size":"sm","flex":0},{"type":"text","text":"{{timestamp}}","color":"#94A3B8","size":"xxs","align":"end","gravity":"center"}]},{"type":"text","text":"System Status Overview","color":"#CBD5E1","size":"xxs","margin":"sm"}]},"body":{"type":"box","layout":"vertical","spacing":"md","paddingAll":"14px","contents":[{"type":"box","layout":"horizontal","backgroundColor":"#F0FDF4","cornerRadius":"6px","paddingAll":"8px","contents":[{"type":"text","text":"ACP","size":"sm","weight":"bold","color":"#111827","flex":2},{"type":"text","text":"{{acpStatus}}","size":"sm","weight":"bold","color":"#059669","flex":2,"align":"end"},{"type":"text","text":"{{acpLatency}}","size":"xxs","color":"#6B7280","flex":2,"align":"end"}]},{"type":"box","layout":"horizontal","backgroundColor":"#F0FDF4","cornerRadius":"6px","paddingAll":"8px","contents":[{"type":"text","text":"x402","size":"sm","weight":"bold","color":"#111827","flex":2},{"type":"text","text":"{{x402Status}}","size":"sm","weight":"bold","color":"#059669","flex":2,"align":"end"},{"type":"text","text":"{{x402Latency}}","size":"xxs","color":"#6B7280","flex":2,"align":"end"}]},{"type":"box","layout":"horizontal","backgroundColor":"#F0FDF4","cornerRadius":"6px","paddingAll":"8px","contents":[{"type":"text","text":"AP2","size":"sm","weight":"bold","color":"#111827","flex":2},{"type":"text","text":"{{ap2Status}}","size":"sm","weight":"bold","color":"#059669","flex":2,"align":"end"},{"type":"text","text":"{{ap2Latency}}","size":"xxs","color":"#6B7280","flex":2,"align":"end"}]},{"type":"separator","margin":"md"},{"type":"box","layout":"horizontal","margin":"md","contents":[{"type":"text","text":"Conformance","size":"xxs","color":"#6B7280","flex":3},{"type":"text","text":"{{conformanceScore}}","size":"xxs","weight":"bold","color":"#111827","flex":4}]},{"type":"box","layout":"horizontal","contents":[{"type":"text","text":"Bridge Sync","size":"xxs","color":"#6B7280","flex":3},{"type":"text","text":"{{bridgeSync}}","size":"xxs","color":"#374151","flex":4}]},{"type":"box","layout":"horizontal","contents":[{"type":"text","text":"Uptime","size":"xxs","color":"#6B7280","flex":3},{"type":"text","text":"{{uptime}}","size":"xxs","color":"#374151","flex":4}]}]},"footer":{"type":"box","layout":"vertical","contents":[{"type":"button","style":"primary","height":"sm","color":"#1E293B","action":{"type":"uri","label":"Open Dashboard","uri":"{{url}}"}}]}}},
-      "acp-agent-handoff": {"id":"acp-agent-handoff","name":"ACP Agent Commerce Handoff","altText":"{{agentName}} started a checkout on your behalf","contents":{"type":"bubble","size":"mega","header":{"type":"box","layout":"vertical","backgroundColor":"#0E7490","paddingAll":"14px","contents":[{"type":"box","layout":"horizontal","contents":[{"type":"text","text":"AGENT COMMERCE","weight":"bold","color":"#FFFFFF","size":"sm","flex":0},{"type":"text","text":"ACTION NEEDED","color":"#FDE68A","size":"xxs","align":"end","gravity":"center","weight":"bold"}]},{"type":"text","text":"Session {{sessionId}}","color":"#CFFAFE","size":"xxs","margin":"sm"}]},"body":{"type":"box","layout":"vertical","spacing":"md","paddingAll":"14px","contents":[{"type":"text","text":"{{agentName}} is ready to purchase:","size":"sm","color":"#111827"},{"type":"box","layout":"vertical","backgroundColor":"#F0FDFA","cornerRadius":"8px","paddingAll":"10px","margin":"sm","contents":[{"type":"text","text":"{{itemDescription}}","size":"sm","color":"#0F766E","wrap":true},{"type":"text","text":"{{total}}","size":"lg","weight":"bold","color":"#0E7490","margin":"sm"}]},{"type":"separator","margin":"md"},{"type":"box","layout":"horizontal","margin":"md","contents":[{"type":"text","text":"Merchant","size":"xxs","color":"#6B7280","flex":2},{"type":"text","text":"{{merchantName}}","size":"xxs","color":"#374151","flex":4}]},{"type":"box","layout":"horizontal","contents":[{"type":"text","text":"Payment","size":"xxs","color":"#6B7280","flex":2},{"type":"text","text":"{{paymentMethod}}","size":"xxs","color":"#374151","flex":4}]},{"type":"box","layout":"horizontal","contents":[{"type":"text","text":"Status","size":"xxs","color":"#6B7280","flex":2},{"type":"text","text":"ready_for_payment","size":"xxs","weight":"bold","color":"#0E7490","flex":4}]},{"type":"text","text":"Tap Approve to authorize this purchase, or Decline to cancel.","size":"xxs","color":"#6B7280","wrap":true,"margin":"md"}]},"footer":{"type":"box","layout":"horizontal","spacing":"sm","contents":[{"type":"button","style":"primary","height":"sm","color":"#0E7490","flex":1,"action":{"type":"uri","label":"Approve","uri":"{{approveUrl}}"}},{"type":"button","style":"secondary","height":"sm","flex":1,"action":{"type":"uri","label":"Decline","uri":"{{declineUrl}}"}}]}}}
+      "acp-agent-handoff": {"id":"acp-agent-handoff","name":"ACP Agent Commerce Handoff","altText":"{{agentName}} started a checkout on your behalf","contents":{"type":"bubble","size":"mega","header":{"type":"box","layout":"vertical","backgroundColor":"#0E7490","paddingAll":"14px","contents":[{"type":"box","layout":"horizontal","contents":[{"type":"text","text":"AGENT COMMERCE","weight":"bold","color":"#FFFFFF","size":"sm","flex":0},{"type":"text","text":"ACTION NEEDED","color":"#FDE68A","size":"xxs","align":"end","gravity":"center","weight":"bold"}]},{"type":"text","text":"Session {{sessionId}}","color":"#CFFAFE","size":"xxs","margin":"sm"}]},"body":{"type":"box","layout":"vertical","spacing":"md","paddingAll":"14px","contents":[{"type":"text","text":"{{agentName}} is ready to purchase:","size":"sm","color":"#111827"},{"type":"box","layout":"vertical","backgroundColor":"#F0FDFA","cornerRadius":"8px","paddingAll":"10px","margin":"sm","contents":[{"type":"text","text":"{{itemDescription}}","size":"sm","color":"#0F766E","wrap":true},{"type":"text","text":"{{total}}","size":"lg","weight":"bold","color":"#0E7490","margin":"sm"}]},{"type":"separator","margin":"md"},{"type":"box","layout":"horizontal","margin":"md","contents":[{"type":"text","text":"Merchant","size":"xxs","color":"#6B7280","flex":2},{"type":"text","text":"{{merchantName}}","size":"xxs","color":"#374151","flex":4}]},{"type":"box","layout":"horizontal","contents":[{"type":"text","text":"Payment","size":"xxs","color":"#6B7280","flex":2},{"type":"text","text":"{{paymentMethod}}","size":"xxs","color":"#374151","flex":4}]},{"type":"box","layout":"horizontal","contents":[{"type":"text","text":"Status","size":"xxs","color":"#6B7280","flex":2},{"type":"text","text":"ready_for_payment","size":"xxs","weight":"bold","color":"#0E7490","flex":4}]},{"type":"text","text":"Tap Approve to authorize this purchase, or Decline to cancel.","size":"xxs","color":"#6B7280","wrap":true,"margin":"md"}]},"footer":{"type":"box","layout":"horizontal","spacing":"sm","contents":[{"type":"button","style":"primary","height":"sm","color":"#0E7490","flex":1,"action":{"type":"uri","label":"Approve","uri":"{{approveUrl}}"}},{"type":"button","style":"secondary","height":"sm","flex":1,"action":{"type":"uri","label":"Decline","uri":"{{declineUrl}}"}}]}}},
+      "hero-image-card": {"id":"hero-image-card","name":"Hero Image Card","altText":"{{heroTitle}} — {{heroCaption}}","contents":{"type":"bubble","size":"mega","hero":{"type":"image","url":"{{heroImageUrl}}","size":"full","aspectRatio":"20:13","aspectMode":"cover","action":{"type":"uri","label":"View","uri":"{{heroLinkUrl}}"}},"body":{"type":"box","layout":"vertical","spacing":"md","paddingAll":"14px","contents":[{"type":"text","text":"{{heroTitle}}","weight":"bold","size":"lg","color":"#111827","wrap":true},{"type":"text","text":"{{heroCaption}}","size":"sm","color":"#6B7280","wrap":true,"margin":"sm"},{"type":"separator","margin":"md"},{"type":"box","layout":"baseline","margin":"md","contents":[{"type":"text","text":"Category","size":"xxs","color":"#6B7280","flex":2},{"type":"text","text":"{{heroCategory}}","size":"xxs","color":"#374151","flex":4}]},{"type":"box","layout":"baseline","contents":[{"type":"text","text":"Date","size":"xxs","color":"#6B7280","flex":2},{"type":"text","text":"{{heroDate}}","size":"xxs","color":"#374151","flex":4}]}]},"footer":{"type":"box","layout":"vertical","contents":[{"type":"button","style":"primary","height":"sm","color":"#2563EB","action":{"type":"uri","label":"{{heroBtnLabel}}","uri":"{{heroLinkUrl}}"}}]}}},
+      "product-carousel": {"id":"product-carousel","name":"Product Carousel","altText":"{{carouselTitle}} — browse {{productCount}} items","contents":{"type":"carousel","contents":[{"type":"bubble","size":"kilo","hero":{"type":"image","url":"{{product1Image}}","size":"full","aspectRatio":"4:3","aspectMode":"cover"},"body":{"type":"box","layout":"vertical","spacing":"sm","contents":[{"type":"text","text":"{{product1Name}}","weight":"bold","size":"md","color":"#111827"},{"type":"text","text":"{{product1Price}}","size":"lg","weight":"bold","color":"#059669"},{"type":"text","text":"{{product1Desc}}","size":"xs","color":"#6B7280","wrap":true}]},"footer":{"type":"box","layout":"vertical","contents":[{"type":"button","style":"primary","height":"sm","color":"#059669","action":{"type":"uri","label":"Buy Now","uri":"{{product1Url}}"}}]}},{"type":"bubble","size":"kilo","hero":{"type":"image","url":"{{product2Image}}","size":"full","aspectRatio":"4:3","aspectMode":"cover"},"body":{"type":"box","layout":"vertical","spacing":"sm","contents":[{"type":"text","text":"{{product2Name}}","weight":"bold","size":"md","color":"#111827"},{"type":"text","text":"{{product2Price}}","size":"lg","weight":"bold","color":"#059669"},{"type":"text","text":"{{product2Desc}}","size":"xs","color":"#6B7280","wrap":true}]},"footer":{"type":"box","layout":"vertical","contents":[{"type":"button","style":"primary","height":"sm","color":"#059669","action":{"type":"uri","label":"Buy Now","uri":"{{product2Url}}"}}]}},{"type":"bubble","size":"kilo","hero":{"type":"image","url":"{{product3Image}}","size":"full","aspectRatio":"4:3","aspectMode":"cover"},"body":{"type":"box","layout":"vertical","spacing":"sm","contents":[{"type":"text","text":"{{product3Name}}","weight":"bold","size":"md","color":"#111827"},{"type":"text","text":"{{product3Price}}","size":"lg","weight":"bold","color":"#059669"},{"type":"text","text":"{{product3Desc}}","size":"xs","color":"#6B7280","wrap":true}]},"footer":{"type":"box","layout":"vertical","contents":[{"type":"button","style":"primary","height":"sm","color":"#059669","action":{"type":"uri","label":"Buy Now","uri":"{{product3Url}}"}}]}}]}},
+      "image-gallery": {"id":"image-gallery","name":"Image Gallery Slide","altText":"Gallery: {{galleryTitle}}","contents":{"type":"carousel","contents":[{"type":"bubble","size":"mega","hero":{"type":"image","url":"{{slide1Image}}","size":"full","aspectRatio":"3:2","aspectMode":"cover"},"body":{"type":"box","layout":"vertical","paddingAll":"10px","contents":[{"type":"text","text":"{{slide1Caption}}","size":"sm","weight":"bold","color":"#111827","wrap":true},{"type":"text","text":"1 / {{slideCount}}","size":"xxs","color":"#9CA3AF","align":"end"}]}},{"type":"bubble","size":"mega","hero":{"type":"image","url":"{{slide2Image}}","size":"full","aspectRatio":"3:2","aspectMode":"cover"},"body":{"type":"box","layout":"vertical","paddingAll":"10px","contents":[{"type":"text","text":"{{slide2Caption}}","size":"sm","weight":"bold","color":"#111827","wrap":true},{"type":"text","text":"2 / {{slideCount}}","size":"xxs","color":"#9CA3AF","align":"end"}]}},{"type":"bubble","size":"mega","hero":{"type":"image","url":"{{slide3Image}}","size":"full","aspectRatio":"3:2","aspectMode":"cover"},"body":{"type":"box","layout":"vertical","paddingAll":"10px","contents":[{"type":"text","text":"{{slide3Caption}}","size":"sm","weight":"bold","color":"#111827","wrap":true},{"type":"text","text":"3 / {{slideCount}}","size":"xxs","color":"#9CA3AF","align":"end"}]}}]}}
     };
 
     const templateMeta = {
@@ -624,6 +747,24 @@ https://developers.line.biz/flex-simulator/</div>
         badge: "OPS",
         vars: ["timestamp", "acpStatus", "acpLatency", "x402Status", "x402Latency", "ap2Status", "ap2Latency", "conformanceScore", "bridgeSync", "uptime", "url"],
         useCase: "System health overview for all 3 protocols"
+      },
+      "hero-image-card": {
+        category: "user",
+        badge: "IMAGE",
+        vars: ["heroImageUrl", "heroTitle", "heroCaption", "heroCategory", "heroDate", "heroBtnLabel", "heroLinkUrl"],
+        useCase: "Full-width hero image card with title and CTA"
+      },
+      "product-carousel": {
+        category: "acp",
+        badge: "CAROUSEL",
+        vars: ["carouselTitle", "productCount", "product1Image", "product1Name", "product1Price", "product1Desc", "product1Url", "product2Image", "product2Name", "product2Price", "product2Desc", "product2Url", "product3Image", "product3Name", "product3Price", "product3Desc", "product3Url"],
+        useCase: "Swipeable product cards with images, prices, and buy buttons"
+      },
+      "image-gallery": {
+        category: "user",
+        badge: "SLIDE",
+        vars: ["galleryTitle", "slideCount", "slide1Image", "slide1Caption", "slide2Image", "slide2Caption", "slide3Image", "slide3Caption"],
+        useCase: "Image slideshow gallery — swipe through photos"
       }
     };
 
@@ -700,6 +841,41 @@ https://developers.line.biz/flex-simulator/</div>
       conformanceScore: "9/11 checks passing",
       bridgeSync: "Last sync 2m ago",
       uptime: "99.7% (30d)",
+      // hero-image-card defaults
+      heroImageUrl: "https://placehold.co/1200x780/2563EB/FFFFFF?text=ACP+Commerce",
+      heroTitle: "Agentic Commerce Protocol",
+      heroCaption: "AI-powered checkout that works across any agent — from ChatGPT to custom bots.",
+      heroCategory: "Protocol Update",
+      heroDate: new Date().toLocaleDateString(),
+      heroBtnLabel: "Learn More",
+      heroLinkUrl: "https://developers.openai.com/commerce",
+      // product-carousel defaults
+      carouselTitle: "Featured Products",
+      productCount: "3",
+      product1Image: "https://placehold.co/800x600/059669/FFFFFF?text=API+Pro",
+      product1Name: "API Pro License",
+      product1Price: "$49/mo",
+      product1Desc: "Unlimited API calls, priority support, 99.9% uptime SLA",
+      product1Url: "https://example.com/product/api-pro",
+      product2Image: "https://placehold.co/800x600/7C3AED/FFFFFF?text=Agent+SDK",
+      product2Name: "Agent SDK",
+      product2Price: "$29/mo",
+      product2Desc: "Build commerce agents with ACP, x402, and AP2 support",
+      product2Url: "https://example.com/product/agent-sdk",
+      product3Image: "https://placehold.co/800x600/DC2626/FFFFFF?text=Enterprise",
+      product3Name: "Enterprise Plan",
+      product3Price: "$199/mo",
+      product3Desc: "Multi-region, dedicated support, custom integrations",
+      product3Url: "https://example.com/product/enterprise",
+      // image-gallery defaults
+      galleryTitle: "Protocol Showcase",
+      slideCount: "3",
+      slide1Image: "https://placehold.co/1200x800/1E293B/FFFFFF?text=ACP+Flow",
+      slide1Caption: "ACP Checkout Flow — Agent to Merchant",
+      slide2Image: "https://placehold.co/1200x800/0E7490/FFFFFF?text=x402+Payment",
+      slide2Caption: "x402 HTTP-Native Crypto Payment",
+      slide3Image: "https://placehold.co/1200x800/7C3AED/FFFFFF?text=AP2+Bridge",
+      slide3Caption: "AP2 Agent-to-Agent Communication",
     };
 
     let studioState = (() => {
@@ -736,6 +912,23 @@ https://developers.line.biz/flex-simulator/</div>
 
     function saveStudio() {
       localStorage.setItem(studioKey, JSON.stringify(studioState));
+    }
+
+    function setTheme(theme) {
+      document.documentElement.setAttribute("data-theme", theme);
+      localStorage.setItem(themeKey, theme);
+    }
+
+    function getFilteredTemplates(templates) {
+      const q = (document.getElementById("templateSearch")?.value || "").trim().toLowerCase();
+      const cat = document.getElementById("templateCategory")?.value || "all";
+      return templates.filter((t) => {
+        const meta = templateMeta[t.id] || { category: "other", useCase: "" };
+        const categoryOk = cat === "all" || meta.category === cat;
+        const text = `${t.id} ${t.name} ${meta.useCase}`.toLowerCase();
+        const queryOk = !q || text.includes(q);
+        return categoryOk && queryOk;
+      });
     }
 
     function setStatus(elementId, message, type) {
@@ -1245,8 +1438,18 @@ https://developers.line.biz/flex-simulator/</div>
 
     document.getElementById("refreshBtn").addEventListener("click", async () => {
       const templates = await loadTemplates();
-      renderTemplateGrid(templates);
+      renderTemplateGrid(getFilteredTemplates(templates));
       renderInventory(templates);
+    });
+
+    document.getElementById("templateSearch").addEventListener("input", async () => {
+      const templates = await loadTemplates();
+      renderTemplateGrid(getFilteredTemplates(templates));
+    });
+
+    document.getElementById("templateCategory").addEventListener("change", async () => {
+      const templates = await loadTemplates();
+      renderTemplateGrid(getFilteredTemplates(templates));
     });
 
     // Persist bridge config
@@ -1263,18 +1466,194 @@ https://developers.line.biz/flex-simulator/</div>
       saveStudio();
     });
 
+    // ── Alert Bridge ─────────────────────────────────────────────
+
+    document.getElementById("sendAlertBtn").addEventListener("click", async function() {
+      try {
+        var alertType = document.getElementById("alertType").value;
+        var alertTitle = document.getElementById("alertTitle").value || "Protocol bridge degradation detected";
+        var alertBody = document.getElementById("alertBody").value || "ACP adapter parity check drifted outside SLO.";
+
+        var vars = Object.assign({}, defaultVarValues, {
+          title: alertTitle,
+          body: alertBody,
+          timestamp: new Date().toLocaleString(),
+        });
+
+        // Select the alert template, render, and send
+        var tpl = embeddedTemplates[alertType];
+        if (!tpl) throw new Error("Template not found: " + alertType);
+
+        var rendered = applyVarsToTemplate(tpl.contents, vars);
+        var altText = applyVarsToTemplate(tpl.altText, vars);
+
+        var base = getBridgeBase();
+        var useLastUser = document.getElementById("useLastUser").checked;
+
+        if (useLastUser) {
+          var data = await fetchJson(base + "/notify/line/flex/last-user", {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify({ templateId: alertType, vars: vars }),
+          });
+          if (!data.ok) throw new Error(data.error);
+          setStatus("alertStatus", "Alert sent to LINE user " + data.userId, "good");
+        } else {
+          var userId = studioState.lineUserId;
+          if (!userId) { setStatus("alertStatus", "Enter a LINE User ID or enable last-user", "warn"); return; }
+          await fetchJson(base + "/notify/line/flex", {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify({ userId: userId, templateId: alertType, vars: vars }),
+          });
+          setStatus("alertStatus", "Alert sent to LINE user " + userId, "good");
+        }
+      } catch (err) {
+        setStatus("alertStatus", "Alert send failed: " + err.message, "bad");
+      }
+    });
+
+    document.getElementById("previewAlertBtn").addEventListener("click", function() {
+      var alertType = document.getElementById("alertType").value;
+      var alertTitle = document.getElementById("alertTitle").value || "Protocol bridge degradation detected";
+      var alertBody = document.getElementById("alertBody").value || "ACP adapter parity check drifted outside SLO.";
+
+      var vars = Object.assign({}, defaultVarValues, {
+        title: alertTitle,
+        body: alertBody,
+        timestamp: new Date().toLocaleString(),
+      });
+
+      var tpl = embeddedTemplates[alertType];
+      if (!tpl) { setStatus("alertStatus", "Template not found", "bad"); return; }
+
+      var rendered = applyVarsToTemplate(tpl.contents, vars);
+      showFlexVisual(rendered);
+      document.getElementById("jsonPreview").textContent = JSON.stringify(rendered, null, 2);
+      setStatus("alertStatus", "Preview: " + tpl.name, "good");
+    });
+
+    // ── Quick Test Buttons ───────────────────────────────────────
+
+    function showQuickResult(data) {
+      var el = document.getElementById("quickTestResult");
+      el.style.display = "block";
+      el.textContent = JSON.stringify(data, null, 2);
+    }
+
+    document.getElementById("testTextBtn").addEventListener("click", async function() {
+      try {
+        setStatus("quickTestStatus", "Sending text…", "");
+        var data = await fetchJson(getBridgeBase() + "/line/test-push", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ text: "Hello from ACP Command Center! 🚀 " + new Date().toLocaleTimeString() }),
+        });
+        setStatus("quickTestStatus", "Text sent!", "good");
+        showQuickResult(data);
+      } catch (err) {
+        setStatus("quickTestStatus", "Text failed: " + err.message, "bad");
+        showQuickResult({ error: err.message });
+      }
+    });
+
+    document.getElementById("testStickerBtn").addEventListener("click", async function() {
+      try {
+        setStatus("quickTestStatus", "Sending sticker…", "");
+        var data = await fetchJson(getBridgeBase() + "/line/push-sticker", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({}),
+        });
+        setStatus("quickTestStatus", "Sticker sent!", "good");
+        showQuickResult(data);
+      } catch (err) {
+        setStatus("quickTestStatus", "Sticker failed: " + err.message, "bad");
+        showQuickResult({ error: err.message });
+      }
+    });
+
+    document.getElementById("testImageBtn").addEventListener("click", async function() {
+      try {
+        setStatus("quickTestStatus", "Sending image…", "");
+        var data = await fetchJson(getBridgeBase() + "/line/push-image", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ imageUrl: "https://placehold.co/1024x1024/2563EB/FFFFFF/png?text=ACP+Test" }),
+        });
+        setStatus("quickTestStatus", "Image sent!", "good");
+        showQuickResult(data);
+      } catch (err) {
+        setStatus("quickTestStatus", "Image failed: " + err.message, "bad");
+        showQuickResult({ error: err.message });
+      }
+    });
+
+    document.getElementById("botInfoBtn").addEventListener("click", async function() {
+      try {
+        setStatus("quickTestStatus", "Fetching bot info…", "");
+        var data = await fetchJson(getBridgeBase() + "/line/bot-info");
+        setStatus("quickTestStatus", "Bot: " + (data.bot?.displayName || data.bot?.basicId || "OK"), "good");
+        showQuickResult(data);
+      } catch (err) {
+        setStatus("quickTestStatus", "Bot info failed: " + err.message, "bad");
+        showQuickResult({ error: err.message });
+      }
+    });
+
+    // ── Bot Status Indicator ─────────────────────────────────────
+
+    async function checkBotStatus() {
+      var dot = document.getElementById("botDot");
+      var label = document.getElementById("botLabel");
+      var userPill = document.getElementById("botUserPill");
+      try {
+        var health = await fetchJson(getBridgeBase() + "/health");
+        if (!health.ok) throw new Error("Bridge unhealthy");
+
+        var config = await fetchJson(getBridgeBase() + "/line/config-check");
+        dot.style.background = config.hasLineAccessToken ? "var(--line-green)" : "var(--warn)";
+        dot.style.boxShadow = config.hasLineAccessToken ? "0 0 10px rgba(6,199,85,0.6)" : "0 0 10px rgba(255,209,102,0.6)";
+        label.textContent = config.hasLineAccessToken
+          ? "@flexmessagesim — Connected via notify-bridge"
+          : "Bridge running but LINE token missing";
+
+        if (config.lastUserId) {
+          userPill.textContent = "Last user: " + config.lastUserId.slice(0, 10) + "…";
+          userPill.className = "pill good";
+        } else {
+          userPill.textContent = "No user captured yet";
+          userPill.className = "pill warn";
+        }
+      } catch (err) {
+        dot.style.background = "var(--bad)";
+        dot.style.boxShadow = "0 0 10px rgba(255,107,107,0.6)";
+        label.textContent = "Bridge unreachable: " + err.message;
+        userPill.textContent = "Offline";
+        userPill.className = "pill bad";
+      }
+    }
+
     // Init
     document.getElementById("bridgeUrl").value = studioState.bridgeUrl;
     document.getElementById("lineUserId").value = studioState.lineUserId;
     document.getElementById("useLastUser").checked = studioState.useLastUser;
 
+    setTheme(localStorage.getItem(themeKey) || "dark");
+    document.getElementById("themeBtn").addEventListener("click", () => {
+      const current = document.documentElement.getAttribute("data-theme") || "dark";
+      setTheme(current === "dark" ? "light" : "dark");
+    });
+
     (async () => {
-      const templates = await loadTemplates();
-      renderTemplateGrid(templates);
+      var templates = await loadTemplates();
+      renderTemplateGrid(getFilteredTemplates(templates));
       renderInventory(templates);
       if (studioState.selectedTemplate) {
         selectTemplate(studioState.selectedTemplate, templates);
       }
+      // Auto-check bot status on load
+      checkBotStatus();
     })();
   </script>
   <script src="./security.js"></script>

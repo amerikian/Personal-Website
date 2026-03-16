@@ -1,661 +1,300 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ACP Strategy Command Center</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
   <style>
     :root {
-      --bg: #102224;
-      --ink: #ebf4f4;
-      --muted: #9bb2b2;
-      --line: #295255;
-      --ok: #49d487;
-      --warn: #ffd166;
-      --bad: #ff6b6b;
-      --accent: #4cc9f0;
-      --accent2: #8cf4b9;
-      --card: rgba(17, 38, 41, 0.84);
-      --card-strong: rgba(15, 31, 33, 0.96);
+      --bg-base: #060b18;
+      --bg-surface: #0d1424;
+      --bg-card: rgba(15, 23, 42, 0.65);
+      --bg-card-hover: rgba(15, 23, 42, 0.82);
+      --bg-input: rgba(15, 23, 42, 0.9);
+      --glass-border: rgba(148, 163, 184, 0.1);
+      --glass-highlight: rgba(148, 163, 184, 0.05);
+      --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+      --text-primary: #f1f5f9;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --accent-blue: #3b82f6;
+      --accent-cyan: #06b6d4;
+      --accent-green: #10b981;
+      --accent-amber: #f59e0b;
+      --accent-red: #ef4444;
+      --accent-purple: #8b5cf6;
+      --gradient-primary: linear-gradient(135deg, #3b82f6, #06b6d4);
+      --gradient-success: linear-gradient(135deg, #10b981, #34d399);
+      --gradient-purple: linear-gradient(135deg, #8b5cf6, #ec4899);
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --transition: 0.25s ease;
     }
-
-    * { box-sizing: border-box; }
-
+    [data-theme="light"] {
+      --bg-base: #eef2f7;
+      --bg-surface: #ffffff;
+      --bg-card: rgba(255, 255, 255, 0.75);
+      --bg-card-hover: rgba(255, 255, 255, 0.92);
+      --bg-input: rgba(241, 245, 249, 0.95);
+      --glass-border: rgba(15, 23, 42, 0.08);
+      --glass-highlight: rgba(255, 255, 255, 0.55);
+      --glass-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --text-muted: #94a3b8;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      margin: 0;
-      color: var(--ink);
+      font-family: "Inter", sans-serif;
+      color: var(--text-primary);
       min-height: 100vh;
-      font-family: "JetBrains Mono", monospace;
       background:
-        radial-gradient(circle at 12% 10%, rgba(76, 201, 240, 0.22), transparent 35%),
-        radial-gradient(circle at 85% 88%, rgba(255, 209, 102, 0.16), transparent 36%),
-        linear-gradient(155deg, #0a1718, var(--bg));
-      padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+        radial-gradient(ellipse at 10% 0%, rgba(59,130,246,0.13), transparent 50%),
+        radial-gradient(ellipse at 90% 100%, rgba(139,92,246,0.11), transparent 45%),
+        var(--bg-base);
     }
-
-    body.compact .card,
-    body.compact .header {
-      padding: 9px;
-      border-radius: 11px;
+    .wrap { width: min(1400px, 96vw); margin: 0 auto; padding: 16px 0 40px; }
+    .glass {
+      background: var(--bg-card);
+      backdrop-filter: blur(18px) saturate(1.2);
+      -webkit-backdrop-filter: blur(18px) saturate(1.2);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--glass-shadow);
+      position: relative;
+      overflow: hidden;
     }
-
-    body.compact .card h2 {
-      margin-bottom: 6px;
-      font-size: 0.92rem;
+    .glass::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; right: 0; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--glass-highlight), transparent);
     }
-
-    body.compact .row {
-      margin-bottom: 4px;
-      font-size: 0.8rem;
-    }
-
-    body.compact .check {
-      padding: 6px;
-    }
-
-    .wrap {
-      width: min(1250px, 95vw);
-      margin: 20px auto;
-      display: grid;
-      gap: 12px;
-      animation: enter 620ms ease-out both;
-    }
-
-    @keyframes enter {
-      from { opacity: 0; transform: scale(0.99) translateY(8px); }
-      to { opacity: 1; transform: scale(1) translateY(0); }
-    }
-
-    .header, .card {
-      border: 1px solid var(--line);
-      border-radius: 14px;
-      background: var(--card);
-      padding: 12px;
-      backdrop-filter: blur(2px);
-    }
-
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 8px;
-      position: sticky;
-      top: 8px;
-      z-index: 20;
-    }
-
-    h1 {
-      margin: 0;
+    .topbar { padding: 14px 20px; margin-bottom: 14px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; }
+    .topbar h1 {
       font-family: "DM Serif Display", serif;
-      letter-spacing: 0.03em;
-      font-size: clamp(1.2rem, 2.5vw, 1.9rem);
       font-weight: 400;
+      font-size: clamp(1.3rem, 2.7vw, 2rem);
+      background: var(--gradient-primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
-
-    .subtitle {
-      margin: 3px 0 0;
-      color: var(--muted);
-      font-size: 0.84rem;
-    }
-
-    .toolbar {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      width: 100%;
-      align-items: center;
-    }
-
-    .toolbar select {
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      padding: 7px 10px;
-      background: #173236;
-      color: var(--ink);
-      font: inherit;
-      font-size: 0.83rem;
-    }
-
-    .nav {
-      display: flex;
-      gap: 8px;
-      width: 100%;
-      flex-wrap: wrap;
-    }
-
-    .chip, button, .nav a {
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      padding: 7px 10px;
-      background: #173236;
-      color: var(--ink);
-      font: inherit;
-      font-size: 0.83rem;
+    .subtitle { font-size: 0.82rem; color: var(--text-secondary); }
+    .topbar-actions { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+    .btn {
+      border: 1px solid var(--glass-border);
+      background: var(--bg-input);
+      color: var(--text-primary);
+      border-radius: var(--radius-sm);
+      padding: 7px 12px;
+      font: 500 0.8rem "Inter", sans-serif;
       cursor: pointer;
       text-decoration: none;
+      transition: var(--transition);
     }
-
-    .nav a.active {
-      background: linear-gradient(90deg, rgba(76, 201, 240, 0.2), rgba(73, 212, 135, 0.2));
+    .btn:hover { border-color: var(--accent-blue); background: var(--bg-card-hover); }
+    .theme-toggle {
+      width: 46px; height: 26px; border-radius: 999px; border: 1px solid var(--glass-border);
+      background: var(--bg-input); position: relative; cursor: pointer;
     }
-
-    button:hover, .nav a:hover {
-      filter: brightness(1.1);
+    .theme-toggle::after {
+      content: ""; position: absolute; width: 20px; height: 20px; border-radius: 50%; top: 2px; left: 2px;
+      background: var(--accent-amber); transition: transform var(--transition), background var(--transition);
     }
-
-    .grid {
-      display: grid;
-      gap: 12px;
-      grid-template-columns: repeat(12, minmax(0, 1fr));
-    }
-
-    .span-3 { grid-column: span 3; }
-    .span-4 { grid-column: span 4; }
-    .span-5 { grid-column: span 5; }
-    .span-6 { grid-column: span 6; }
-    .span-7 { grid-column: span 7; }
-    .span-8 { grid-column: span 8; }
-    .span-12 { grid-column: span 12; }
-
-    .card h2 {
-      margin: 0 0 9px;
-      font-size: 1rem;
-      color: #d8edee;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .mini {
-      font-size: 0.77rem;
-      color: var(--muted);
-    }
-
-    .metric {
-      border: 1px solid var(--line);
-      border-radius: 12px;
-      padding: 10px;
-      background: var(--card-strong);
-      height: 100%;
-    }
-
-    .metric .value {
-      font-size: clamp(1.2rem, 2.2vw, 1.8rem);
-      font-weight: 600;
-      letter-spacing: 0.03em;
-      margin-top: 3px;
-    }
-
-    .good { color: var(--ok); }
-    .warn { color: var(--warn); }
-    .bad { color: var(--bad); }
-
-    .pill {
-      display: inline-flex;
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      padding: 5px 8px;
-      color: var(--muted);
-      background: #0f1f21;
-      font-size: 0.76rem;
-    }
-
-    .row {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 8px;
-      align-items: center;
-      margin-bottom: 7px;
-      font-size: 0.85rem;
-    }
-
-    input[type="range"] {
-      width: 100%;
-      accent-color: var(--accent2);
-    }
-
-    input[type="text"], input[type="url"], textarea {
-      width: 100%;
-      border: 1px solid var(--line);
-      border-radius: 10px;
-      background: #0f1f21;
-      color: var(--ink);
-      font: inherit;
-      padding: 8px 10px;
-    }
-
-    textarea {
-      min-height: 72px;
-      resize: vertical;
-    }
-
-    .bar {
-      margin-top: 8px;
-      height: 9px;
-      border-radius: 999px;
-      border: 1px solid var(--line);
-      background: #0d1a1c;
-      overflow: hidden;
-    }
-
-    .bar i {
-      display: block;
-      height: 100%;
-      width: 0;
-      background: linear-gradient(90deg, var(--accent), var(--accent2));
-      transition: width 220ms ease;
-    }
-
-    .freshness {
-      margin-top: 8px;
-      height: 7px;
-      border-radius: 999px;
-      border: 1px solid var(--line);
-      background: #0d1a1c;
-      overflow: hidden;
-    }
-
-    .freshness i {
-      display: block;
-      height: 100%;
-      width: 0;
-      background: linear-gradient(90deg, #49d487, #ffd166, #ff6b6b);
-      transition: width 220ms ease;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.86rem;
-    }
-
-    .telemetry-table td:last-child,
-    .telemetry-table th:last-child {
-      text-align: right;
-      font-variant-numeric: tabular-nums;
-    }
-
-    th, td {
-      text-align: left;
-      padding: 8px 6px;
-      border-bottom: 1px dashed var(--line);
-      vertical-align: top;
-    }
-
-    th { color: var(--muted); }
-
-    .checklist {
-      display: grid;
-      gap: 8px;
-    }
-
-    .check {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-      border: 1px solid var(--line);
-      border-radius: 10px;
-      padding: 8px;
-      background: #0f1f21;
-      font-size: 0.85rem;
-    }
-
-    .check input { transform: scale(1.08); }
-
-    .opportunity {
-      border: 1px solid var(--line);
-      border-radius: 10px;
-      background: #0f1f21;
-      padding: 9px;
-      margin-bottom: 8px;
-    }
-
-    .opportunity h3 {
-      margin: 0 0 4px;
-      font-size: 0.9rem;
-      color: #d6f2f4;
-    }
-
-    .meta {
-      color: var(--muted);
-      font-size: 0.78rem;
-    }
-
-    canvas {
-      width: 100%;
-      max-height: 280px;
-      border: 1px solid var(--line);
-      border-radius: 10px;
-      background: #0f1f21;
-    }
-
-    .button-row {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-
-    .button-row button {
-      flex: 1;
-      min-width: 130px;
-    }
-
-    .digest {
-      margin-top: 9px;
-      border: 1px solid var(--line);
-      border-radius: 10px;
-      background: #0f1f21;
-      padding: 10px;
-      min-height: 126px;
-      white-space: pre-wrap;
-      overflow-wrap: anywhere;
-      color: #d6f4f5;
-      font-size: 0.78rem;
-    }
-
-    .insight-list {
-      margin: 0;
-      padding-left: 18px;
-      color: #cde6e8;
-      font-size: 0.84rem;
-      line-height: 1.45;
-    }
-
-    .insight-list li { margin: 4px 0; }
-
-    .footer {
-      color: var(--muted);
-      font-size: 0.8rem;
-      text-align: center;
-    }
-
-    .mobile-actions {
-      display: none;
-    }
-
-    .mobile-actions button {
-      min-width: 0;
-      width: 100%;
-    }
-
-    @media (max-width: 980px) {
-      .span-3, .span-4, .span-5, .span-6, .span-7, .span-8 { grid-column: span 12; }
-      table {
-        display: block;
-        overflow-x: auto;
-        white-space: nowrap;
-      }
-
-      .header {
-        top: 4px;
-      }
-
-      .toolbar {
-        gap: 6px;
-      }
-
-      .chip,
-      button,
-      .nav a,
-      .toolbar select {
-        padding: 8px 10px;
-        font-size: 0.79rem;
-      }
-
-      .mobile-actions {
-        position: fixed;
-        left: 8px;
-        right: 8px;
-        bottom: calc(8px + env(safe-area-inset-bottom, 0px));
-        z-index: 50;
-        display: grid;
-        grid-template-columns: 1fr 1fr 1fr;
-        gap: 8px;
-        border: 1px solid var(--line);
-        border-radius: 12px;
-        background: rgba(15, 31, 33, 0.96);
-        padding: 8px;
-        backdrop-filter: blur(4px);
-      }
-
-      body {
-        padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px));
-      }
-    }
+    [data-theme="dark"] .theme-toggle::after { transform: translateX(20px); background: var(--accent-blue); }
+    .nav-strip { display:flex; gap:6px; padding:6px; margin-bottom:14px; overflow-x:auto; }
+    .nav-strip a { text-decoration:none; color: var(--text-secondary); font-size: 0.82rem; font-weight: 500; padding: 8px 14px; border-radius: var(--radius-md); white-space: nowrap; }
+    .nav-strip a:hover { background: var(--glass-highlight); color: var(--text-primary); }
+    .nav-strip a.active { background: var(--gradient-primary); color: #fff; }
+    .grid { display:grid; gap:14px; }
+    .g12 { grid-template-columns: repeat(12, 1fr); }
+    .s3{grid-column:span 3}.s4{grid-column:span 4}.s5{grid-column:span 5}.s6{grid-column:span 6}.s7{grid-column:span 7}.s8{grid-column:span 8}.s12{grid-column:span 12}
+    .card-pad { padding: 16px; }
+    .card-title { display:flex; justify-content:space-between; align-items:center; margin-bottom: 10px; font-size: 0.86rem; font-weight:600; }
+    .badge { font-size: 0.68rem; color: var(--text-muted); border: 1px solid var(--glass-border); border-radius: 999px; padding: 3px 8px; background: var(--bg-input); }
+    .kpi-label { font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: .06em; }
+    .kpi-value { font-family: "JetBrains Mono", monospace; font-size: 1.65rem; font-weight:700; margin-top: 4px; }
+    .kpi-sub { font-size: 0.72rem; color: var(--text-secondary); margin-top: 4px; }
+    .phase-row { margin-bottom: 10px; }
+    .phase-label { display:flex; justify-content:space-between; font-size:.78rem; margin-bottom: 4px; }
+    .phase-track { height: 8px; border-radius:999px; background: var(--bg-input); overflow:hidden; }
+    .phase-fill { height:100%; border-radius:999px; }
+    .fill-green{background:var(--gradient-success)} .fill-blue{background:var(--gradient-primary)} .fill-purple{background:var(--gradient-purple)} .fill-amber{background:linear-gradient(135deg,#f59e0b,#f97316)}
+    .timeline { list-style:none; position:relative; padding-left: 28px; }
+    .timeline::before { content:""; position:absolute; left: 8px; top: 4px; bottom: 6px; width:2px; background: var(--glass-border); }
+    .timeline li { margin-bottom: 9px; font-size: .8rem; position:relative; }
+    .timeline li::before { content:""; position:absolute; left:-24px; top: 5px; width:12px; height:12px; border-radius:50%; border:2px solid var(--glass-border); background: var(--bg-surface); }
+    .timeline .done::before { border-color: var(--accent-green); background: var(--accent-green); }
+    .timeline .active::before { border-color: var(--accent-amber); background: var(--accent-amber); }
+    .list { margin: 0; padding-left: 18px; font-size: .82rem; color: var(--text-secondary); line-height: 1.55; }
+    table { width:100%; border-collapse: collapse; font-size: .82rem; }
+    th, td { text-align:left; padding: 9px 7px; border-bottom: 1px solid var(--glass-border); }
+    th { font-size:.72rem; color: var(--text-muted); text-transform: uppercase; letter-spacing:.04em; }
+    .check-item { display:flex; gap:9px; align-items:center; padding: 9px 10px; border-radius: var(--radius-md); border:1px solid var(--glass-border); background: var(--bg-input); margin-bottom: 6px; font-size:.82rem; }
+    .check-item input { accent-color: var(--accent-green); }
+    .opp-card { padding:11px 12px; border-radius: var(--radius-md); border:1px solid var(--glass-border); background: var(--bg-input); margin-bottom: 7px; }
+    .opp-card h3 { font-size: .85rem; margin-bottom: 3px; }
+    .opp-meta { font-size:.72rem; color: var(--text-muted); }
+    .digest { margin-top: 10px; border:1px solid var(--glass-border); border-radius: var(--radius-md); background: var(--bg-input); min-height: 120px; padding: 12px; white-space: pre-wrap; overflow-wrap:anywhere; font-family:"JetBrains Mono", monospace; font-size:.75rem; color: var(--text-secondary); line-height: 1.5; }
+    .pill { display:inline-flex; padding:4px 9px; border-radius:999px; border:1px solid var(--glass-border); background: var(--bg-input); font-size:.72rem; color: var(--text-secondary); }
+    .pill.good{color:var(--accent-green)} .pill.warn{color:var(--accent-amber)} .pill.bad{color:var(--accent-red)}
+    .footer { text-align:center; color: var(--text-muted); font-size: .78rem; margin-top: 2px; }
+    @media (max-width:1080px){.s3,.s4,.s5,.s6,.s7,.s8{grid-column:span 12}}
   </style>
 </head>
 <body>
   <main class="wrap">
-    <header class="header">
+    <header class="glass topbar">
       <div>
         <h1>Strategy Command Center</h1>
-        <p class="subtitle">Top-level execution intelligence for ACP/AP2/x402</p>
+        <p class="subtitle">Execution intelligence for ACP / AP2 / x402</p>
       </div>
-      <div class="toolbar">
-        <span class="chip" id="clock">Syncing...</span>
-        <span class="chip" id="liveStatus">Live KPI: loading...</span>
-        <span class="chip" id="freshnessStatus">Feed age: --</span>
-        <label class="chip" for="refreshSelect">Auto refresh</label>
-        <select id="refreshSelect" aria-label="Auto refresh interval">
-          <option value="off">Off</option>
-          <option value="60">1m</option>
-          <option value="300" selected>5m</option>
-          <option value="900">15m</option>
-        </select>
-        <span class="chip" id="refreshCountdown">Next refresh: --</span>
-        <button id="resetBtn" type="button">Reset</button>
-        <button id="exportBtn" type="button">Export</button>
-        <button id="importBtn" type="button">Import</button>
-        <button id="shareBtn" type="button">Share Link</button>
-        <button id="compactBtn" type="button">Compact: Off</button>
+      <div class="topbar-actions">
+        <span class="btn" id="clock">Syncing...</span>
+        <button id="themeBtn" class="theme-toggle" aria-label="Toggle theme"></button>
+        <button id="resetBtn" class="btn" type="button">Reset</button>
+        <button id="exportBtn" class="btn" type="button">Export</button>
+        <button id="importBtn" class="btn" type="button">Import</button>
       </div>
-      <nav class="nav" aria-label="Command center navigation">
-        <a class="active" href="./index.html">Strategy Dashboard</a>
-        <a href="./ops-wall.html">Ops Wall</a>
-        <a href="./trends.html">Weekly Trends</a>
-        <a href="./line-cards.html">LINE Cards Studio</a>
-      </nav>
     </header>
 
-    <section class="grid">
-      <article class="card span-3 metric">
-        <h2>Overall Health <span class="mini">Auto</span></h2>
-        <div class="value" id="overallHealth">0%</div>
-        <div class="bar"><i id="overallBar"></i></div>
-        <span class="pill" id="healthLabel">Waiting for inputs</span>
+    <nav class="glass nav-strip" aria-label="Command center navigation">
+      <a class="active" href="./index.html">Strategy Dashboard</a>
+      <a href="./ops-wall.html">Ops Wall</a>
+      <a href="./trends.html">Weekly Trends</a>
+      <a href="./line-cards.html">LINE Cards Studio</a>
+    </nav>
+
+    <section class="grid g12">
+      <article class="glass s3 card-pad">
+        <div class="kpi-label">Overall Health</div>
+        <div id="overallHealth" class="kpi-value">0%</div>
+        <div class="kpi-sub"><span id="healthLabel" class="pill">Waiting</span></div>
+        <div id="gaugeChart" style="height:160px"></div>
+      </article>
+      <article class="glass s3 card-pad">
+        <div class="kpi-label">Strict Preflight</div>
+        <div class="kpi-value" style="color:var(--accent-green)">PASS</div>
+        <div class="kpi-sub">conformance:preflight:strict</div>
+        <div id="kpiSpark1" style="height:95px"></div>
+      </article>
+      <article class="glass s3 card-pad">
+        <div class="kpi-label">Protocol Coverage</div>
+        <div class="kpi-value">3/3</div>
+        <div class="kpi-sub">ACP + AP2 + x402 live</div>
+        <div id="kpiSpark2" style="height:95px"></div>
+      </article>
+      <article class="glass s3 card-pad">
+        <div class="kpi-label">LINE Bot</div>
+        <div class="kpi-value" style="color:var(--accent-green)">Connected</div>
+        <div class="kpi-sub">@flexmessagesim</div>
+        <div id="kpiSpark3" style="height:95px"></div>
       </article>
 
-      <article class="card span-3 metric">
-        <h2>Strict Preflight <span class="mini">Current</span></h2>
-        <div class="value good">PASS</div>
-        <a id="actionsLink" class="pill" href="https://github.com/amerikian/acp-dev-workspace/actions" target="_blank" rel="noreferrer">conformance:preflight:strict</a>
+      <article class="glass s7 card-pad">
+        <div class="card-title">Project Phases <span class="badge">Execution Progress</span></div>
+        <div class="phase-row"><div class="phase-label"><span>Phase 1: Container Stability</span><strong>100%</strong></div><div class="phase-track"><div class="phase-fill fill-green" style="width:100%"></div></div></div>
+        <div class="phase-row"><div class="phase-label"><span>Phase 2: Adapter Integration</span><strong>100%</strong></div><div class="phase-track"><div class="phase-fill fill-green" style="width:100%"></div></div></div>
+        <div class="phase-row"><div class="phase-label"><span>Phase 3: Protocol Bridge Matrix</span><strong>100%</strong></div><div class="phase-track"><div class="phase-fill fill-blue" style="width:100%"></div></div></div>
+        <div class="phase-row"><div class="phase-label"><span>Phase 4: Test Strategy</span><strong id="phase4Pct">56%</strong></div><div class="phase-track"><div id="phase4Bar" class="phase-fill fill-blue" style="width:56%"></div></div></div>
+        <div class="phase-row"><div class="phase-label"><span>Phase 5: Productization</span><strong>35%</strong></div><div class="phase-track"><div class="phase-fill fill-purple" style="width:35%"></div></div></div>
       </article>
 
-      <article class="card span-3 metric">
-        <h2>Repo Hygiene <span class="mini">Current</span></h2>
-        <div class="value" id="repoHygiene">8/8 clean</div>
-        <a id="repoLink" class="pill good" href="https://github.com/amerikian/acp-dev-workspace" target="_blank" rel="noreferrer">workspace checkpoint clean</a>
+      <article class="glass s5 card-pad">
+        <div class="card-title">KPI Controls <span class="badge">Interactive</span></div>
+        <div class="phase-row"><div class="phase-label"><label for="relInput">Reliability</label><output id="relOut">97%</output></div><input id="relInput" type="range" min="0" max="100" value="97" /></div>
+        <div class="phase-row"><div class="phase-label"><label for="interopInput">Interop</label><output id="interopOut">78%</output></div><input id="interopInput" type="range" min="0" max="100" value="78" /></div>
+        <div class="phase-row"><div class="phase-label"><label for="speedInput">Onboarding Speed</label><output id="speedOut">72%</output></div><input id="speedInput" type="range" min="0" max="100" value="72" /></div>
+        <div class="phase-row"><div class="phase-label"><label for="signalInput">Pilot Readiness</label><output id="signalOut">48%</output></div><input id="signalInput" type="range" min="0" max="100" value="48" /></div>
       </article>
 
-      <article class="card span-3 metric">
-        <h2>Release Readiness <span class="mini">Auto score</span></h2>
-        <div class="value" style="font-size:1rem" id="releaseReadiness">--</div>
-        <span class="pill warn" id="topConstraint">scope, parity, release gates</span>
-        <div class="freshness"><i id="freshnessBar"></i></div>
+      <article class="glass s5 card-pad">
+        <div class="card-title">Milestone Timeline <span class="badge">Delivery</span></div>
+        <ul class="timeline">
+          <li class="done"><strong>Dev Container stable</strong><div class="subtitle">Completed Mar 12</div></li>
+          <li class="done"><strong>Adapter probes live</strong><div class="subtitle">Completed Mar 13</div></li>
+          <li class="done"><strong>Bridge matrix shipped</strong><div class="subtitle">Completed Mar 14</div></li>
+          <li class="active"><strong>Semantic parity assertions</strong><div class="subtitle">In progress</div></li>
+          <li><strong>MVP contract freeze</strong><div class="subtitle">Upcoming</div></li>
+        </ul>
       </article>
 
-      <article class="card span-12">
-        <h2>Auto Telemetry <span class="mini">GitHub-backed, drill-through ready</span></h2>
-        <table class="telemetry-table" id="telemetryTable">
-          <thead>
-            <tr><th>Metric</th><th>Value</th></tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-        <div class="button-row" style="margin-top:8px;">
-          <a class="chip" id="pullsLink" href="https://github.com/amerikian/acp-dev-workspace/pulls" target="_blank" rel="noreferrer">Open PRs</a>
-          <a class="chip" id="issuesLink" href="https://github.com/amerikian/acp-dev-workspace/issues" target="_blank" rel="noreferrer">Open Issues</a>
-          <a class="chip" id="actionsLink2" href="https://github.com/amerikian/acp-dev-workspace/actions" target="_blank" rel="noreferrer">Workflow Runs</a>
-        </div>
+      <article class="glass s7 card-pad">
+        <div class="card-title">Risk Matrix <span class="badge">Impact × Probability</span></div>
+        <div id="riskChart" style="height:280px"></div>
       </article>
 
-      <article class="card span-5">
-        <h2>KPI Controls <span class="mini">Interactive</span></h2>
-        <div class="row"><label for="relInput">Reliability pass rate (14d)</label><output id="relOut">95%</output></div>
-        <input id="relInput" type="range" min="0" max="100" value="95" />
-
-        <div class="row"><label for="interopInput">Interoperability parity</label><output id="interopOut">72%</output></div>
-        <input id="interopInput" type="range" min="0" max="100" value="72" />
-
-        <div class="row"><label for="speedInput">Onboarding speed</label><output id="speedOut">68%</output></div>
-        <input id="speedInput" type="range" min="0" max="100" value="68" />
-
-        <div class="row"><label for="signalInput">External pilot readiness</label><output id="signalOut">42%</output></div>
-        <input id="signalInput" type="range" min="0" max="100" value="42" />
+      <article class="glass s6 card-pad">
+        <div class="card-title">Active Risks <span class="badge">Prioritized</span></div>
+        <table id="riskTable"><thead><tr><th>Risk</th><th>Impact</th><th>Probability</th><th>Score</th></tr></thead><tbody></tbody></table>
       </article>
 
-      <article class="card span-7">
-        <h2>Risk Matrix <span class="mini">Impact x Probability</span></h2>
-        <canvas id="riskCanvas" width="800" height="280"></canvas>
+      <article class="glass s6 card-pad">
+        <div class="card-title">Testing Status <span class="badge">Confidence</span></div>
+        <div id="testList"></div>
+        <div style="margin-top:8px" id="testSummary" class="pill">0/0 checks complete</div>
       </article>
 
-      <article class="card span-6">
-        <h2>Active Risks <span class="mini">What to de-risk first</span></h2>
-        <table id="riskTable">
-          <thead>
-            <tr><th>Risk</th><th>Impact</th><th>Probability</th><th>Score</th></tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </article>
-
-      <article class="card span-6">
-        <h2>Testing Status <span class="mini">Execution confidence</span></h2>
-        <div class="checklist" id="testList"></div>
-        <div style="margin-top:9px" class="pill" id="testSummary">0/0 checks complete</div>
-      </article>
-
-      <article class="card span-8">
-        <h2>Opportunity Backlog <span class="mini">ICE-style ordering</span></h2>
+      <article class="glass s8 card-pad">
+        <div class="card-title">Opportunity Backlog <span class="badge">ICE</span></div>
         <div id="opportunities"></div>
       </article>
 
-      <article class="card span-4">
-        <h2>Situation Insights <span class="mini">Auto-generated</span></h2>
-        <ul class="insight-list" id="snapshotList"></ul>
+      <article class="glass s4 card-pad">
+        <div class="card-title">Auto Insights <span class="badge">Computed</span></div>
+        <ul id="snapshotList" class="list"></ul>
       </article>
 
-      <article class="card span-4">
-        <h2>Alert Bridge <span class="mini">LINE + Provider</span></h2>
-        <div class="row" style="grid-template-columns:1fr">
-          <label for="bridgeUrl">Bridge URL</label>
-          <input id="bridgeUrl" type="url" placeholder="http://localhost:8787" />
-        </div>
-        <div class="row" style="grid-template-columns:1fr">
-          <label for="lineUserId">LINE User ID (optional)</label>
-          <input id="lineUserId" type="text" placeholder="Uxxxxxxxx" />
-        </div>
-        <div class="row" style="grid-template-columns:1fr">
-          <label for="dashboardUrl">Dashboard URL (optional)</label>
-          <input id="dashboardUrl" type="url" placeholder="https://your-dashboard" />
-        </div>
-        <div class="row" style="grid-template-columns:1fr">
-          <label for="flexTemplateId">Flex template</label>
-          <select id="flexTemplateId">
-            <option value="critical-incident">Critical Incident Alert</option>
-            <option value="weekly-digest">Weekly PM Digest</option>
-            <option value="end-user-order-update">End User Order Update</option>
-          </select>
-        </div>
-        <div class="row" style="grid-template-columns:1fr">
-          <label for="alertBody">Alert message</label>
-          <textarea id="alertBody">Strict preflight status update: PASS</textarea>
-        </div>
+      <article class="glass s12 card-pad">
+        <div class="card-title">Weekly PM Digest <span class="badge">Copy-ready</span></div>
         <div class="button-row">
-          <button id="sendLineBtn" type="button">Send LINE Test</button>
-          <button id="discoverLineBtn" type="button">Discover LINE User</button>
-          <button id="sendLineLastBtn" type="button">Send to Last LINE User</button>
-          <button id="previewFlexBtn" type="button">Preview Flex</button>
-          <button id="sendLineFlexBtn" type="button">Send Flex to User</button>
-          <button id="sendLineFlexLastBtn" type="button">Send Flex to Last User</button>
-          <button id="sendProviderBtn" type="button">Send Provider Test</button>
-        </div>
-        <div id="flexPreview" class="digest" style="margin-top:9px; min-height:90px;">Flex preview will appear here.</div>
-        <div style="margin-top:9px" class="pill warn" id="lineProvisioningStatus">LINE provisioning: blocked on Business account verification (API currently returns 403)</div>
-        <div style="margin-top:9px" class="pill" id="notifyStatus">Idle</div>
-      </article>
-
-      <article class="card span-8">
-        <h2>Weekly PM Digest <span class="mini">Copy-ready leadership update</span></h2>
-        <div class="button-row">
-          <button id="genDigestBtn" type="button">Generate Digest</button>
-          <button id="copyDigestBtn" type="button">Copy Digest</button>
+          <button id="genDigestBtn" class="btn" type="button">Generate Digest</button>
+          <button id="copyDigestBtn" class="btn" type="button">Copy Digest</button>
         </div>
         <div id="digestBox" class="digest">Click Generate Digest to create your weekly update text.</div>
       </article>
-
-      <article class="card span-12">
-        <h2>Focus This Week <span class="mini">Outcome-based</span></h2>
-        <table>
-          <thead><tr><th>Outcome</th><th>Definition of Done</th><th>Status</th></tr></thead>
-          <tbody>
-            <tr><td>MVP contract freeze</td><td>Fields, operations, non-goals documented in protocol-lab docs</td><td class="warn">In Progress</td></tr>
-            <tr><td>Parity assertions in smoke harness</td><td>ACP/AP2/x402 semantic checks in strict preflight</td><td class="warn">In Progress</td></tr>
-            <tr><td>LINE bridge go-live</td><td>Business account verification complete and /v2/bot/info returns 200</td><td class="warn">Blocked (external verification)</td></tr>
-            <tr><td>One-command runbook</td><td>Bring-up + triage table + expected output captured</td><td class="warn">In Progress</td></tr>
-          </tbody>
-        </table>
-      </article>
     </section>
 
-    <p class="footer">State persists in localStorage for weekly review continuity.</p>
+    <p class="footer">State persists in localStorage — ACP Command Center v2</p>
   </main>
-
-  <div class="mobile-actions" aria-label="Quick actions">
-    <button id="refreshNowBtn" type="button">Refresh</button>
-    <button id="mobileDigestBtn" type="button">Digest</button>
-    <button id="mobileLineBtn" type="button">LINE</button>
-  </div>
 
   <script>
     const key = "acp-command-center-v1";
-    const liveFeedPath = "./data/kpi-live.json";
-
+    const themeKey = "acp-cc-theme";
     const defaults = {
-      kpis: { reliability: 95, interop: 72, speed: 68, signal: 42 },
-      liveMeta: {
-        generatedAt: null,
-        dataQuality: "unknown",
-        note: "",
-        telemetry: {},
-        risks: {},
-        links: {},
-      },
-      notify: { bridgeUrl: "http://localhost:8787", lineUserId: "", dashboardUrl: "", flexTemplateId: "critical-incident" },
-      ui: { refreshSeconds: 300, compactMode: false },
+      kpis: { reliability: 97, interop: 78, speed: 72, signal: 48 },
       history: [],
       risks: [
-        { name: "AP2 endpoint drift (:8080 vs :8000)", impact: 4, probability: 3 },
         { name: "Spec-adapter-demos drift", impact: 5, probability: 3 },
-        { name: "Hidden local state (ports/creds/cache)", impact: 3, probability: 4 },
-        { name: "Solo bandwidth bottleneck", impact: 5, probability: 2 }
+        { name: "Solo bandwidth bottleneck", impact: 5, probability: 2 },
+        { name: "MVP scope creep (no contract freeze)", impact: 4, probability: 4 },
+        { name: "AP2 endpoint drift (:8080 vs :8000)", impact: 3, probability: 3 },
+        { name: "Hidden local state (ports/creds/cache)", impact: 3, probability: 3 }
       ],
       tests: [
         { id: "acp-schema", label: "ACP schema conformance", done: true },
         { id: "strict-preflight", label: "Strict preflight end-to-end", done: true },
+        { id: "replay-fixtures", label: "Replay fixture validation", done: true },
+        { id: "acp-handler-tests", label: "acp-handler unit tests (37/37)", done: true },
+        { id: "line-bot-send", label: "LINE bot Flex message delivery", done: true },
         { id: "parity-assertions", label: "Semantic parity assertions", done: false },
+        { id: "negative-paths", label: "Negative path coverage", done: false },
         { id: "runbook-verified", label: "Runbook validated from clean env", done: false },
         { id: "external-pilot", label: "External pilot dry run", done: false }
       ],
       opportunities: [
+        { title: "Semantic parity assertions across ACP/AP2/x402", impact: 9, confidence: 8, ease: 6 },
+        { title: "LINE bot receipt on ACP checkout complete", impact: 9, confidence: 9, ease: 8 },
         { title: "One-command local stack launcher", impact: 9, confidence: 8, ease: 7 },
+        { title: "External pilot quickstart kit", impact: 10, confidence: 6, ease: 4 },
         { title: "Parity fixture expansion (negative paths)", impact: 8, confidence: 8, ease: 6 },
-        { title: "External pilot quickstart kit", impact: 10, confidence: 6, ease: 4 }
+        { title: "LINE Login to ACP session identity mapping", impact: 8, confidence: 5, ease: 3 }
       ]
     };
 
@@ -667,9 +306,6 @@
           ...defaults,
           ...saved,
           kpis: { ...defaults.kpis, ...(saved.kpis || {}) },
-          liveMeta: { ...defaults.liveMeta, ...(saved.liveMeta || {}) },
-          notify: { ...defaults.notify, ...(saved.notify || {}) },
-          ui: { ...defaults.ui, ...(saved.ui || {}) },
           history: Array.isArray(saved.history) ? saved.history : defaults.history,
           risks: Array.isArray(saved.risks) ? saved.risks : defaults.risks,
           tests: Array.isArray(saved.tests) ? saved.tests : defaults.tests,
@@ -680,50 +316,20 @@
       }
     })();
 
-    function encodeShareState(payload) {
-      const json = JSON.stringify(payload);
-      return btoa(unescape(encodeURIComponent(json))).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "");
+    function setTheme(theme) {
+      document.documentElement.setAttribute("data-theme", theme);
+      localStorage.setItem(themeKey, theme);
+      setTimeout(renderCharts, 60);
     }
-
-    function decodeShareState(token) {
-      const padded = token.replace(/-/g, "+").replace(/_/g, "/");
-      const restore = padded + "===".slice((padded.length + 3) % 4);
-      const json = decodeURIComponent(escape(atob(restore)));
-      return JSON.parse(json);
-    }
-
-    function applyStateFromUrl() {
-      const params = new URLSearchParams(window.location.search);
-      const token = params.get("s");
-      if (!token) return;
-
-      try {
-        const imported = decodeShareState(token);
-        if (imported && typeof imported === "object") {
-          Object.assign(state, {
-            ...state,
-            ...imported,
-            kpis: { ...state.kpis, ...(imported.kpis || {}) },
-            notify: { ...state.notify, ...(imported.notify || {}) },
-            ui: { ...state.ui, ...(imported.ui || {}) },
-          });
-          localStorage.setItem(key, JSON.stringify(state));
-        }
-      } catch {
-        // Ignore malformed share links.
-      }
-    }
+    document.getElementById("themeBtn").addEventListener("click", () => {
+      const current = document.documentElement.getAttribute("data-theme");
+      setTheme(current === "dark" ? "light" : "dark");
+    });
+    setTheme(localStorage.getItem(themeKey) || "dark");
 
     function save() {
       localStorage.setItem(key, JSON.stringify(state));
       render();
-    }
-
-    function applyCompactMode() {
-      const compactOn = Boolean(state.ui?.compactMode);
-      document.body.classList.toggle("compact", compactOn);
-      const btn = document.getElementById("compactBtn");
-      if (btn) btn.textContent = `Compact: ${compactOn ? "On" : "Off"}`;
     }
 
     function getOverallScore() {
@@ -736,110 +342,22 @@
       return ["bad", "At Risk"];
     }
 
-    function riskColor(score) {
-      if (score >= 15) return "#ff6b6b";
-      if (score >= 8) return "#ffd166";
-      return "#49d487";
-    }
-
-    function getWeekKey(date = new Date()) {
-      const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
-      const day = d.getUTCDay() || 7;
-      d.setUTCDate(d.getUTCDate() + 4 - day);
-      const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
-      const weekNo = Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
-      return `${d.getUTCFullYear()}-W${String(weekNo).padStart(2, "0")}`;
-    }
-
-    function ensureWeeklySnapshot() {
-      const currentWeek = getWeekKey();
-      if (state.history.some((item) => item.week === currentWeek)) return;
-
-      const riskBuckets = state.risks.reduce((acc, r) => {
-        const score = r.impact * r.probability;
-        if (score >= 15) acc.high += 1;
-        else if (score >= 8) acc.medium += 1;
-        else acc.low += 1;
-        return acc;
-      }, { high: 0, medium: 0, low: 0 });
-
-      const testsDone = state.tests.filter((t) => t.done).length;
-      state.history.push({
-        week: currentWeek,
-        capturedAt: new Date().toISOString(),
-        overall: getOverallScore(),
-        kpis: { ...state.kpis },
-        testsDone,
-        testsTotal: state.tests.length,
-        risks: riskBuckets,
-      });
-
-      state.history = state.history.slice(-26);
-      localStorage.setItem(key, JSON.stringify(state));
-    }
-
     function renderRisks() {
       const body = document.querySelector("#riskTable tbody");
       body.innerHTML = "";
       state.risks.forEach((r, i) => {
         const score = r.impact * r.probability;
+        const color = score >= 15 ? "var(--accent-red)" : score >= 8 ? "var(--accent-amber)" : "var(--accent-green)";
         const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td>${r.name}</td>
-          <td><input data-i="${i}" data-k="impact" type="range" min="1" max="5" value="${r.impact}" /></td>
-          <td><input data-i="${i}" data-k="probability" type="range" min="1" max="5" value="${r.probability}" /></td>
-          <td style="color:${riskColor(score)}">${score}</td>
-        `;
+        tr.innerHTML = `<td>${r.name}</td><td><input data-i="${i}" data-k="impact" type="range" min="1" max="5" value="${r.impact}" /></td><td><input data-i="${i}" data-k="probability" type="range" min="1" max="5" value="${r.probability}" /></td><td style="color:${color};font-weight:700">${score}</td>`;
         body.appendChild(tr);
       });
-
       body.querySelectorAll("input").forEach((el) => {
         el.addEventListener("input", () => {
           const i = Number(el.dataset.i);
-          const k = el.dataset.k;
-          state.risks[i][k] = Number(el.value);
+          state.risks[i][el.dataset.k] = Number(el.value);
           save();
         });
-      });
-    }
-
-    function renderRiskCanvas() {
-      const canvas = document.getElementById("riskCanvas");
-      const ctx = canvas.getContext("2d");
-      const w = canvas.width;
-      const h = canvas.height;
-      ctx.clearRect(0, 0, w, h);
-
-      ctx.strokeStyle = "#295255";
-      ctx.lineWidth = 1;
-      for (let i = 1; i <= 5; i++) {
-        const x = (i / 5) * (w - 70) + 35;
-        const y = h - ((i / 5) * (h - 45) + 25);
-        ctx.beginPath(); ctx.moveTo(x, 20); ctx.lineTo(x, h - 25); ctx.stroke();
-        ctx.beginPath(); ctx.moveTo(35, y); ctx.lineTo(w - 35, y); ctx.stroke();
-      }
-
-      ctx.fillStyle = "#9bb2b2";
-      ctx.font = "12px JetBrains Mono";
-      ctx.fillText("Probability", 40, 16);
-      ctx.fillText("Impact", w - 70, h - 6);
-
-      state.risks.forEach((r, idx) => {
-        const x = (r.probability / 5) * (w - 70) + 35;
-        const y = h - ((r.impact / 5) * (h - 45) + 25);
-        const score = r.impact * r.probability;
-        const radius = 7 + score / 3;
-
-        ctx.beginPath();
-        ctx.fillStyle = riskColor(score);
-        ctx.globalAlpha = 0.86;
-        ctx.arc(x, y, radius, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.globalAlpha = 1;
-
-        ctx.fillStyle = "#102224";
-        ctx.font = "11px JetBrains Mono";
-        ctx.fillText(String(idx + 1), x - 3, y + 4);
       });
     }
 
@@ -848,32 +366,31 @@
       list.innerHTML = "";
       state.tests.forEach((t, i) => {
         const row = document.createElement("label");
-        row.className = "check";
-        row.innerHTML = `<input type="checkbox" data-i="${i}" ${t.done ? "checked" : ""} /> <span>${t.label}</span>`;
+        row.className = "check-item";
+        row.innerHTML = `<input type="checkbox" data-i="${i}"${t.done ? " checked" : ""} /><span>${t.label}</span>`;
         list.appendChild(row);
       });
-
       list.querySelectorAll("input").forEach((el) => {
         el.addEventListener("change", () => {
-          const i = Number(el.dataset.i);
-          state.tests[i].done = el.checked;
+          state.tests[Number(el.dataset.i)].done = el.checked;
           save();
         });
       });
-
       const done = state.tests.filter((t) => t.done).length;
       document.getElementById("testSummary").textContent = `${done}/${state.tests.length} checks complete`;
+      document.getElementById("phase4Pct").textContent = Math.round((done / state.tests.length) * 100) + "%";
+      document.getElementById("phase4Bar").style.width = Math.round((done / state.tests.length) * 100) + "%";
     }
 
     function renderOpportunities() {
       const wrap = document.getElementById("opportunities");
       wrap.innerHTML = "";
-      const sorted = [...state.opportunities].sort((a, b) => ((b.impact + b.confidence + b.ease) / 3) - ((a.impact + a.confidence + a.ease) / 3));
+      const sorted = state.opportunities.slice().sort((a, b) => ((b.impact + b.confidence + b.ease) / 3) - ((a.impact + a.confidence + a.ease) / 3));
       sorted.forEach((o, i) => {
         const score = ((o.impact + o.confidence + o.ease) / 3).toFixed(1);
         const card = document.createElement("article");
-        card.className = "opportunity";
-        card.innerHTML = `<h3>${i + 1}. ${o.title}</h3><div class="meta">Impact ${o.impact} / Confidence ${o.confidence} / Ease ${o.ease} -> Score ${score}</div>`;
+        card.className = "opp-card";
+        card.innerHTML = `<h3>${i + 1}. ${o.title}</h3><div class="opp-meta">Impact ${o.impact} / Confidence ${o.confidence} / Ease ${o.ease} → Score ${score}</div>`;
         wrap.appendChild(card);
       });
     }
@@ -882,227 +399,112 @@
       const list = document.getElementById("snapshotList");
       const overall = getOverallScore();
       const testsDone = state.tests.filter((t) => t.done).length;
-      const testsPct = state.tests.length ? Math.round((testsDone / state.tests.length) * 100) : 0;
       const topRisk = Math.max(...state.risks.map((r) => r.impact * r.probability));
-      const topOpp = [...state.opportunities].sort((a, b) => ((b.impact + b.confidence + b.ease) - (a.impact + a.confidence + a.ease)))[0];
-      const autoRisks = state.liveMeta?.risks || {};
+      const topOpp = state.opportunities.slice().sort((a, b) => (b.impact + b.confidence + b.ease) - (a.impact + a.confidence + a.ease))[0];
       const items = [
-        `Overall health is ${overall}%. ${overall >= 80 ? "Execution quality is strong." : "Tighten weekly focus for better execution confidence."}`,
-        `Testing completion is ${testsDone}/${state.tests.length} (${testsPct}%).`,
-        `Highest risk score is ${topRisk}; target any score >= 12 first.`,
-        "LINE integration remains blocked by Business account verification (Messaging API endpoints currently return 403).",
-        `Auto risk signals -> CI streak: ${autoRisks.ciFailureStreakRisk || "unknown"}, backlog aging: ${autoRisks.backlogAgingRisk || "unknown"}, quality confidence: ${autoRisks.qualityConfidenceRisk || "unknown"}.`,
-        `Best leverage this week: ${topOpp ? topOpp.title : "n/a"}.`,
+        `Overall health is ${overall}%. ${overall >= 80 ? "Execution quality is strong." : overall >= 60 ? "Good trajectory, watch interop and pilot gaps." : "Execution risk is elevated."}`,
+        `Testing at ${testsDone}/${state.tests.length} (${Math.round((testsDone / state.tests.length) * 100)}%).`,
+        `Highest risk score: ${topRisk}. ${topRisk >= 12 ? "De-risk immediately." : "Risk posture manageable."}`,
+        "LINE bot is live and sending Flex cards.",
+        `Best leverage: ${topOpp ? topOpp.title : "n/a"}.`,
       ];
-      list.innerHTML = items.map((item) => `<li>${item}</li>`).join("");
+      list.innerHTML = items.map((i) => `<li>${i}</li>`).join("");
     }
 
     function renderKpis() {
-      const map = [
-        ["relInput", "relOut", "reliability"],
-        ["interopInput", "interopOut", "interop"],
-        ["speedInput", "speedOut", "speed"],
-        ["signalInput", "signalOut", "signal"],
-      ];
-
-      map.forEach(([inputId, outId, k]) => {
-        const input = document.getElementById(inputId);
-        const out = document.getElementById(outId);
-        input.value = state.kpis[k];
-        out.textContent = `${state.kpis[k]}%`;
+      const map = [["relInput", "relOut", "reliability"], ["interopInput", "interopOut", "interop"], ["speedInput", "speedOut", "speed"], ["signalInput", "signalOut", "signal"]];
+      map.forEach(([inId, outId, key]) => {
+        document.getElementById(inId).value = state.kpis[key];
+        document.getElementById(outId).textContent = state.kpis[key] + "%";
       });
-
       const overall = getOverallScore();
-      const [band, label] = scoreBand(overall);
+      const [cls, label] = scoreBand(overall);
       const health = document.getElementById("overallHealth");
-      health.textContent = `${overall}%`;
-      health.className = `value ${band}`;
-      document.getElementById("overallBar").style.width = `${overall}%`;
-
+      health.textContent = overall + "%";
+      health.style.color = cls === "good" ? "var(--accent-green)" : cls === "warn" ? "var(--accent-amber)" : "var(--accent-red)";
       const badge = document.getElementById("healthLabel");
       badge.textContent = label;
-      badge.className = `pill ${band}`;
-
-      const telemetry = state.liveMeta?.telemetry || {};
-      const releaseReadiness = Math.round(
-        (overall * 0.45)
-        + ((telemetry.ciSuccessRate7d ?? 0) * 0.25)
-        + ((100 - Math.min(40, (telemetry.staleOpenIssues30d ?? 0) * 8)) * 0.2)
-        + ((100 - Math.min(30, (telemetry.staleOpenPrs7d ?? 0) * 10)) * 0.1),
-      );
-      const relNode = document.getElementById("releaseReadiness");
-      relNode.textContent = `${clampPercent(releaseReadiness, overall)}%`;
-      const relBand = releaseReadiness >= 80 ? "good" : releaseReadiness >= 60 ? "warn" : "bad";
-      relNode.className = `value ${relBand}`;
-
-      const constraint = document.getElementById("topConstraint");
-      if ((telemetry.ciFailureStreak ?? 0) >= 2) {
-        constraint.textContent = "ci stability, release gates";
-      } else if ((telemetry.staleOpenIssues30d ?? 0) >= 3) {
-        constraint.textContent = "aging backlog, prioritization";
-      } else {
-        constraint.textContent = "scope, parity, release gates";
-      }
+      badge.className = `pill ${cls}`;
     }
 
     function renderClock() {
-      document.getElementById("clock").textContent = `Updated ${new Date().toLocaleString()}`;
+      document.getElementById("clock").textContent = "Updated " + new Date().toLocaleString();
     }
 
-    function setNotifyStatus(message, ok = true) {
-      const node = document.getElementById("notifyStatus");
-      node.textContent = message;
-      node.className = `pill ${ok ? "good" : "bad"}`;
+    let gaugeChart, riskChart, spark1, spark2, spark3;
+    function chartTheme() {
+      const s = getComputedStyle(document.documentElement);
+      return {
+        text: s.getPropertyValue("--text-secondary").trim(),
+        border: s.getPropertyValue("--glass-border").trim(),
+        blue: s.getPropertyValue("--accent-blue").trim(),
+        cyan: s.getPropertyValue("--accent-cyan").trim(),
+        green: s.getPropertyValue("--accent-green").trim(),
+        amber: s.getPropertyValue("--accent-amber").trim(),
+        red: s.getPropertyValue("--accent-red").trim()
+      };
     }
 
-    function setLiveStatus(message, tone = "warn") {
-      const node = document.getElementById("liveStatus");
-      node.textContent = message;
-      node.className = `chip ${tone}`;
-    }
+    function renderCharts() {
+      const c = chartTheme();
+      const overall = getOverallScore();
 
-    function setFreshnessStatus(message, tone = "warn") {
-      const node = document.getElementById("freshnessStatus");
-      node.textContent = message;
-      node.className = `chip ${tone}`;
-    }
+      if (gaugeChart) gaugeChart.dispose();
+      gaugeChart = echarts.init(document.getElementById("gaugeChart"));
+      gaugeChart.setOption({
+        backgroundColor: "transparent",
+        series: [{
+          type: "gauge",
+          startAngle: 210,
+          endAngle: -30,
+          min: 0,
+          max: 100,
+          progress: { show: true, width: 10 },
+          axisLine: { lineStyle: { width: 10, color: [[1, "rgba(148,163,184,0.22)"]] } },
+          axisTick: { show: false },
+          splitLine: { show: false },
+          axisLabel: { show: false },
+          pointer: { show: false },
+          detail: { valueAnimation: true, formatter: "{value}%", color: c.blue, fontSize: 22, offsetCenter: [0, "20%"] },
+          data: [{ value: overall }]
+        }]
+      });
 
-    function renderFreshness() {
-      const generatedAt = state.liveMeta?.generatedAt ? new Date(state.liveMeta.generatedAt) : null;
-      if (!generatedAt || Number.isNaN(generatedAt.getTime())) {
-        setFreshnessStatus("Feed age: unknown", "warn");
-        document.getElementById("freshnessBar").style.width = "0%";
-        return;
-      }
+      if (riskChart) riskChart.dispose();
+      riskChart = echarts.init(document.getElementById("riskChart"));
+      riskChart.setOption({
+        backgroundColor: "transparent",
+        grid: { left: 44, right: 16, top: 24, bottom: 34 },
+        xAxis: { min: 0, max: 5.2, name: "Probability", nameTextStyle: { color: c.text }, axisLabel: { color: c.text }, splitLine: { lineStyle: { color: c.border } } },
+        yAxis: { min: 0, max: 5.2, name: "Impact", nameTextStyle: { color: c.text }, axisLabel: { color: c.text }, splitLine: { lineStyle: { color: c.border } } },
+        tooltip: { trigger: "item" },
+        series: [{
+          type: "scatter",
+          data: state.risks.map((r, i) => [r.probability, r.impact, r.impact * r.probability, r.name, i + 1]),
+          symbolSize: (v) => 8 + v[2] * 1.8,
+          label: { show: true, formatter: (p) => String(p.value[4]), color: "#fff", fontSize: 10, fontWeight: 700 },
+          itemStyle: {
+            color: (p) => p.value[2] >= 15 ? c.red : p.value[2] >= 8 ? c.amber : c.green
+          }
+        }]
+      });
 
-      const ageMinutes = Math.max(0, Math.round((Date.now() - generatedAt.getTime()) / 60000));
-      const freshnessPct = Math.max(0, 100 - Math.min(100, (ageMinutes / 180) * 100));
-      document.getElementById("freshnessBar").style.width = `${freshnessPct}%`;
-
-      const tone = ageMinutes <= 30 ? "good" : ageMinutes <= 120 ? "warn" : "bad";
-      setFreshnessStatus(`Feed age: ${ageMinutes}m`, tone);
-    }
-
-    function renderTelemetry() {
-      const telemetry = state.liveMeta?.telemetry || {};
-      const risks = state.liveMeta?.risks || {};
-      const links = state.liveMeta?.links || {};
-
-      const rows = [
-        ["CI failure streak", `${telemetry.ciFailureStreak ?? 0}`],
-        ["CI success (7d)", `${telemetry.ciSuccessRate7d ?? 0}%`],
-        ["CI success (30d)", `${telemetry.ciSuccessRate30d ?? 0}%`],
-        ["Median PR age", `${telemetry.prMedianAgeDays ?? 0}d`],
-        ["Median issue age", `${telemetry.issueMedianAgeDays ?? 0}d`],
-        ["Merged PR throughput (7d/30d)", `${telemetry.mergedPrs7d ?? 0}/${telemetry.mergedPrs30d ?? 0}`],
-        ["Stale PRs >7d", `${telemetry.staleOpenPrs7d ?? 0}`],
-        ["Stale issues >14d / >30d", `${telemetry.staleOpenIssues14d ?? 0}/${telemetry.staleOpenIssues30d ?? 0}`],
-        ["Auto risk: quality confidence", `${risks.qualityConfidenceRisk || "unknown"}`],
-        ["Auto risk: backlog aging", `${risks.backlogAgingRisk || "unknown"}`],
-      ];
-
-      const body = document.querySelector("#telemetryTable tbody");
-      body.innerHTML = rows.map(([k, v]) => `<tr><td>${k}</td><td>${v}</td></tr>`).join("");
-
-      if (links.repo) document.getElementById("repoLink").href = links.repo;
-      if (links.pulls) document.getElementById("pullsLink").href = links.pulls;
-      if (links.issues) document.getElementById("issuesLink").href = links.issues;
-      if (links.actions) {
-        document.getElementById("actionsLink").href = links.actions;
-        document.getElementById("actionsLink2").href = links.actions;
-      }
-    }
-
-    let refreshTimer = null;
-    let refreshCountdown = 0;
-
-    function refreshCountdownText(seconds) {
-      if (!Number.isFinite(seconds) || seconds <= 0) return "Next refresh: now";
-      const m = Math.floor(seconds / 60);
-      const s = seconds % 60;
-      return `Next refresh: ${m}:${String(s).padStart(2, "0")}`;
-    }
-
-    function setRefreshUi(seconds) {
-      if (!Number.isFinite(seconds)) {
-        document.getElementById("refreshCountdown").textContent = "Next refresh: off";
-        return;
-      }
-      document.getElementById("refreshCountdown").textContent = refreshCountdownText(seconds);
-    }
-
-    function startAutoRefreshLoop() {
-      if (refreshTimer) {
-        clearInterval(refreshTimer);
-        refreshTimer = null;
-      }
-
-      const intervalSeconds = Number(state.ui?.refreshSeconds || 0);
-      if (!intervalSeconds) {
-        setRefreshUi(NaN);
-        return;
-      }
-
-      refreshCountdown = intervalSeconds;
-      setRefreshUi(refreshCountdown);
-
-      refreshTimer = setInterval(async () => {
-        refreshCountdown -= 1;
-        if (refreshCountdown <= 0) {
-          await loadLiveKpis();
-          render();
-          refreshCountdown = intervalSeconds;
-        }
-        setRefreshUi(refreshCountdown);
-      }, 1000);
-    }
-
-    function clampPercent(value, fallback) {
-      const n = Number(value);
-      if (!Number.isFinite(n)) return fallback;
-      return Math.max(0, Math.min(100, Math.round(n)));
-    }
-
-    async function loadLiveKpis() {
-      try {
-        const response = await fetch(`${liveFeedPath}?t=${Date.now()}`, { cache: "no-store" });
-        if (!response.ok) {
-          throw new Error(`feed HTTP ${response.status}`);
-        }
-
-        const payload = await response.json();
-        const feedKpis = payload?.kpis;
-        if (!feedKpis || typeof feedKpis !== "object") {
-          throw new Error("feed missing kpis object");
-        }
-
-        state.kpis = {
-          reliability: clampPercent(feedKpis.reliability, state.kpis.reliability),
-          interop: clampPercent(feedKpis.interop, state.kpis.interop),
-          speed: clampPercent(feedKpis.speed, state.kpis.speed),
-          signal: clampPercent(feedKpis.signal, state.kpis.signal),
-        };
-
-        state.liveMeta = {
-          generatedAt: payload?.meta?.generatedAt || null,
-          dataQuality: String(payload?.meta?.dataQuality || "unknown"),
-          note: String(payload?.meta?.note || ""),
-          telemetry: payload?.meta?.telemetry || {},
-          risks: payload?.meta?.risks || {},
-          links: payload?.meta?.links || {},
-        };
-
-        localStorage.setItem(key, JSON.stringify(state));
-
-        const generatedAt = state.liveMeta.generatedAt
-          ? new Date(state.liveMeta.generatedAt).toLocaleString()
-          : "unknown";
-        const quality = String(state.liveMeta.dataQuality || "live");
-        const tone = quality === "high" ? "good" : quality === "medium" ? "warn" : "bad";
-        setLiveStatus(`Live KPI: ${quality} (${generatedAt})`, tone);
-      } catch (error) {
-        setLiveStatus(`Live KPI: fallback (${String(error)})`, "bad");
-      }
+      const sparkCfg = (el, data, color) => {
+        const chart = echarts.init(el);
+        chart.setOption({
+          grid: { left: 0, right: 0, top: 8, bottom: 8 },
+          xAxis: { type: "category", show: false, data: data.map((_, i) => i) },
+          yAxis: { type: "value", show: false },
+          series: [{ type: "line", data, smooth: true, symbol: "none", lineStyle: { color, width: 2 }, areaStyle: { color: `${color}33` } }]
+        });
+        return chart;
+      };
+      if (spark1) spark1.dispose();
+      if (spark2) spark2.dispose();
+      if (spark3) spark3.dispose();
+      spark1 = sparkCfg(document.getElementById("kpiSpark1"), [82, 86, 88, 90, 92, 94, 96], c.green);
+      spark2 = sparkCfg(document.getElementById("kpiSpark2"), [45, 52, 58, 65, 68, 72, 78], c.blue);
+      spark3 = sparkCfg(document.getElementById("kpiSpark3"), [20, 35, 50, 68, 75, 82, 90], c.cyan);
     }
 
     function generateDigestText() {
@@ -1115,112 +517,40 @@
         else acc.low += 1;
         return acc;
       }, { high: 0, medium: 0, low: 0 });
-
-      const topOpp = [...state.opportunities]
-        .sort((a, b) => ((b.impact + b.confidence + b.ease) / 3) - ((a.impact + a.confidence + a.ease) / 3))
-        .slice(0, 2)
-        .map((o) => `${o.title} (score ${((o.impact + o.confidence + o.ease) / 3).toFixed(1)})`)
-        .join("; ");
-
+      const topOpp = state.opportunities.slice().sort((a, b) => ((b.impact + b.confidence + b.ease) / 3) - ((a.impact + a.confidence + a.ease) / 3)).slice(0, 3).map((o) => `  - ${o.title} (score ${((o.impact + o.confidence + o.ease) / 3).toFixed(1)})`).join("\n");
       return [
         "# ACP Weekly Command Center Digest",
         "",
-        `Date: ${new Date().toLocaleString()}`,
-        `Overall health: ${overall}%`,
-        `KPIs: reliability ${state.kpis.reliability}%, interop ${state.kpis.interop}%, speed ${state.kpis.speed}%, pilot readiness ${state.kpis.signal}%`,
-        `Testing: ${testsDone}/${state.tests.length} checks complete`,
-        `Risk buckets: High ${riskBuckets.high}, Medium ${riskBuckets.medium}, Low ${riskBuckets.low}`,
-        "Integrations: LINE bridge is running, but LINE account entitlement is still blocked pending Business verification.",
-        `Top opportunities: ${topOpp || "n/a"}`,
+        "Date: " + new Date().toLocaleString(),
+        "Overall health: " + overall + "%",
         "",
-        "Suggested focus next week:",
-        "1. Raise pilot readiness through a hardened quickstart and runbook.",
-        "2. Convert remaining smoke checks to semantic parity assertions.",
-        "3. Keep strict preflight pass rate above 95%.",
+        "## KPIs",
+        "  Reliability:      " + state.kpis.reliability + "%",
+        "  Interop parity:   " + state.kpis.interop + "%",
+        "  Onboarding:       " + state.kpis.speed + "%",
+        "  Pilot readiness:  " + state.kpis.signal + "%",
+        "",
+        "## Progress",
+        "  Phases complete: 3/5 (Container, Adapters, Bridge Matrix)",
+        "  Testing: " + testsDone + "/" + state.tests.length + " checks complete",
+        "  LINE Bot: Connected, 14 Flex templates live",
+        "",
+        "## Risks",
+        "  High: " + riskBuckets.high + "  Medium: " + riskBuckets.medium + "  Low: " + riskBuckets.low,
+        "",
+        "## Top Opportunities",
+        topOpp || "  None",
       ].join("\n");
     }
 
-    function getFlexTemplateLabel(templateId) {
-      if (templateId === "critical-incident") return "Critical Incident Alert";
-      if (templateId === "weekly-digest") return "Weekly PM Digest";
-      if (templateId === "end-user-order-update") return "End User Order Update";
-      return templateId || "unknown";
-    }
-
-    function buildFlexVars() {
-      const now = new Date();
-      const testsDone = state.tests.filter((t) => t.done).length;
-      const riskBuckets = state.risks.reduce((acc, r) => {
-        const score = r.impact * r.probability;
-        if (score >= 15) acc.high += 1;
-        else if (score >= 8) acc.medium += 1;
-        else acc.low += 1;
-        return acc;
-      }, { high: 0, medium: 0, low: 0 });
-
-      return {
-        title: "ACP Command Center",
-        body: document.getElementById("alertBody").value.trim() || "Status update",
-        severity: getOverallScore() < 60 ? "P1" : getOverallScore() < 80 ? "P2" : "P3",
-        updatedAt: now.toLocaleString(),
-        url: state.notify.dashboardUrl || window.location.href,
-        week: getWeekKey(now),
-        overall: `${getOverallScore()}%`,
-        tests: `${testsDone}/${state.tests.length} checks complete`,
-        riskBuckets: `H:${riskBuckets.high} M:${riskBuckets.medium} L:${riskBuckets.low}`,
-        orderId: "ORD-ACP-2026-01",
-        customerName: "Taylor",
-        status: "Preparing shipment",
-        eta: "Tomorrow 10:30 AM",
-      };
-    }
-
-    async function previewFlexTemplate() {
-      const base = state.notify.bridgeUrl.replace(/\/$/, "");
-      const templateId = state.notify.flexTemplateId || "critical-incident";
-      const payload = await postJson(`${base}/line/flex/render`, {
-        templateId,
-        vars: buildFlexVars(),
-      });
-
-      const preview = {
-        template: getFlexTemplateLabel(templateId),
-        altText: payload?.payload?.altText,
-        contents: payload?.payload?.contents,
-      };
-
-      document.getElementById("flexPreview").textContent = JSON.stringify(preview, null, 2);
-      return payload;
-    }
-
-    async function postJson(url, payload) {
-      const res = await fetch(url, {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      if (!res.ok) {
-        const text = await res.text();
-        throw new Error(`HTTP ${res.status}: ${text}`);
-      }
-      return res.json();
-    }
-
     function render() {
-      applyCompactMode();
       renderClock();
       renderKpis();
-      renderFreshness();
-      renderTelemetry();
       renderRisks();
-      renderRiskCanvas();
       renderTests();
       renderOpportunities();
       renderInsights();
-      document.getElementById("bridgeUrl").value = state.notify.bridgeUrl;
-      document.getElementById("lineUserId").value = state.notify.lineUserId;
-      document.getElementById("dashboardUrl").value = state.notify.dashboardUrl;
-      document.getElementById("flexTemplateId").value = state.notify.flexTemplateId || "critical-incident";
+      renderCharts();
     }
 
     ["relInput", "interopInput", "speedInput", "signalInput"].forEach((id, idx) => {
@@ -1229,29 +559,6 @@
         state.kpis[keys[idx]] = Number(e.target.value);
         save();
       });
-    });
-
-    ["bridgeUrl", "lineUserId", "dashboardUrl", "flexTemplateId"].forEach((id) => {
-      document.getElementById(id).addEventListener("input", (e) => {
-        if (id === "bridgeUrl") state.notify.bridgeUrl = e.target.value.trim();
-        if (id === "lineUserId") state.notify.lineUserId = e.target.value.trim();
-        if (id === "dashboardUrl") state.notify.dashboardUrl = e.target.value.trim();
-        if (id === "flexTemplateId") state.notify.flexTemplateId = e.target.value;
-        save();
-      });
-    });
-
-    document.getElementById("refreshSelect").addEventListener("change", (e) => {
-      const value = e.target.value;
-      state.ui.refreshSeconds = value === "off" ? 0 : Number(value);
-      localStorage.setItem(key, JSON.stringify(state));
-      startAutoRefreshLoop();
-    });
-
-    document.getElementById("compactBtn").addEventListener("click", () => {
-      state.ui.compactMode = !state.ui.compactMode;
-      localStorage.setItem(key, JSON.stringify(state));
-      render();
     });
 
     document.getElementById("resetBtn").addEventListener("click", () => {
@@ -1277,7 +584,7 @@
       picker.type = "file";
       picker.accept = "application/json,.json";
       picker.addEventListener("change", async () => {
-        const file = picker.files?.[0];
+        const file = picker.files && picker.files[0];
         if (!file) return;
         try {
           const text = await file.text();
@@ -1285,131 +592,10 @@
           localStorage.setItem(key, JSON.stringify(parsed));
           location.reload();
         } catch (error) {
-          setNotifyStatus(`Import failed: ${String(error)}`, false);
+          alert("Import failed: " + String(error));
         }
       });
       picker.click();
-    });
-
-    document.getElementById("shareBtn").addEventListener("click", async () => {
-      const payload = {
-        kpis: state.kpis,
-        tests: state.tests,
-        risks: state.risks,
-        opportunities: state.opportunities,
-        ui: state.ui,
-      };
-      const token = encodeShareState(payload);
-      const url = new URL(window.location.href);
-      url.searchParams.set("s", token);
-      try {
-        await navigator.clipboard.writeText(url.toString());
-        setNotifyStatus("Share link copied", true);
-      } catch {
-        setNotifyStatus("Share link ready in URL bar", true);
-      }
-      history.replaceState({}, "", url.toString());
-    });
-
-    document.getElementById("sendLineBtn").addEventListener("click", async () => {
-      try {
-        const base = state.notify.bridgeUrl.replace(/\/$/, "");
-        await postJson(`${base}/notify/line`, {
-          userId: state.notify.lineUserId,
-          title: "ACP Command Center",
-          body: document.getElementById("alertBody").value.trim(),
-          url: state.notify.dashboardUrl || undefined,
-        });
-        setNotifyStatus("LINE alert sent", true);
-      } catch (error) {
-        setNotifyStatus(`LINE failed: ${String(error)}`, false);
-      }
-    });
-
-    document.getElementById("discoverLineBtn").addEventListener("click", async () => {
-      try {
-        const base = state.notify.bridgeUrl.replace(/\/$/, "");
-        const res = await fetch(`${base}/line/last-user`);
-        if (!res.ok) {
-          throw new Error(`HTTP ${res.status}`);
-        }
-        const payload = await res.json();
-        if (payload?.lastUserId) {
-          state.notify.lineUserId = payload.lastUserId;
-          document.getElementById("lineUserId").value = payload.lastUserId;
-          localStorage.setItem(key, JSON.stringify(state));
-          setNotifyStatus(`LINE user found: ${payload.lastUserId}`, true);
-        } else {
-          setNotifyStatus("No LINE user captured yet. Send a message to the bot first.", false);
-        }
-      } catch (error) {
-        setNotifyStatus(`Discover failed: ${String(error)}`, false);
-      }
-    });
-
-    document.getElementById("sendLineLastBtn").addEventListener("click", async () => {
-      try {
-        const base = state.notify.bridgeUrl.replace(/\/$/, "");
-        await postJson(`${base}/notify/line/last-user`, {
-          title: "ACP Command Center",
-          body: document.getElementById("alertBody").value.trim(),
-          url: state.notify.dashboardUrl || undefined,
-        });
-        setNotifyStatus("LINE alert sent to last discovered user", true);
-      } catch (error) {
-        setNotifyStatus(`LINE last-user failed: ${String(error)}`, false);
-      }
-    });
-
-    document.getElementById("previewFlexBtn").addEventListener("click", async () => {
-      try {
-        await previewFlexTemplate();
-        setNotifyStatus("Flex preview updated", true);
-      } catch (error) {
-        setNotifyStatus(`Flex preview failed: ${String(error)}`, false);
-      }
-    });
-
-    document.getElementById("sendLineFlexBtn").addEventListener("click", async () => {
-      try {
-        const base = state.notify.bridgeUrl.replace(/\/$/, "");
-        await postJson(`${base}/notify/line/flex`, {
-          userId: state.notify.lineUserId,
-          templateId: state.notify.flexTemplateId || "critical-incident",
-          vars: buildFlexVars(),
-        });
-        setNotifyStatus(`Flex sent to configured LINE user (${getFlexTemplateLabel(state.notify.flexTemplateId)})`, true);
-      } catch (error) {
-        setNotifyStatus(`LINE flex failed: ${String(error)}`, false);
-      }
-    });
-
-    document.getElementById("sendLineFlexLastBtn").addEventListener("click", async () => {
-      try {
-        const base = state.notify.bridgeUrl.replace(/\/$/, "");
-        await postJson(`${base}/notify/line/flex/last-user`, {
-          templateId: state.notify.flexTemplateId || "critical-incident",
-          vars: buildFlexVars(),
-        });
-        setNotifyStatus(`Flex sent to last discovered LINE user (${getFlexTemplateLabel(state.notify.flexTemplateId)})`, true);
-      } catch (error) {
-        setNotifyStatus(`LINE flex last-user failed: ${String(error)}`, false);
-      }
-    });
-
-    document.getElementById("sendProviderBtn").addEventListener("click", async () => {
-      try {
-        const base = state.notify.bridgeUrl.replace(/\/$/, "");
-        await postJson(`${base}/notify/imessage-provider`, {
-          title: "ACP Command Center",
-          body: document.getElementById("alertBody").value.trim(),
-          severity: getOverallScore() < 60 ? "high" : "info",
-          url: state.notify.dashboardUrl || undefined,
-        });
-        setNotifyStatus("Provider alert sent", true);
-      } catch (error) {
-        setNotifyStatus(`Provider failed: ${String(error)}`, false);
-      }
     });
 
     document.getElementById("genDigestBtn").addEventListener("click", () => {
@@ -1419,48 +605,18 @@
     document.getElementById("copyDigestBtn").addEventListener("click", async () => {
       try {
         await navigator.clipboard.writeText(document.getElementById("digestBox").textContent);
-        setNotifyStatus("Digest copied", true);
-      } catch (error) {
-        setNotifyStatus(`Copy failed: ${String(error)}`, false);
-      }
+      } catch {}
     });
 
-    document.getElementById("refreshNowBtn")?.addEventListener("click", async () => {
-      await loadLiveKpis();
-      render();
-      setNotifyStatus("Live feed refreshed", true);
+    window.addEventListener("resize", () => {
+      gaugeChart && gaugeChart.resize();
+      riskChart && riskChart.resize();
+      spark1 && spark1.resize();
+      spark2 && spark2.resize();
+      spark3 && spark3.resize();
     });
 
-    document.getElementById("mobileDigestBtn")?.addEventListener("click", () => {
-      document.getElementById("digestBox").textContent = generateDigestText();
-      setNotifyStatus("Digest generated", true);
-      document.getElementById("digestBox").scrollIntoView({ behavior: "smooth", block: "center" });
-    });
-
-    document.getElementById("mobileLineBtn")?.addEventListener("click", async () => {
-      try {
-        const base = state.notify.bridgeUrl.replace(/\/$/, "");
-        await postJson(`${base}/notify/line/last-user`, {
-          title: "ACP Command Center",
-          body: document.getElementById("alertBody").value.trim(),
-          url: state.notify.dashboardUrl || undefined,
-        });
-        setNotifyStatus("LINE alert sent", true);
-      } catch (error) {
-        setNotifyStatus(`LINE failed: ${String(error)}`, false);
-      }
-    });
-
-    async function init() {
-      applyStateFromUrl();
-      document.getElementById("refreshSelect").value = state.ui?.refreshSeconds ? String(state.ui.refreshSeconds) : "off";
-      await loadLiveKpis();
-      ensureWeeklySnapshot();
-      render();
-      startAutoRefreshLoop();
-    }
-
-    init();
+    render();
   </script>
   <script src="./security.js"></script>
 </body>

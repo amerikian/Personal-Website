@@ -1,440 +1,258 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ACP Ops Wall</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
   <style>
     :root {
-      --bg: #102224;
-      --ink: #ebf4f4;
-      --muted: #9bb2b2;
-      --line: #295255;
-      --ok: #49d487;
-      --warn: #ffd166;
-      --bad: #ff6b6b;
-      --accent: #4cc9f0;
-      --card: rgba(17, 38, 41, 0.84);
+      --bg-base:#060b18; --bg-card:rgba(15,23,42,.66); --bg-input:rgba(15,23,42,.9);
+      --text:#f1f5f9; --muted:#94a3b8; --line:rgba(148,163,184,.12);
+      --ok:#10b981; --warn:#f59e0b; --bad:#ef4444; --blue:#3b82f6; --cyan:#06b6d4;
+      --grad:linear-gradient(135deg,#3b82f6,#06b6d4); --radius:16px; --radius-sm:10px;
     }
-
-    * { box-sizing: border-box; }
-
-    body {
-      margin: 0;
-      font-family: "JetBrains Mono", monospace;
-      color: var(--ink);
-      min-height: 100vh;
-      background:
-        radial-gradient(circle at 12% 10%, rgba(76, 201, 240, 0.22), transparent 35%),
-        radial-gradient(circle at 85% 88%, rgba(255, 209, 102, 0.18), transparent 36%),
-        linear-gradient(155deg, #0a1718, var(--bg));
+    [data-theme="light"] {
+      --bg-base:#eef2f7; --bg-card:rgba(255,255,255,.78); --bg-input:#fff;
+      --text:#0f172a; --muted:#64748b; --line:rgba(15,23,42,.1);
     }
-
-    .wrap {
-      width: min(1200px, 95vw);
-      margin: 20px auto;
-      display: grid;
-      gap: 12px;
-      animation: enter 700ms ease-out both;
-    }
-
-    @keyframes enter {
-      from { opacity: 0; transform: scale(0.99) translateY(8px); }
-      to { opacity: 1; transform: scale(1) translateY(0); }
-    }
-
-    .header {
-      border: 1px solid var(--line);
-      border-radius: 14px;
-      padding: 14px;
-      background: var(--card);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
-    .navlinks {
-      display: flex;
-      gap: 8px;
-      width: 100%;
-      flex-wrap: wrap;
-    }
-
-    .navlinks a {
-      text-decoration: none;
-      color: var(--ink);
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      padding: 7px 10px;
-      font-size: 0.82rem;
-      background: #173236;
-    }
-
-    .navlinks a.active {
-      background: linear-gradient(90deg, rgba(76, 201, 240, 0.2), rgba(73, 212, 135, 0.2));
-    }
-
-    h1 {
-      margin: 0;
-      font-family: "DM Serif Display", serif;
-      letter-spacing: 0.03em;
-      font-size: clamp(1.2rem, 2.5vw, 1.9rem);
-      font-weight: 400;
-    }
-
-    .status {
-      padding: 8px 12px;
-      border-radius: 999px;
-      border: 1px solid var(--line);
-      background: #0f1f21;
-      color: var(--ok);
-      font-weight: 600;
-    }
-
-    .kpi-strip {
-      display: grid;
-      gap: 10px;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
-
-    .kpi {
-      border: 1px solid var(--line);
-      border-radius: 10px;
-      background: #0f1f21;
-      padding: 10px;
-    }
-
-    .kpi .label {
-      color: var(--muted);
-      font-size: 0.78rem;
-    }
-
-    .kpi .value {
-      margin-top: 3px;
-      font-size: 1.05rem;
-      font-weight: 600;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: 1.3fr 1fr;
-      gap: 12px;
-    }
-
-    .card {
-      border: 1px solid var(--line);
-      border-radius: 14px;
-      background: var(--card);
-      padding: 12px;
-    }
-
-    .card h2 {
-      margin: 0 0 10px;
-      font-size: 1rem;
-      color: #d8edee;
-    }
-
-    .commands {
-      display: grid;
-      gap: 8px;
-    }
-
-    .cmd {
-      border: 1px solid var(--line);
-      border-radius: 10px;
-      padding: 10px;
-      background: #0f1f21;
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 8px;
-      align-items: center;
-    }
-
-    .cmd code {
-      color: #9ef0ff;
-      word-break: break-word;
-    }
-
-    button {
-      border: 1px solid var(--line);
-      background: #173236;
-      color: var(--ink);
-      border-radius: 10px;
-      padding: 7px 10px;
-      cursor: pointer;
-      font-family: inherit;
-      font-size: 0.85rem;
-    }
-
-    button:hover { filter: brightness(1.1); }
-
-    .pulse {
-      height: 190px;
-      border: 1px solid var(--line);
-      border-radius: 10px;
-      background: #0f1f21;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .line {
-      position: absolute;
-      left: 0;
-      right: 0;
-      top: 50%;
-      height: 2px;
-      background: linear-gradient(90deg, transparent, var(--accent), transparent);
-      animation: sweep 2.4s linear infinite;
-    }
-
-    @keyframes sweep {
-      from { transform: translateX(-100%); }
-      to { transform: translateX(100%); }
-    }
-
-    .ticks {
-      display: grid;
-      gap: 6px;
-      margin-top: 10px;
-      font-size: 0.85rem;
-    }
-
-    .tick {
-      display: grid;
-      grid-template-columns: auto 1fr;
-      gap: 8px;
-      align-items: center;
-    }
-
-    .dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 99px;
-      background: var(--ok);
-      box-shadow: 0 0 14px rgba(73, 212, 135, 0.6);
-    }
-
-    .warn .dot { background: var(--warn); box-shadow: 0 0 14px rgba(255, 209, 102, 0.6); }
-    .bad .dot { background: var(--bad); box-shadow: 0 0 14px rgba(255, 107, 107, 0.6); }
-
-    .triage {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.85rem;
-    }
-
-    .triage th,
-    .triage td {
-      border-bottom: 1px dashed var(--line);
-      text-align: left;
-      padding: 8px 4px;
-      vertical-align: top;
-    }
-
-    .triage th { color: var(--muted); }
-
-    @media (max-width: 900px) {
-      .grid { grid-template-columns: 1fr; }
-      .kpi-strip { grid-template-columns: 1fr; }
-      .card { padding: 10px; }
-      .triage {
-        display: block;
-        overflow-x: auto;
-        white-space: nowrap;
-      }
-    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:"Inter",sans-serif;color:var(--text);background:radial-gradient(ellipse at 12% 0%,rgba(59,130,246,.13),transparent 46%),radial-gradient(ellipse at 90% 100%,rgba(6,182,212,.1),transparent 48%),var(--bg-base)}
+    .wrap{width:min(1380px,96vw);margin:0 auto;padding:16px 0 36px}
+    .glass{background:var(--bg-card);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border:1px solid var(--line);border-radius:var(--radius);box-shadow:0 8px 24px rgba(0,0,0,.24);position:relative;overflow:hidden}
+    .glass::before{content:"";position:absolute;left:0;right:0;top:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.4),transparent)}
+    .topbar{padding:14px 20px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+    .topbar h1{font-family:"DM Serif Display",serif;font-size:clamp(1.3rem,2.6vw,1.95rem);font-weight:400;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+    .btn,.chip,.nav a{border:1px solid var(--line);border-radius:999px;background:var(--bg-input);color:var(--text);padding:7px 12px;font:500 .8rem "Inter",sans-serif;text-decoration:none;cursor:pointer}
+    .theme{width:44px;height:26px;border-radius:999px;border:1px solid var(--line);background:var(--bg-input);position:relative;cursor:pointer}
+    .theme::after{content:"";position:absolute;left:2px;top:2px;width:20px;height:20px;border-radius:50%;background:var(--warn);transition:.2s}
+    [data-theme="dark"] .theme::after{transform:translateX(18px);background:var(--blue)}
+    .nav{display:flex;gap:6px;padding:6px;margin-bottom:14px;overflow-x:auto}
+    .nav a.active{background:var(--grad);color:#fff}
+    .grid{display:grid;gap:14px}.g12{grid-template-columns:repeat(12,1fr)}
+    .s4{grid-column:span 4}.s5{grid-column:span 5}.s7{grid-column:span 7}.s8{grid-column:span 8}.s12{grid-column:span 12}
+    .pad{padding:16px}
+    .title{display:flex;justify-content:space-between;align-items:center;font-size:.88rem;font-weight:600;margin-bottom:10px}
+    .mini{font-size:.72rem;color:var(--muted)}
+    .kpi{padding:14px}
+    .kpi .lbl{font-size:.7rem;letter-spacing:.06em;color:var(--muted);text-transform:uppercase}
+    .kpi .val{font-family:"JetBrains Mono",monospace;font-size:1.4rem;font-weight:700;margin-top:4px}
+    .good{color:var(--ok)}.warn{color:var(--warn)}.bad{color:var(--bad)}
+    .proto{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+    .chip-card{border:1px solid var(--line);border-radius:10px;background:var(--bg-input);padding:10px;text-align:center}
+    .chip-card .n{font-size:.68rem;color:var(--muted);letter-spacing:.05em;text-transform:uppercase}
+    .chip-card .v{font-size:.9rem;font-weight:700;margin-top:3px}
+    .cmd-list{display:grid;gap:8px}
+    .cmd{border:1px solid var(--line);border-radius:10px;background:var(--bg-input);padding:10px;display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center}
+    .cmd .l{font-size:.7rem;color:var(--muted);margin-bottom:2px}
+    .cmd code{font-size:.76rem;color:#67e8f9;word-break:break-word}
+    .tick-list{display:grid;gap:6px}
+    .tick{display:grid;grid-template-columns:auto 1fr;gap:8px;align-items:start;font-size:.82rem}
+    .dot{width:10px;height:10px;border-radius:50%;margin-top:4px;background:var(--ok);box-shadow:0 0 12px rgba(16,185,129,.6)}
+    .tick.warn .dot{background:var(--warn);box-shadow:0 0 12px rgba(245,158,11,.5)}
+    .tick.bad .dot{background:var(--bad);box-shadow:0 0 12px rgba(239,68,68,.5)}
+    table{width:100%;border-collapse:collapse;font-size:.82rem}
+    th,td{text-align:left;padding:9px 7px;border-bottom:1px solid var(--line);vertical-align:top}
+    th{font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+    .statusbar{display:flex;align-items:center;gap:8px;border:1px solid rgba(6,199,85,.3);border-radius:10px;background:rgba(6,199,85,.08);padding:9px 12px;font-size:.82rem}
+    .botdot{width:10px;height:10px;border-radius:50%;background:#06c755;box-shadow:0 0 12px rgba(6,199,85,.6)}
+    .footer{text-align:center;color:var(--muted);font-size:.78rem;margin-top:4px}
+    @media (max-width:1080px){.s4,.s5,.s7,.s8{grid-column:span 12}.proto{grid-template-columns:1fr 1fr}}
   </style>
 </head>
 <body>
   <main class="wrap">
-    <header class="header">
-      <h1>Protocol Ops Wall</h1>
-      <div class="status" id="wallStatus">PRECHECK RESULT: PASS</div>
-      <nav class="navlinks" aria-label="Command center navigation">
-        <a href="./index.html">Strategy Dashboard</a>
-        <a class="active" href="./ops-wall.html">Ops Wall</a>
-        <a href="./trends.html">Weekly Trends</a>
-        <a href="./line-cards.html">LINE Cards Studio</a>
-      </nav>
+    <header class="glass topbar">
+      <div>
+        <h1>Protocol Ops Wall</h1>
+        <p class="mini">Operational runbook and triage intelligence</p>
+      </div>
+      <div class="actions">
+        <span class="chip" id="clock">Syncing...</span>
+        <button id="themeBtn" class="theme" aria-label="Toggle theme"></button>
+      </div>
     </header>
 
-    <section class="kpi-strip">
-      <article class="kpi">
-        <div class="label">Current Operating Mode</div>
-        <div class="value" id="modeValue">Stabilize and Productize</div>
-      </article>
-      <article class="kpi">
-        <div class="label">Most Important Signal</div>
-        <div class="value" id="signalValue">Strict preflight remains green</div>
-      </article>
-      <article class="kpi">
-        <div class="label">Immediate Risk Focus</div>
-        <div class="value" id="riskFocusValue">LINE account entitlement + endpoint parity gaps</div>
-      </article>
-    </section>
+    <nav class="glass nav" aria-label="Command center navigation">
+      <a href="./index.html">Strategy Dashboard</a>
+      <a class="active" href="./ops-wall.html">Ops Wall</a>
+      <a href="./trends.html">Weekly Trends</a>
+      <a href="./line-cards.html">LINE Cards Studio</a>
+    </nav>
 
-    <section class="kpi-strip">
-      <article class="kpi">
-        <div class="label">Live feed quality</div>
-        <div class="value" id="qualityValue">loading...</div>
-      </article>
-      <article class="kpi">
-        <div class="label">Feed freshness</div>
-        <div class="value" id="freshnessValue">--</div>
-      </article>
-      <article class="kpi">
-        <div class="label">Drill-through</div>
-        <div class="value"><a id="drillActions" href="https://github.com/amerikian/acp-dev-workspace/actions" target="_blank" rel="noreferrer" style="color:#9ef0ff;">workflow runs</a></div>
-      </article>
-    </section>
+    <section class="grid g12">
+      <article class="glass s4 kpi"><div class="lbl">Operating Mode</div><div class="val">Stabilize + Productize</div></article>
+      <article class="glass s4 kpi"><div class="lbl">Primary Signal</div><div class="val good">Strict preflight GREEN</div></article>
+      <article class="glass s4 kpi"><div class="lbl">Risk Focus</div><div class="val warn">Scope creep + parity gaps</div></article>
 
-    <section class="grid">
-      <article class="card">
-        <h2>Runbook Commands</h2>
-        <div class="commands" id="commands"></div>
+      <article class="glass s12 pad">
+        <div class="proto">
+          <div class="chip-card"><div class="n">ACP</div><div class="v good">Healthy</div></div>
+          <div class="chip-card"><div class="n">AP2</div><div class="v good">Healthy</div></div>
+          <div class="chip-card"><div class="n">x402</div><div class="v good">Healthy</div></div>
+          <div class="chip-card"><div class="n">LINE Bot</div><div class="v good">Connected</div></div>
+        </div>
       </article>
 
-      <article class="card">
-        <h2>Live Rhythm</h2>
-        <div class="pulse"><div class="line"></div></div>
-        <div class="ticks">
+      <article class="glass s12 pad">
+        <div class="statusbar"><span class="botdot"></span><span><strong>@flexmessagesim</strong> connected via notify-bridge (8787), Flex templates available, push path healthy.</span></div>
+      </article>
+
+      <article class="glass s7 pad">
+        <div class="title">Runbook Commands <span class="mini">Copy & run</span></div>
+        <div id="commands" class="cmd-list"></div>
+      </article>
+
+      <article class="glass s5 pad">
+        <div class="title">Health Radar <span class="mini">Protocol vitality</span></div>
+        <div id="healthChart" style="height:280px"></div>
+      </article>
+
+      <article class="glass s5 pad">
+        <div class="title">Live Rhythm <span class="mini">Operator checklist</span></div>
+        <div class="tick-list">
           <div class="tick"><span class="dot"></span><span>ACP strict schema + lifecycle checks green</span></div>
+          <div class="tick"><span class="dot"></span><span>LINE bot connected and delivering Flex cards</span></div>
+          <div class="tick"><span class="dot"></span><span>Replay fixtures passing (acp.operation.json)</span></div>
           <div class="tick warn"><span class="dot"></span><span>Watch AP2 endpoint drift and auto-fallback events</span></div>
-          <div class="tick warn"><span class="dot"></span><span>LINE bridge configured, but Messaging API still blocked by Business verification</span></div>
           <div class="tick warn"><span class="dot"></span><span>Prioritize parity assertions over net-new feature work</span></div>
           <div class="tick bad"><span class="dot"></span><span>Block release if strict preflight or replay drops red</span></div>
         </div>
       </article>
 
-      <article class="card" style="grid-column: 1 / -1;">
-        <h2>Triage Matrix</h2>
-        <table class="triage">
-          <thead>
-            <tr>
-              <th>Signal</th>
-              <th>Interpretation</th>
-              <th>Action</th>
-            </tr>
-          </thead>
+      <article class="glass s7 pad">
+        <div class="title">Triage Matrix <span class="mini">Decision guide</span></div>
+        <table>
+          <thead><tr><th>Signal</th><th>Interpretation</th><th>Action</th></tr></thead>
           <tbody>
-            <tr>
-              <td>preflight strict fails on ACP</td>
-              <td>Contract/spec drift or local ACP service regression</td>
-              <td>Run ACP conformance standalone, inspect checkout create/get/complete behavior, update fixture if intentional</td>
-            </tr>
-            <tr>
-              <td>auto AP2 fallback triggers repeatedly</td>
-              <td>Primary AP2 endpoint instability or route mismatch</td>
-              <td>Normalize AP2 base URL policy and document default path behavior in runbook</td>
-            </tr>
-            <tr>
-              <td>replay passes, ops fails</td>
-              <td>Live environment issue, not fixture quality</td>
-              <td>Inspect ports, credentials, and running local services before changing contracts</td>
-            </tr>
-            <tr>
-              <td>high repo dirtiness</td>
-              <td>Execution context noise and hidden risk in verification</td>
-              <td>Clean or isolate branch state before checkpointing weekly status</td>
-            </tr>
-            <tr>
-              <td>line push returns 403</td>
-              <td>LINE channel entitlement incomplete (Business verification or Messaging API readiness)</td>
-              <td>Complete Business verification, reissue access token, then retest /v2/bot/info and push endpoints</td>
-            </tr>
+            <tr><td>preflight strict fails on ACP</td><td>Contract/spec drift or ACP service regression</td><td>Run ACP validate standalone; inspect create/get/complete.</td></tr>
+            <tr><td>auto AP2 fallback repeats</td><td>AP2 endpoint instability / mismatch</td><td>Normalize AP2 base URL policy and update runbook.</td></tr>
+            <tr><td>replay passes, ops fails</td><td>Live environment issue</td><td>Check ports, creds, and local services before code edits.</td></tr>
+            <tr><td>LINE bot fails to send</td><td>Bridge down or token expired</td><td>Check /health and /line/config-check, rotate token if needed.</td></tr>
+            <tr><td>scope creep in protocol-lab</td><td>MVP freeze not enforced</td><td>Document non-goals, defer out-of-scope work.</td></tr>
           </tbody>
         </table>
       </article>
+
+      <article class="glass s12 pad">
+        <div class="title">Quick Health Checks <span class="mini">One-click command copy</span></div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:8px">
+          <div class="cmd"><div><div class="l">LINE Bot Health</div><code>curl -s localhost:8787/health | jq .</code></div><button type="button" class="btn copy-cmd">Copy</button></div>
+          <div class="cmd"><div><div class="l">LINE Config</div><code>curl -s localhost:8787/line/config-check | jq .</code></div><button type="button" class="btn copy-cmd">Copy</button></div>
+          <div class="cmd"><div><div class="l">ACP Handler Tests</div><code>cd /workspaces/ACP\ Dev/ecosystem/acp-handler && corepack pnpm exec vitest run</code></div><button type="button" class="btn copy-cmd">Copy</button></div>
+          <div class="cmd"><div><div class="l">Protocol Lab Strict</div><code>cd /workspaces/ACP\ Dev/protocol-lab && npm run conformance:preflight:strict</code></div><button type="button" class="btn copy-cmd">Copy</button></div>
+        </div>
+      </article>
     </section>
+
+    <p class="footer">Protocol Ops Wall — ACP Command Center v2</p>
   </main>
 
   <script>
+    const themeKey = "acp-cc-theme";
+    function setTheme(t) {
+      document.documentElement.setAttribute("data-theme", t);
+      localStorage.setItem(themeKey, t);
+      setTimeout(renderChart, 60);
+    }
+    document.getElementById("themeBtn").addEventListener("click", () => {
+      setTheme(document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark");
+    });
+    setTheme(localStorage.getItem(themeKey) || "dark");
+
+    document.getElementById("clock").textContent = "Updated " + new Date().toLocaleString();
+
     const runbookCommands = [
-      "cd /workspaces/ACP Dev/protocol-lab && npm run conformance:preflight:strict",
-      "cd /workspaces/ACP Dev/protocol-lab && npm run conformance:all:auto-ap2",
-      "cd /workspaces/ACP Dev/agentic-commerce-protocol && corepack pnpm run validate:all",
-      "cd /workspaces/ACP Dev/protocol-lab && npm run conformance:replay"
+      { label: "Strict Preflight", cmd: "cd /workspaces/ACP\\ Dev/protocol-lab && npm run conformance:preflight:strict" },
+      { label: "All Adapters (auto AP2)", cmd: "cd /workspaces/ACP\\ Dev/protocol-lab && npm run conformance:all:auto-ap2" },
+      { label: "ACP Spec Validate", cmd: "cd /workspaces/ACP\\ Dev/agentic-commerce-protocol && corepack pnpm run validate:all" },
+      { label: "Replay Fixtures", cmd: "cd /workspaces/ACP\\ Dev/protocol-lab && npm run conformance:replay" },
+      { label: "Operation Smoke", cmd: "cd /workspaces/ACP\\ Dev/protocol-lab && npm run conformance:ops" },
+      { label: "LINE Bot Health", cmd: "curl -s http://localhost:8787/health | jq ." }
     ];
 
     const commandsNode = document.getElementById("commands");
-
-    runbookCommands.forEach((line) => {
+    runbookCommands.forEach((entry) => {
       const row = document.createElement("div");
       row.className = "cmd";
-
-      const code = document.createElement("code");
-      code.textContent = line;
-
-      const copyBtn = document.createElement("button");
-      copyBtn.type = "button";
-      copyBtn.textContent = "Copy";
-      copyBtn.addEventListener("click", async () => {
+      row.innerHTML = `<div><div class="l">${entry.label}</div><code>${entry.cmd}</code></div><button class="btn">Copy</button>`;
+      row.querySelector("button").addEventListener("click", async () => {
         try {
-          await navigator.clipboard.writeText(line);
-          copyBtn.textContent = "Copied";
-          setTimeout(() => { copyBtn.textContent = "Copy"; }, 900);
+          await navigator.clipboard.writeText(entry.cmd);
+          row.querySelector("button").textContent = "Copied";
+          setTimeout(() => (row.querySelector("button").textContent = "Copy"), 900);
         } catch {
-          copyBtn.textContent = "Failed";
-          setTimeout(() => { copyBtn.textContent = "Copy"; }, 900);
+          row.querySelector("button").textContent = "Failed";
+          setTimeout(() => (row.querySelector("button").textContent = "Copy"), 900);
         }
       });
-
-      row.appendChild(code);
-      row.appendChild(copyBtn);
       commandsNode.appendChild(row);
     });
 
-    const status = document.getElementById("wallStatus");
-    const now = new Date();
-    status.textContent = `PRECHECK RESULT: PASS  |  ${now.toLocaleString()}`;
-
-    async function loadLiveOpsSignals() {
-      try {
-        const response = await fetch(`./data/kpi-live.json?t=${Date.now()}`, { cache: "no-store" });
-        if (!response.ok) {
-          throw new Error(`feed HTTP ${response.status}`);
+    document.querySelectorAll(".copy-cmd").forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        const code = btn.closest(".cmd").querySelector("code");
+        if (!code) return;
+        try {
+          await navigator.clipboard.writeText(code.textContent);
+          btn.textContent = "Copied";
+          setTimeout(() => (btn.textContent = "Copy"), 900);
+        } catch {
+          btn.textContent = "Failed";
+          setTimeout(() => (btn.textContent = "Copy"), 900);
         }
-        const payload = await response.json();
-        const meta = payload?.meta || {};
-        const telemetry = meta?.telemetry || {};
-        const risks = meta?.risks || {};
+      });
+    });
 
-        const generatedAt = meta.generatedAt ? new Date(meta.generatedAt) : null;
-        const ageMinutes = generatedAt ? Math.max(0, Math.round((Date.now() - generatedAt.getTime()) / 60000)) : null;
-
-        document.getElementById("qualityValue").textContent = String(meta.dataQuality || "unknown").toUpperCase();
-        document.getElementById("freshnessValue").textContent = Number.isFinite(ageMinutes) ? `${ageMinutes}m` : "unknown";
-
-        document.getElementById("signalValue").textContent = (telemetry.ciFailureStreak ?? 0) > 0
-          ? `CI failure streak: ${telemetry.ciFailureStreak}`
-          : "Strict preflight remains green";
-
-        const backlogRisk = risks.backlogAgingRisk || "low";
-        const qualityRisk = risks.qualityConfidenceRisk || "low";
-        document.getElementById("riskFocusValue").textContent = `Backlog ${backlogRisk} / Quality ${qualityRisk}`;
-
-        document.getElementById("modeValue").textContent = (telemetry.ciFailureStreak ?? 0) >= 2
-          ? "Stabilize release pipeline"
-          : "Stabilize and Productize";
-
-        if (qualityRisk !== "low") {
-          document.getElementById("riskFocusValue").textContent = `LINE entitlement blocker + Backlog ${backlogRisk}`;
-        }
-
-        if (meta?.links?.actions) {
-          document.getElementById("drillActions").href = meta.links.actions;
-        }
-      } catch {
-        document.getElementById("qualityValue").textContent = "UNKNOWN";
-      }
+    let healthChart;
+    function renderChart() {
+      const s = getComputedStyle(document.documentElement);
+      const txt = s.getPropertyValue("--muted").trim();
+      const line = s.getPropertyValue("--line").trim();
+      const ok = s.getPropertyValue("--ok").trim();
+      const warn = s.getPropertyValue("--warn").trim();
+      const bad = s.getPropertyValue("--bad").trim();
+      if (healthChart) healthChart.dispose();
+      healthChart = echarts.init(document.getElementById("healthChart"));
+      healthChart.setOption({
+        backgroundColor: "transparent",
+        tooltip: {},
+        radar: {
+          indicator: [
+            { name: "ACP", max: 100 },
+            { name: "AP2", max: 100 },
+            { name: "x402", max: 100 },
+            { name: "notify-bridge", max: 100 },
+            { name: "LINE push", max: 100 },
+            { name: "Replay fixtures", max: 100 }
+          ],
+          axisName: { color: txt },
+          splitLine: { lineStyle: { color: line } },
+          axisLine: { lineStyle: { color: line } },
+          splitArea: { areaStyle: { color: ["transparent"] } }
+        },
+        series: [{
+          type: "radar",
+          data: [{
+            value: [96, 87, 93, 92, 90, 88],
+            areaStyle: { color: "rgba(59,130,246,0.18)" },
+            lineStyle: { color: "#3b82f6", width: 2 },
+            itemStyle: { color: "#06b6d4" }
+          }]
+        }],
+        graphic: [
+          { type: "text", left: "5%", top: "5%", style: { text: "Healthy", fill: ok, font: "600 12px Inter" } },
+          { type: "text", left: "23%", top: "5%", style: { text: "Watch", fill: warn, font: "600 12px Inter" } },
+          { type: "text", left: "38%", top: "5%", style: { text: "Critical", fill: bad, font: "600 12px Inter" } }
+        ]
+      });
     }
-
-    loadLiveOpsSignals();
+    window.addEventListener("resize", () => healthChart && healthChart.resize());
+    renderChart();
   </script>
   <script src="./security.js"></script>
 </body>
