@@ -1,38 +1,38 @@
 {
   "kpis": {
-    "reliability": 84,
-    "interop": 72,
+    "reliability": 100,
+    "interop": 82,
     "speed": 90,
-    "signal": 87,
-    "releaseReadiness": 72
+    "signal": 96,
+    "releaseReadiness": 94
   },
   "meta": {
-    "generatedAt": "2026-03-16T01:26:40.704Z",
-    "source": "github:amerikian/Personal-Website",
+    "generatedAt": "2026-03-16T03:34:52.227Z",
+    "source": "github:amerikian/acp-dev-workspace",
     "dataQuality": "high",
-    "note": "Reliability estimated from repository freshness and issue/PR pressure due to limited workflow history. Interop estimated because no recent relevant workflow run was available.",
+    "note": "Reliability based on recent preflight/conformance workflow outcomes.",
     "links": {
-      "repo": "https://github.com/amerikian/Personal-Website",
-      "pulls": "https://github.com/amerikian/Personal-Website/pulls",
-      "issues": "https://github.com/amerikian/Personal-Website/issues",
-      "actions": "https://github.com/amerikian/Personal-Website/actions"
+      "repo": "https://github.com/amerikian/acp-dev-workspace",
+      "pulls": "https://github.com/amerikian/acp-dev-workspace/pulls",
+      "issues": "https://github.com/amerikian/acp-dev-workspace/issues",
+      "actions": "https://github.com/amerikian/acp-dev-workspace/actions"
     },
     "telemetry": {
       "openPrs": 0,
       "openIssues": 0,
       "freshnessDays": 0,
-      "relevantCompletedRuns": 0,
-      "relevantSuccessfulRuns": 0,
+      "relevantCompletedRuns": 4,
+      "relevantSuccessfulRuns": 4,
       "ciFailureStreak": 0,
-      "ciSuccessRate7d": 0,
-      "ciSuccessRate30d": 0,
+      "ciSuccessRate7d": 100,
+      "ciSuccessRate30d": 100,
       "prMedianAgeDays": 0,
       "issueMedianAgeDays": 0,
       "staleOpenPrs7d": 0,
       "staleOpenIssues14d": 0,
       "staleOpenIssues30d": 0,
-      "mergedPrs7d": 0,
-      "mergedPrs30d": 0
+      "mergedPrs7d": 2,
+      "mergedPrs30d": 2
     },
     "risks": {
       "ciFailureStreakRisk": "low",
