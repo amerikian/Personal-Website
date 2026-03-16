@@ -7,6 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
   <style>
     :root {
       --bg: #060b18;
@@ -396,6 +397,54 @@
       color: var(--title);
     }
 
+    .analytics-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .chart-panel {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--surface-input);
+      padding: 10px;
+    }
+    .chart-title {
+      font-size: 0.74rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 6px;
+    }
+    .chart-box {
+      width: 100%;
+      height: 220px;
+    }
+    .chart-box.small {
+      height: 180px;
+    }
+
+    .embed-wrap {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--surface-input);
+      overflow: hidden;
+      min-height: 220px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--muted);
+      font-size: 0.8rem;
+      text-align: center;
+      padding: 12px;
+    }
+    .embed-wrap iframe {
+      width: 100%;
+      height: 280px;
+      border: 0;
+      display: none;
+      background: #fff;
+    }
+
     .sim-link {
       display: inline-flex;
       align-items: center;
@@ -502,6 +551,7 @@
     @media (max-width: 980px) {
       .span-3, .span-4, .span-5, .span-6, .span-7, .span-8 { grid-column: span 12; }
       .studio-hero { grid-template-columns: 1fr; }
+      .analytics-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -574,6 +624,41 @@
         </div>
         <div class="status-bar">
           <span class="pill" id="studioStatus">Idle</span>
+        </div>
+      </article>
+
+      <!-- Analytics (ECharts) -->
+      <article class="card span-8">
+        <h2>Studio Analytics <span class="mini">ECharts telemetry</span></h2>
+        <div class="analytics-grid">
+          <div class="chart-panel">
+            <div class="chart-title">Action Outcomes (24h)</div>
+            <div id="actionChart" class="chart-box"></div>
+          </div>
+          <div class="chart-panel">
+            <div class="chart-title">Top Template Activity</div>
+            <div id="templateChart" class="chart-box"></div>
+          </div>
+        </div>
+        <div class="chart-panel" style="margin-top:10px">
+          <div class="chart-title">Bridge Latency (ms)</div>
+          <div id="latencyChart" class="chart-box small"></div>
+        </div>
+      </article>
+
+      <!-- Optional Power BI Embed -->
+      <article class="card span-4">
+        <h2>Power BI Embed <span class="mini">Optional</span></h2>
+        <div style="display:grid;gap:8px">
+          <input id="pbiUrl" type="url" placeholder="https://app.powerbi.com/view?r=..." />
+          <div class="button-row" style="margin-top:0">
+            <button id="pbiLoadBtn" type="button">Load Embed</button>
+            <button id="pbiClearBtn" type="button">Clear</button>
+          </div>
+        </div>
+        <div id="pbiWrap" class="embed-wrap" style="margin-top:10px">
+          <div id="pbiPlaceholder">Paste a Power BI public embed URL to render here.</div>
+          <iframe id="pbiFrame" title="Power BI Embed" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
         </div>
       </article>
 
@@ -752,6 +837,7 @@ https://developers.line.biz/flex-simulator/</div>
 
   <script>
     const studioKey = "acp-line-cards-studio-v1";
+    const telemetryKey = "acp-line-cards-telemetry-v2";
     const ccKey = "acp-command-center-v1";
     const themeKey = "acp-cc-theme";
 
@@ -978,6 +1064,7 @@ https://developers.line.biz/flex-simulator/</div>
           lineUserId: saved?.lineUserId || "",
           useLastUser: saved?.useLastUser !== false,
           selectedTemplate: saved?.selectedTemplate || null,
+          pbiUrl: saved?.pbiUrl || "",
           customVars: saved?.customVars || {},
         };
       } catch {
@@ -986,10 +1073,26 @@ https://developers.line.biz/flex-simulator/</div>
           lineUserId: "",
           useLastUser: true,
           selectedTemplate: null,
+          pbiUrl: "",
           customVars: {},
         };
       }
     })();
+
+    let telemetryState = (() => {
+      try {
+        const saved = JSON.parse(localStorage.getItem(telemetryKey));
+        return {
+          events: Array.isArray(saved?.events) ? saved.events : [],
+        };
+      } catch {
+        return { events: [] };
+      }
+    })();
+
+    let actionChart;
+    let templateChart;
+    let latencyChart;
 
     // Sync bridgeUrl/lineUserId from main command center state
     try {
@@ -1006,9 +1109,137 @@ https://developers.line.biz/flex-simulator/</div>
       localStorage.setItem(studioKey, JSON.stringify(studioState));
     }
 
+    function saveTelemetry() {
+      localStorage.setItem(telemetryKey, JSON.stringify(telemetryState));
+    }
+
+    function trackEvent(type, detail) {
+      telemetryState.events.push({
+        ts: Date.now(),
+        type,
+        template: studioState.selectedTemplate || "none",
+        detail: detail || {},
+      });
+      telemetryState.events = telemetryState.events.slice(-500);
+      saveTelemetry();
+      renderAnalytics();
+    }
+
     function setTheme(theme) {
       document.documentElement.setAttribute("data-theme", theme);
       localStorage.setItem(themeKey, theme);
+      setTimeout(renderAnalytics, 60);
+    }
+
+    function chartColors() {
+      const s = getComputedStyle(document.documentElement);
+      return {
+        text: s.getPropertyValue("--muted").trim(),
+        line: s.getPropertyValue("--line").trim(),
+        blue: s.getPropertyValue("--accent").trim(),
+        cyan: s.getPropertyValue("--accent2").trim(),
+        green: s.getPropertyValue("--ok").trim(),
+        amber: s.getPropertyValue("--warn").trim(),
+        red: s.getPropertyValue("--bad").trim(),
+      };
+    }
+
+    function renderAnalytics() {
+      if (typeof echarts === "undefined") return;
+      const c = chartColors();
+      const since = Date.now() - 24 * 60 * 60 * 1000;
+      const recent = telemetryState.events.filter((e) => e.ts >= since);
+
+      const rollup = {
+        render: { ok: 0, fail: 0 },
+        send: { ok: 0, fail: 0 },
+        raw: { ok: 0, fail: 0 },
+        alert: { ok: 0, fail: 0 },
+        bridge: { ok: 0, fail: 0 },
+      };
+      const templateCounts = {};
+      const latencies = [];
+
+      recent.forEach((e) => {
+        if (e.type === "render_success") rollup.render.ok += 1;
+        if (e.type === "render_fail") rollup.render.fail += 1;
+        if (e.type === "send_success") rollup.send.ok += 1;
+        if (e.type === "send_fail") rollup.send.fail += 1;
+        if (e.type === "raw_send_success") rollup.raw.ok += 1;
+        if (e.type === "raw_send_fail") rollup.raw.fail += 1;
+        if (e.type === "alert_send_success") rollup.alert.ok += 1;
+        if (e.type === "alert_send_fail") rollup.alert.fail += 1;
+        if (e.type === "bridge_check_success") rollup.bridge.ok += 1;
+        if (e.type === "bridge_check_fail") rollup.bridge.fail += 1;
+
+        if (e.template && e.template !== "none") {
+          templateCounts[e.template] = (templateCounts[e.template] || 0) + 1;
+        }
+        if (e.detail && typeof e.detail.ms === "number") {
+          latencies.push([new Date(e.ts).toLocaleTimeString(), e.detail.ms]);
+        }
+      });
+
+      const actions = ["render", "send", "raw", "alert", "bridge"];
+
+      if (actionChart) actionChart.dispose();
+      actionChart = echarts.init(document.getElementById("actionChart"));
+      actionChart.setOption({
+        grid: { left: 40, right: 10, top: 20, bottom: 24 },
+        tooltip: { trigger: "axis", axisPointer: { type: "shadow" } },
+        xAxis: { type: "category", data: actions, axisLabel: { color: c.text }, axisLine: { lineStyle: { color: c.line } } },
+        yAxis: { type: "value", axisLabel: { color: c.text }, splitLine: { lineStyle: { color: c.line } } },
+        series: [
+          { name: "Success", type: "bar", stack: "a", data: actions.map((a) => rollup[a].ok), itemStyle: { color: c.blue } },
+          { name: "Fail", type: "bar", stack: "a", data: actions.map((a) => rollup[a].fail), itemStyle: { color: c.red } },
+        ],
+      });
+
+      const topTemplates = Object.entries(templateCounts).sort((a, b) => b[1] - a[1]).slice(0, 6);
+      if (templateChart) templateChart.dispose();
+      templateChart = echarts.init(document.getElementById("templateChart"));
+      templateChart.setOption({
+        grid: { left: 80, right: 10, top: 10, bottom: 20 },
+        tooltip: { trigger: "axis", axisPointer: { type: "shadow" } },
+        xAxis: { type: "value", axisLabel: { color: c.text }, splitLine: { lineStyle: { color: c.line } } },
+        yAxis: { type: "category", data: topTemplates.map((i) => i[0]), axisLabel: { color: c.text, fontSize: 10 } },
+        series: [{ type: "bar", data: topTemplates.map((i) => i[1]), itemStyle: { color: c.cyan } }],
+      });
+
+      if (latencyChart) latencyChart.dispose();
+      latencyChart = echarts.init(document.getElementById("latencyChart"));
+      latencyChart.setOption({
+        grid: { left: 34, right: 10, top: 20, bottom: 24 },
+        tooltip: { trigger: "axis" },
+        xAxis: { type: "category", data: latencies.map((i) => i[0]), axisLabel: { color: c.text, showMinLabel: false, showMaxLabel: false } },
+        yAxis: { type: "value", axisLabel: { color: c.text }, splitLine: { lineStyle: { color: c.line } } },
+        series: [{ type: "line", data: latencies.map((i) => i[1]), smooth: true, symbol: "none", lineStyle: { color: c.amber, width: 2 }, areaStyle: { color: `${c.amber}33` } }],
+      });
+    }
+
+    function applyPowerBiUrl(url) {
+      const frame = document.getElementById("pbiFrame");
+      const placeholder = document.getElementById("pbiPlaceholder");
+      const val = (url || "").trim();
+      if (!val) {
+        frame.style.display = "none";
+        frame.src = "";
+        placeholder.style.display = "block";
+        placeholder.textContent = "Paste a Power BI public embed URL to render here.";
+        return;
+      }
+      try {
+        const parsed = new URL(val);
+        if (!/^https?:$/.test(parsed.protocol)) throw new Error("Invalid URL protocol");
+        frame.src = parsed.toString();
+        frame.style.display = "block";
+        placeholder.style.display = "none";
+      } catch {
+        frame.style.display = "none";
+        frame.src = "";
+        placeholder.style.display = "block";
+        placeholder.textContent = "Invalid URL. Use a full https Power BI embed link.";
+      }
     }
 
     function getFilteredTemplates(templates) {
@@ -1339,6 +1570,7 @@ https://developers.line.biz/flex-simulator/</div>
     async function renderPreview() {
       if (!studioState.selectedTemplate) {
         setStatus("studioStatus", "Select a template first", "warn");
+        trackEvent("render_fail", { reason: "no_template" });
         return null;
       }
 
@@ -1362,57 +1594,68 @@ https://developers.line.biz/flex-simulator/</div>
         const json = JSON.stringify(rendered, null, 2);
         document.getElementById("jsonPreview").textContent = json;
         setStatus("studioStatus", `Rendered ${tpl.name}`, "good");
+        trackEvent("render_success", { template: studioState.selectedTemplate });
         return payload;
       } catch (err) {
         setStatus("studioStatus", `Render failed: ${err.message}`, "bad");
+        trackEvent("render_fail", { reason: err.message });
         return null;
       }
     }
 
     async function sendToLine(contents, altText) {
+      const started = performance.now();
       const base = getBridgeBase();
       const useLastUser = document.getElementById("useLastUser").checked;
+      try {
+        if (useLastUser) {
+          if (!studioState.selectedTemplate && !contents) {
+            setStatus("studioStatus", "Nothing to send", "warn");
+            trackEvent("send_fail", { reason: "nothing_to_send", ms: Math.round(performance.now() - started) });
+            return;
+          }
 
-      if (useLastUser) {
-        if (!studioState.selectedTemplate && !contents) {
-          setStatus("studioStatus", "Nothing to send", "warn");
-          return;
+          if (studioState.selectedTemplate && !contents) {
+            const payload = await renderPreview();
+            if (!payload) return;
+            contents = payload.contents;
+            altText = payload.altText;
+          }
+
+          const data = await fetchJson(`${base}/notify/line/flex/last-user`, {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify({
+              templateId: studioState.selectedTemplate,
+              vars: studioState.customVars,
+            }),
+          });
+          if (!data.ok) throw new Error(data.error);
+          setStatus("studioStatus", `Sent to LINE user ${data.userId}`, "good");
+          trackEvent("send_success", { mode: "last-user", ms: Math.round(performance.now() - started) });
+        } else {
+          const userId = studioState.lineUserId;
+          if (!userId) {
+            setStatus("studioStatus", "Enter a LINE User ID or enable last-user", "warn");
+            trackEvent("send_fail", { reason: "missing_user_id", ms: Math.round(performance.now() - started) });
+            return;
+          }
+
+          await fetchJson(`${base}/notify/line/flex`, {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify({
+              userId,
+              templateId: studioState.selectedTemplate,
+              vars: studioState.customVars,
+            }),
+          });
+          setStatus("studioStatus", `Sent to LINE user ${userId}`, "good");
+          trackEvent("send_success", { mode: "explicit-user", ms: Math.round(performance.now() - started) });
         }
-
-        if (studioState.selectedTemplate && !contents) {
-          const payload = await renderPreview();
-          if (!payload) return;
-          contents = payload.contents;
-          altText = payload.altText;
-        }
-
-        const data = await fetchJson(`${base}/notify/line/flex/last-user`, {
-          method: "POST",
-          headers: { "content-type": "application/json" },
-          body: JSON.stringify({
-            templateId: studioState.selectedTemplate,
-            vars: studioState.customVars,
-          }),
-        });
-        if (!data.ok) throw new Error(data.error);
-        setStatus("studioStatus", `Sent to LINE user ${data.userId}`, "good");
-      } else {
-        const userId = studioState.lineUserId;
-        if (!userId) {
-          setStatus("studioStatus", "Enter a LINE User ID or enable last-user", "warn");
-          return;
-        }
-
-        await fetchJson(`${base}/notify/line/flex`, {
-          method: "POST",
-          headers: { "content-type": "application/json" },
-          body: JSON.stringify({
-            userId,
-            templateId: studioState.selectedTemplate,
-            vars: studioState.customVars,
-          }),
-        });
-        setStatus("studioStatus", `Sent to LINE user ${userId}`, "good");
+      } catch (err) {
+        trackEvent("send_fail", { reason: err.message, ms: Math.round(performance.now() - started) });
+        throw err;
       }
     }
 
@@ -1439,10 +1682,12 @@ https://developers.line.biz/flex-simulator/</div>
     });
 
     document.getElementById("sendRawBtn").addEventListener("click", async () => {
+      const started = performance.now();
       try {
         const raw = document.getElementById("rawFlexInput").value.trim();
         if (!raw) {
           setStatus("studioStatus", "Enter raw Flex JSON first", "warn");
+          trackEvent("raw_send_fail", { reason: "empty_input", ms: Math.round(performance.now() - started) });
           return;
         }
         const contents = JSON.parse(raw);
@@ -1463,8 +1708,10 @@ https://developers.line.biz/flex-simulator/</div>
         });
         if (!data.ok) throw new Error(data.error);
         setStatus("studioStatus", `Raw Flex sent to LINE`, "good");
+        trackEvent("raw_send_success", { ms: Math.round(performance.now() - started) });
       } catch (err) {
         setStatus("studioStatus", `Raw send failed: ${err.message}`, "bad");
+        trackEvent("raw_send_fail", { reason: err.message, ms: Math.round(performance.now() - started) });
       }
     });
 
@@ -1506,15 +1753,19 @@ https://developers.line.biz/flex-simulator/</div>
     });
 
     document.getElementById("healthBtn").addEventListener("click", async () => {
+      const started = performance.now();
       try {
         const data = await fetchJson(`${getBridgeBase()}/health`);
         setStatus("bridgeStatus", data.ok ? "Bridge healthy" : "Bridge error", data.ok ? "good" : "bad");
+        trackEvent("bridge_check_success", { check: "health", ms: Math.round(performance.now() - started) });
       } catch (err) {
         setStatus("bridgeStatus", `Unreachable: ${err.message}`, "bad");
+        trackEvent("bridge_check_fail", { check: "health", reason: err.message, ms: Math.round(performance.now() - started) });
       }
     });
 
     document.getElementById("configBtn").addEventListener("click", async () => {
+      const started = performance.now();
       try {
         const data = await fetchJson(`${getBridgeBase()}/line/config-check`);
         const parts = [];
@@ -1523,8 +1774,10 @@ https://developers.line.biz/flex-simulator/</div>
         if (data.lastUserId) parts.push(`User:${data.lastUserId.slice(0,8)}…`);
         else parts.push("User:none");
         setStatus("bridgeStatus", parts.join(" | "), data.hasLineAccessToken ? "good" : "warn");
+        trackEvent("bridge_check_success", { check: "config", ms: Math.round(performance.now() - started), token: !!data.hasLineAccessToken });
       } catch (err) {
         setStatus("bridgeStatus", `Config check failed: ${err.message}`, "bad");
+        trackEvent("bridge_check_fail", { check: "config", reason: err.message, ms: Math.round(performance.now() - started) });
       }
     });
 
@@ -1557,10 +1810,26 @@ https://developers.line.biz/flex-simulator/</div>
       studioState.useLastUser = e.target.checked;
       saveStudio();
     });
+    document.getElementById("pbiUrl").addEventListener("input", (e) => {
+      studioState.pbiUrl = e.target.value.trim();
+      saveStudio();
+    });
+    document.getElementById("pbiLoadBtn").addEventListener("click", () => {
+      applyPowerBiUrl(document.getElementById("pbiUrl").value.trim());
+      trackEvent("pbi_load", { ok: true });
+    });
+    document.getElementById("pbiClearBtn").addEventListener("click", () => {
+      document.getElementById("pbiUrl").value = "";
+      studioState.pbiUrl = "";
+      saveStudio();
+      applyPowerBiUrl("");
+      trackEvent("pbi_clear", { ok: true });
+    });
 
     // ── Alert Bridge ─────────────────────────────────────────────
 
     document.getElementById("sendAlertBtn").addEventListener("click", async function() {
+      var started = performance.now();
       try {
         var alertType = document.getElementById("alertType").value;
         var alertTitle = document.getElementById("alertTitle").value || "Protocol bridge degradation detected";
@@ -1600,8 +1869,10 @@ https://developers.line.biz/flex-simulator/</div>
           });
           setStatus("alertStatus", "Alert sent to LINE user " + userId, "good");
         }
+        trackEvent("alert_send_success", { template: alertType, ms: Math.round(performance.now() - started) });
       } catch (err) {
         setStatus("alertStatus", "Alert send failed: " + err.message, "bad");
+        trackEvent("alert_send_fail", { template: document.getElementById("alertType").value, reason: err.message, ms: Math.round(performance.now() - started) });
       }
     });
 
@@ -1634,6 +1905,7 @@ https://developers.line.biz/flex-simulator/</div>
     }
 
     document.getElementById("testTextBtn").addEventListener("click", async function() {
+      var started = performance.now();
       try {
         setStatus("quickTestStatus", "Sending text…", "");
         var data = await fetchJson(getBridgeBase() + "/line/test-push", {
@@ -1643,13 +1915,16 @@ https://developers.line.biz/flex-simulator/</div>
         });
         setStatus("quickTestStatus", "Text sent!", "good");
         showQuickResult(data);
+        trackEvent("quick_test_success", { kind: "text", ms: Math.round(performance.now() - started) });
       } catch (err) {
         setStatus("quickTestStatus", "Text failed: " + err.message, "bad");
         showQuickResult({ error: err.message });
+        trackEvent("quick_test_fail", { kind: "text", reason: err.message, ms: Math.round(performance.now() - started) });
       }
     });
 
     document.getElementById("testStickerBtn").addEventListener("click", async function() {
+      var started = performance.now();
       try {
         setStatus("quickTestStatus", "Sending sticker…", "");
         var data = await fetchJson(getBridgeBase() + "/line/push-sticker", {
@@ -1659,13 +1934,16 @@ https://developers.line.biz/flex-simulator/</div>
         });
         setStatus("quickTestStatus", "Sticker sent!", "good");
         showQuickResult(data);
+        trackEvent("quick_test_success", { kind: "sticker", ms: Math.round(performance.now() - started) });
       } catch (err) {
         setStatus("quickTestStatus", "Sticker failed: " + err.message, "bad");
         showQuickResult({ error: err.message });
+        trackEvent("quick_test_fail", { kind: "sticker", reason: err.message, ms: Math.round(performance.now() - started) });
       }
     });
 
     document.getElementById("testImageBtn").addEventListener("click", async function() {
+      var started = performance.now();
       try {
         setStatus("quickTestStatus", "Sending image…", "");
         var data = await fetchJson(getBridgeBase() + "/line/push-image", {
@@ -1675,21 +1953,26 @@ https://developers.line.biz/flex-simulator/</div>
         });
         setStatus("quickTestStatus", "Image sent!", "good");
         showQuickResult(data);
+        trackEvent("quick_test_success", { kind: "image", ms: Math.round(performance.now() - started) });
       } catch (err) {
         setStatus("quickTestStatus", "Image failed: " + err.message, "bad");
         showQuickResult({ error: err.message });
+        trackEvent("quick_test_fail", { kind: "image", reason: err.message, ms: Math.round(performance.now() - started) });
       }
     });
 
     document.getElementById("botInfoBtn").addEventListener("click", async function() {
+      var started = performance.now();
       try {
         setStatus("quickTestStatus", "Fetching bot info…", "");
         var data = await fetchJson(getBridgeBase() + "/line/bot-info");
         setStatus("quickTestStatus", "Bot: " + (data.bot?.displayName || data.bot?.basicId || "OK"), "good");
         showQuickResult(data);
+        trackEvent("quick_test_success", { kind: "bot-info", ms: Math.round(performance.now() - started) });
       } catch (err) {
         setStatus("quickTestStatus", "Bot info failed: " + err.message, "bad");
         showQuickResult({ error: err.message });
+        trackEvent("quick_test_fail", { kind: "bot-info", reason: err.message, ms: Math.round(performance.now() - started) });
       }
     });
 
@@ -1730,11 +2013,18 @@ https://developers.line.biz/flex-simulator/</div>
     document.getElementById("bridgeUrl").value = studioState.bridgeUrl;
     document.getElementById("lineUserId").value = studioState.lineUserId;
     document.getElementById("useLastUser").checked = studioState.useLastUser;
+    document.getElementById("pbiUrl").value = studioState.pbiUrl || "";
 
     setTheme(localStorage.getItem(themeKey) || "dark");
     document.getElementById("themeBtn").addEventListener("click", () => {
       const current = document.documentElement.getAttribute("data-theme") || "dark";
       setTheme(current === "dark" ? "light" : "dark");
+    });
+
+    window.addEventListener("resize", () => {
+      actionChart && actionChart.resize();
+      templateChart && templateChart.resize();
+      latencyChart && latencyChart.resize();
     });
 
     (async () => {
@@ -1746,6 +2036,8 @@ https://developers.line.biz/flex-simulator/</div>
       }
       // Auto-check bot status on load
       checkBotStatus();
+      applyPowerBiUrl(studioState.pbiUrl || "");
+      renderAnalytics();
     })();
   </script>
   <script src="./security.js"></script>
