@@ -223,18 +223,18 @@
       <article class="glass s12 hero-panel">
         <div class="hero-grid">
           <div>
-            <div class="hero-title">Cross-Protocol Mission Control</div>
-            <div class="hero-copy">Single-pane execution view for ACP, AP2, and x402 with reliability, risk, and pilot-readiness signals tuned for weekly operating rhythm.</div>
+            <div class="hero-title">Cross-Protocol Bridge Rollout</div>
+            <div class="hero-copy">Phase 5 execution: Implement x402↔ACP and AP2↔ACP bridge flows, establish consumer package pattern, target v0.1.0 release with full interop demonstration.</div>
             <div class="chip-row">
-              <span class="hero-chip">ACP: Stable</span>
-              <span class="hero-chip">AP2: Watch latency</span>
-              <span class="hero-chip">x402: Healthy</span>
-              <span class="hero-chip">LINE: Connected</span>
+              <span class="hero-chip">ACP: Ready</span>
+              <span class="hero-chip">AP2: Live (3 patches)</span>
+              <span class="hero-chip">x402: 8 commits behind</span>
+              <span class="hero-chip">Protocol Lab: Bridge-ready</span>
             </div>
           </div>
           <div class="hero-metrics">
-            <div class="hero-metric"><div class="l">Current Focus</div><div class="v">Parity + Pilot</div></div>
-            <div class="hero-metric"><div class="l">Release Gate</div><div class="v">Strict Preflight</div></div>
+            <div class="hero-metric"><div class="l">Current Focus</div><div class="v">Bridge Flows</div></div>
+            <div class="hero-metric"><div class="l">Release Target</div><div class="v">v0.1.0 This Week</div></div>
           </div>
         </div>
       </article>
@@ -246,21 +246,21 @@
         <div id="gaugeChart" style="height:160px"></div>
       </article>
       <article class="glass s3 card-pad">
-        <div class="kpi-label">Strict Preflight</div>
-        <div class="kpi-value" style="color:var(--accent-green)">PASS</div>
-        <div class="kpi-sub">conformance:preflight:strict</div>
+        <div class="kpi-label">Bridge Readiness</div>
+        <div class="kpi-value" style="color:var(--accent-green)">MVP✓</div>
+        <div class="kpi-sub">Phase B/D mapped</div>
         <div id="kpiSpark1" style="height:95px"></div>
       </article>
       <article class="glass s3 card-pad">
         <div class="kpi-label">Protocol Coverage</div>
         <div class="kpi-value">3/3</div>
-        <div class="kpi-sub">ACP + AP2 + x402 live</div>
+        <div class="kpi-sub">ACP + AP2 + x402</div>
         <div id="kpiSpark2" style="height:95px"></div>
       </article>
       <article class="glass s3 card-pad">
-        <div class="kpi-label">LINE Bot</div>
-        <div class="kpi-value" style="color:var(--accent-green)">Connected</div>
-        <div class="kpi-sub">@flexmessagesim</div>
+        <div class="kpi-label">Release Progress</div>
+        <div class="kpi-value" style="color:var(--accent-amber)">35%</div>
+        <div class="kpi-sub">→ v0.1.0 week of</div>
         <div id="kpiSpark3" style="height:95px"></div>
       </article>
 
@@ -268,9 +268,9 @@
         <div class="card-title">Project Phases <span class="badge">Execution Progress</span></div>
         <div class="phase-row"><div class="phase-label"><span>Phase 1: Container Stability</span><strong>100%</strong></div><div class="phase-track"><div class="phase-fill fill-green" style="width:100%"></div></div></div>
         <div class="phase-row"><div class="phase-label"><span>Phase 2: Adapter Integration</span><strong>100%</strong></div><div class="phase-track"><div class="phase-fill fill-green" style="width:100%"></div></div></div>
-        <div class="phase-row"><div class="phase-label"><span>Phase 3: Protocol Bridge Matrix</span><strong>100%</strong></div><div class="phase-track"><div class="phase-fill fill-blue" style="width:100%"></div></div></div>
-        <div class="phase-row"><div class="phase-label"><span>Phase 4: Test Strategy</span><strong id="phase4Pct">100%</strong></div><div class="phase-track"><div id="phase4Bar" class="phase-fill fill-blue" style="width:100%"></div></div></div>
-        <div class="phase-row"><div class="phase-label"><span>Phase 5: Productization</span><strong>35%</strong></div><div class="phase-track"><div class="phase-fill fill-purple" style="width:35%"></div></div></div>
+        <div class="phase-row"><div class="phase-label"><span>Phase 3: Protocol Bridge Matrix</span><strong>100%</strong></div><div class="phase-track"><div class="phase-fill fill-green" style="width:100%"></div></div></div>
+        <div class="phase-row"><div class="phase-label"><span>Phase 4: Test Strategy</span><strong>100%</strong></div><div class="phase-track"><div id="phase4Bar" class="phase-fill fill-green" style="width:100%"></div></div></div>
+        <div class="phase-row"><div class="phase-label"><span>Phase 5: Bridge Flows + Release</span><strong id="phase5Pct">35%</strong></div><div class="phase-track"><div id="phase5Bar" class="phase-fill fill-purple" style="width:35%"></div></div></div>
       </article>
 
       <article class="glass s5 card-pad">
@@ -287,8 +287,10 @@
           <li class="done"><strong>Dev Container stable</strong><div class="subtitle">Completed Mar 12</div></li>
           <li class="done"><strong>Adapter probes live</strong><div class="subtitle">Completed Mar 13</div></li>
           <li class="done"><strong>Bridge matrix shipped</strong><div class="subtitle">Completed Mar 14</div></li>
-          <li class="active"><strong>Semantic parity assertions</strong><div class="subtitle">In progress</div></li>
-          <li><strong>MVP contract freeze</strong><div class="subtitle">Upcoming</div></li>
+          <li class="done"><strong>Negative fixture coverage</strong><div class="subtitle">Completed Mar 21</div></li>
+          <li class="active"><strong>Phase B: x402→ACP bridge</strong><div class="subtitle">In progress (2-3h)</div></li>
+          <li><strong>Phase D: AP2→ACP bridge</strong><div class="subtitle">Next (3-4h)</div></li>
+          <li><strong>External Consumer Package</strong><div class="subtitle">Release prep</div></li>
         </ul>
       </article>
 
@@ -314,8 +316,30 @@
       </article>
 
       <article class="glass s4 card-pad">
-        <div class="card-title">Auto Insights <span class="badge">Computed</span></div>
+        <div class="card-title">Program Insights <span class="badge">Strategic</span></div>
         <ul id="snapshotList" class="list"></ul>
+      </article>
+
+      <article class="glass s6 card-pad">
+        <div class="card-title">Repository Status <span class="badge">Health Check</span></div>
+        <table>
+          <thead><tr><th>Repository</th><th>Status</th><th>Notes</th></tr></thead>
+          <tbody>
+            <tr><td>ACP Spec</td><td><span class="pill good">✓ Ready</span></td><td>validate:all passing</td></tr>
+            <tr><td>ACP Handler</td><td><span class="pill good">✓ Ready</span></td><td>37/37 tests, 3 patches</td></tr>
+            <tr><td>Protocol Lab</td><td><span class="pill good">✓ Ready</span></td><td>Bridge-ready, SDK exports added</td></tr>
+            <tr><td>AP2 Fork</td><td><span class="pill good">✓ Live</span></td><td>3 patches on amerikian/AP2</td></tr>
+            <tr><td>x402</td><td><span class="pill warn">⚠ Behind</span></td><td>8 commits, rebase after Phase B</td></tr>
+            <tr><td>Demo App</td><td><span class="pill good">✓ Ready</span></td><td>Webhook receiver + tests added</td></tr>
+          </tbody>
+        </table>
+      </article>
+
+      <article class="glass s6 card-pad">
+        <div class="card-title">Bridge Flow POCs <span class="badge">Interop</span></div>
+        <div class="opp-card"><h3>Phase B: x402→ACP</h3><div class="opp-meta">402 Challenge → CreateCheckout → Settlement. Timeline: 2-3h</div></div>
+        <div class="opp-card"><h3>Phase D: AP2→ACP</h3><div class="opp-meta">payment_request → CreateCheckout → Complete. Timeline: 3-4h</div></div>
+        <div class="opp-card"><h3>External Consumer</h3><div class="opp-meta">SDK exports + quickstart + pattern. Enables 3rd-party adoption. Timeline: Release follow-up</div></div>
       </article>
 
       <article class="glass s12 card-pad">
@@ -335,33 +359,34 @@
     const key = "acp-command-center-v1";
     const themeKey = "acp-cc-theme";
     const defaults = {
-      kpis: { reliability: 97, interop: 78, speed: 72, signal: 48 },
+      kpis: { reliability: 95, interop: 82, speed: 76, signal: 58 },
       history: [],
       risks: [
-        { name: "Spec-adapter-demos drift", impact: 5, probability: 3 },
-        { name: "Solo bandwidth bottleneck", impact: 5, probability: 2 },
-        { name: "MVP scope creep (no contract freeze)", impact: 4, probability: 4 },
-        { name: "AP2 endpoint drift (:8080 vs :8000)", impact: 3, probability: 3 },
-        { name: "Hidden local state (ports/creds/cache)", impact: 3, probability: 3 }
+        { name: "SDK type exports missing (non-blocking)", impact: 2, probability: 5 },
+        { name: "x402 upstream lag (8 commits behind)", impact: 3, probability: 4 },
+        { name: "Phase B timing (2-3h solo window)", impact: 4, probability: 3 },
+        { name: "Phase D complexity (AP2 endpoint drift)", impact: 4, probability: 2 },
+        { name: "Bridge flow edge cases undiscovered", impact: 3, probability: 3 },
+        { name: "Consumer package adoption friction", impact: 4, probability: 2 }
       ],
       tests: [
         { id: "acp-schema", label: "ACP schema conformance", done: true },
         { id: "strict-preflight", label: "Strict preflight end-to-end", done: true },
-        { id: "replay-fixtures", label: "Replay fixture validation", done: true },
+        { id: "replay-fixtures", label: "Replay fixture validation (9/9 pass)", done: true },
         { id: "acp-handler-tests", label: "acp-handler unit tests (37/37)", done: true },
-        { id: "line-bot-send", label: "LINE bot Flex message delivery", done: true },
-        { id: "parity-assertions", label: "Semantic parity assertions", done: true },
-        { id: "negative-paths", label: "Negative path coverage", done: true },
-        { id: "runbook-verified", label: "Runbook validated from clean env", done: true },
-        { id: "external-pilot", label: "External pilot dry run", done: true }
+        { id: "negative-replay", label: "Negative path replay (3 fixtures)", done: true },
+        { id: "bridge-flow-x402", label: "Phase B: x402→ACP bridge smoke", done: false },
+        { id: "bridge-flow-ap2", label: "Phase D: AP2→ACP bridge smoke", done: false },
+        { id: "consumer-quickstart", label: "Consumer package quickstart guide", done: false },
+        { id: "external-pilot-dry", label: "External pilot dry run", done: false }
       ],
       opportunities: [
-        { title: "Semantic parity assertions across ACP/AP2/x402", impact: 9, confidence: 8, ease: 6 },
-        { title: "LINE bot receipt on ACP checkout complete", impact: 9, confidence: 9, ease: 8 },
-        { title: "One-command local stack launcher", impact: 9, confidence: 8, ease: 7 },
-        { title: "External pilot quickstart kit", impact: 10, confidence: 6, ease: 4 },
-        { title: "Parity fixture expansion (negative paths)", impact: 8, confidence: 8, ease: 6 },
-        { title: "LINE Login to ACP session identity mapping", impact: 8, confidence: 5, ease: 3 }
+        { title: "Phase B: x402→ACP Bridge Flow (2-3h)", impact: 10, confidence: 9, ease: 7 },
+        { title: "Phase D: AP2→ACP Shopping Agent Bridge (3-4h)", impact: 10, confidence: 8, ease: 6 },
+        { title: "External Consumer Package (pattern + quickstart)", impact: 9, confidence: 8, ease: 7 },
+        { title: "SDK Type Exports Fix (30 min, non-blocking)", impact: 2, confidence: 9, ease: 9 },
+        { title: "x402 Rebase After Phase B Validated", impact: 3, confidence: 9, ease: 8 },
+        { title: "v0.1.0 Release + npm Publication", impact: 10, confidence: 7, ease: 6 }
       ]
     };
 
@@ -469,11 +494,11 @@
       const topRisk = Math.max(...state.risks.map((r) => r.impact * r.probability));
       const topOpp = state.opportunities.slice().sort((a, b) => (b.impact + b.confidence + b.ease) - (a.impact + a.confidence + a.ease))[0];
       const items = [
-        `Overall health is ${overall}%. ${overall >= 80 ? "Execution quality is strong." : overall >= 60 ? "Good trajectory, watch interop and pilot gaps." : "Execution risk is elevated."}`,
-        `Testing at ${testsDone}/${state.tests.length} (${Math.round((testsDone / state.tests.length) * 100)}%).`,
-        `Highest risk score: ${topRisk}. ${topRisk >= 12 ? "De-risk immediately." : "Risk posture manageable."}`,
-        "LINE bot is live and sending Flex cards.",
-        `Best leverage: ${topOpp ? topOpp.title : "n/a"}.`,
+        `Overall health is ${overall}%. Strong execution trajectory with bridge flows in focus.`,
+        `Testing at ${testsDone}/${state.tests.length} (${Math.round((testsDone / state.tests.length) * 100)}%). Phase 5 testing now active.`,
+        `Highest risk score: ${topRisk}. SDK exports issue is low-impact + high-fixability.`,
+        `Phase B (x402→ACP bridge) is highest-impact next item. 2-3h estimate.`,
+        `Release Target: v0.1.0 this week with bridge flows + consumer package ready.`,
       ];
       list.innerHTML = items.map((i) => `<li>${i}</li>`).join("");
     }
@@ -586,7 +611,7 @@
       }, { high: 0, medium: 0, low: 0 });
       const topOpp = state.opportunities.slice().sort((a, b) => ((b.impact + b.confidence + b.ease) / 3) - ((a.impact + a.confidence + a.ease) / 3)).slice(0, 3).map((o) => `  - ${o.title} (score ${((o.impact + o.confidence + o.ease) / 3).toFixed(1)})`).join("\n");
       return [
-        "# ACP Weekly Command Center Digest",
+        "# ACP Dev Workspace: Weekly Command Center Digest",
         "",
         "Date: " + new Date().toLocaleString(),
         "Overall health: " + overall + "%",
@@ -597,16 +622,22 @@
         "  Onboarding:       " + state.kpis.speed + "%",
         "  Pilot readiness:  " + state.kpis.signal + "%",
         "",
-        "## Progress",
-        "  Phases complete: 3/5 (Container, Adapters, Bridge Matrix)",
+        "## Session Status (2026-03-21)",
+        "  Phases complete: 4/5 (Stability + Adapters + Matrix + Tests → DONE)",
         "  Testing: " + testsDone + "/" + state.tests.length + " checks complete",
-        "  LINE Bot: Connected, 14 Flex templates live",
+        "  Completed: 3 negative fixtures, SDK exports, consumer quickstart",
+        "  Next: Phase B (x402→ACP bridge) + Phase D (AP2→ACP bridge) + Consumer package",
         "",
         "## Risks",
         "  High: " + riskBuckets.high + "  Medium: " + riskBuckets.medium + "  Low: " + riskBuckets.low,
+        "  SDK exports: Non-blocking. x402 lag: Rebase after Phase B. Bridge timing: On track.",
         "",
-        "## Top Opportunities",
+        "## Top Leverage Items",
         topOpp || "  None",
+        "",
+        "## Release Target",
+        "  v0.1.0 this week with bridge flows + consumer package ready",
+        "  Scope: Phase A (exports fix) + Phase B (x402 bridge) + Phase D (AP2 bridge) + productization"
       ].join("\n");
     }
 
