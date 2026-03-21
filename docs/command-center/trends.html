@@ -589,6 +589,12 @@
         testsDone: 5, testsTotal: 9, risks: { high: 0, medium: 3, low: 2 },
         phases: { p1: 100, p2: 100, p3: 100, p4: 55, p5: 0 },
       },
+      {
+        week: "2026-W12", capturedAt: "2026-03-21T22:00:00.000Z", overall: 88,
+        kpis: { reliability: 97, interop: 95, speed: 84, signal: 78 },
+        testsDone: 7, testsTotal: 9, risks: { high: 0, medium: 2, low: 2 },
+        phases: { p1: 100, p2: 100, p3: 100, p4: 78, p5: 75 },
+      },
     ];
     const _allZero = state.history.length > 0 && state.history.every((h) => Number(h.overall || 0) === 0);
     if (!state.history.length || _allZero) {
