@@ -4,10 +4,10 @@
     "interop": 82,
     "speed": 79,
     "signal": 84,
-    "releaseReadiness": 84
+    "releaseReadiness": 83
   },
   "meta": {
-    "generatedAt": "2026-03-22T18:56:23.255Z",
+    "generatedAt": "2026-03-23T03:24:45.725Z",
     "source": "github:amerikian/acp-dev-workspace",
     "dataQuality": "high",
     "note": "Reliability based on recent preflight/conformance workflow outcomes.",
@@ -24,14 +24,14 @@
       "relevantCompletedRuns": 29,
       "relevantSuccessfulRuns": 24,
       "ciFailureStreak": 0,
-      "ciSuccessRate7d": 83,
+      "ciSuccessRate7d": 80,
       "ciSuccessRate30d": 83,
       "prMedianAgeDays": 1,
       "issueMedianAgeDays": 0,
       "staleOpenPrs7d": 0,
       "staleOpenIssues14d": 0,
       "staleOpenIssues30d": 0,
-      "mergedPrs7d": 2,
+      "mergedPrs7d": 0,
       "mergedPrs30d": 2
     },
     "risks": {
