@@ -7,7 +7,7 @@
     "releaseReadiness": 83
   },
   "meta": {
-    "generatedAt": "2026-03-23T03:24:45.725Z",
+    "generatedAt": "2026-03-23T07:40:20.414Z",
     "source": "github:amerikian/acp-dev-workspace",
     "dataQuality": "high",
     "note": "Reliability based on recent preflight/conformance workflow outcomes.",
@@ -26,7 +26,7 @@
       "ciFailureStreak": 0,
       "ciSuccessRate7d": 80,
       "ciSuccessRate30d": 83,
-      "prMedianAgeDays": 1,
+      "prMedianAgeDays": 2,
       "issueMedianAgeDays": 0,
       "staleOpenPrs7d": 0,
       "staleOpenIssues14d": 0,
