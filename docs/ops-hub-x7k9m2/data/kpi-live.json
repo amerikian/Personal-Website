@@ -1,13 +1,13 @@
 {
   "kpis": {
-    "reliability": 61,
-    "interop": 82,
+    "reliability": 60,
+    "interop": 66,
     "speed": 79,
-    "signal": 76,
-    "releaseReadiness": 70
+    "signal": 72,
+    "releaseReadiness": 67
   },
   "meta": {
-    "generatedAt": "2026-04-16T12:41:45.431Z",
+    "generatedAt": "2026-04-16T18:42:18.021Z",
     "source": "github:amerikian/acp-dev-workspace",
     "dataQuality": "high",
     "note": "Reliability based on recent preflight/conformance workflow outcomes.",
@@ -21,11 +21,11 @@
       "openPrs": 2,
       "openIssues": 2,
       "freshnessDays": 0,
-      "relevantCompletedRuns": 49,
+      "relevantCompletedRuns": 50,
       "relevantSuccessfulRuns": 30,
-      "ciFailureStreak": 0,
+      "ciFailureStreak": 1,
       "ciSuccessRate7d": 58,
-      "ciSuccessRate30d": 61,
+      "ciSuccessRate30d": 60,
       "prMedianAgeDays": 26,
       "issueMedianAgeDays": 0,
       "staleOpenPrs7d": 2,
@@ -35,7 +35,7 @@
       "mergedPrs30d": 0
     },
     "risks": {
-      "ciFailureStreakRisk": "low",
+      "ciFailureStreakRisk": "medium",
       "stalenessRisk": "low",
       "qualityConfidenceRisk": "low",
       "backlogAgingRisk": "low"
