@@ -7,7 +7,7 @@
     "releaseReadiness": 70
   },
   "meta": {
-    "generatedAt": "2026-08-03T07:25:33.586Z",
+    "generatedAt": "2026-08-03T13:19:01.928Z",
     "source": "github:amerikian/acp-dev-workspace",
     "dataQuality": "high",
     "note": "Reliability based on recent preflight/conformance workflow outcomes.",
